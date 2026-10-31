@@ -3,7 +3,7 @@ DOCUMENT TYPE: Curated local summary based on the linked U.S. DOT page; not verb
 JURISDICTION: U.S. DOT refund rules for flights to, from, or within the United States.
 OFFICIAL SOURCE: https://www.transportation.gov/individuals/aviation-consumer-protection/refunds
 SOURCE PAGE LAST UPDATED: November 7, 2025
-LOCAL SUMMARY CHECKED: October 30, 2026
+LOCAL SUMMARY CHECKED: October 31, 2026
 
 REFUND AFTER A CANCELLATION
 A passenger is entitled to a refund of the ticket price when the airline cancels a flight, regardless of the reason, and the passenger chooses not to travel or does not accept travel credits, vouchers, or other compensation offered instead of a refund.
@@ -25,10 +25,17 @@ IF THE PASSENGER ACCEPTS OR TAKES ALTERNATIVE TRANSPORTATION
 A passenger who chooses to take the significantly delayed or changed flight, or an alternative flight offered by the airline, is generally not entitled to a refund of the ticket price under this DOT rule. If a passenger rejects the alternative offer, or does not respond and does not take the alternative transportation, a refund must be issued automatically. Airlines must notify passengers of the right to a refund when offering alternative transportation.
 
 REFUND FORM AND DEADLINES
-A required ticket refund is returned to the original form of payment. A voucher, travel credit, or other compensation in place of a refund may be offered, but the passenger must be informed of the refund right and must choose whether to accept the alternative form. Refund timing depends on the payment method and the relevant event; check the current DOT page for the precise deadline rather than inferring it.
+A required ticket refund is returned to the original form of payment. A voucher, travel credit, or other compensation in place of a refund may be offered, but the passenger must be informed of the refund right and must affirmatively choose to accept the alternative form. The DOT refund page states that credit-card refunds are due within 7 business days, and refunds for other payment methods (such as cash or check) are due within 20 calendar days, subject to the specific event and timing described on the current DOT page. Do not call the 20-day period 20 business days.
+
+LEGAL REFERENCE — SEE ALSO 14 CFR PART 260
+For the regulatory definition of a significantly delayed or changed flight, see 14 CFR §260.2. The definition includes a scheduled late arrival at least 3 hours later for domestic itineraries or at least 6 hours later for international itineraries, and an early departure at least 3 hours earlier for domestic itineraries or 6 hours earlier for international itineraries.
+
+For the carrier's obligation to refund airfare for a cancelled or significantly delayed or changed flight, see 14 CFR §260.6, titled "Refunding fare for flights cancelled or significantly delayed or changed by carriers." The provision addresses a full and prompt refund when a consumer with a nonrefundable ticket chooses not to fly on the significantly delayed or changed flight, accept an alternative flight, or accept a voucher, credit, or other compensation offered in place of the refund.
+
+The current eCFR links are https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.2 and https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.6. The eCFR page displayed the current Title 14 content as of October 29, 2026. Do not cite 14 CFR §250.13 as the refund rule; the refund provisions described here are in Part 260.
 
 IMPORTANT LIMITS
-This is an educational local summary, not legal advice. Do not infer refund eligibility from a departure delay alone. Establish the itinerary type, original and revised scheduled arrival times, whether the passenger accepts or uses alternative transportation, and whether the passenger chooses not to travel. Refer to the official DOT page for all details and exceptions.
+This is an educational local summary, not legal advice. Do not infer refund eligibility from a departure delay alone. Establish the itinerary type, original and revised scheduled arrival times, whether the passenger accepts or uses alternative transportation, and whether the passenger chooses not to travel. Refer to the linked official DOT and eCFR pages for all details and exceptions.
 
 SEARCH TERMS (ENGLISH AND INDONESIAN)
-refund, ticket refund, original form of payment, cancellation, cancelled flight, significant delay, significant change, late arrival, early departure, alternative flight, alternative transportation, reject rebooking, accept rebooking, pengembalian dana, refund tiket, pembatalan penerbangan, keterlambatan kedatangan, keterlambatan keberangkatan, keberangkatan lebih awal, penerbangan alternatif, menolak penerbangan pengganti, menerima rebooking.
+refund, ticket refund, original form of payment, cancellation, cancelled flight, significant delay, significant change, late arrival, early departure, alternative flight, alternative transportation, reject rebooking, accept rebooking, 14 CFR Part 260, section 260.2, section 260.6, pengembalian dana, refund tiket, pembatalan penerbangan, keterlambatan kedatangan, keterlambatan keberangkatan, keberangkatan lebih awal, penerbangan alternatif, menolak penerbangan pengganti, menerima rebooking.

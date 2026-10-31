@@ -29,6 +29,19 @@ def load_trained_model():
         raise RuntimeError("Model belum tersedia. Bootstrap/training harus berhasil terlebih dahulu.") from registry_error
 
 
+def _interpret_probability(predicted: int, probability: float | None) -> str:
+    if probability is None:
+        return "Probabilitas tidak tersedia; label model tidak boleh ditafsirkan sebagai kepastian kondisi penerbangan."
+    threshold = 0.5
+    if abs(probability - threshold) <= 0.05:
+        return (
+            "Probabilitas berada dekat ambang klasifikasi 50%. Label kelas hanya menunjukkan "
+            "hasil keputusan model pada ambang tersebut dan bukan bukti bahwa penerbangan akan tepat waktu."
+        )
+    if predicted == 1:
+        return "Probabilitas berada di atas ambang klasifikasi 50%; ini tetap estimasi historis, bukan kepastian delay."
+    return "Probabilitas berada di bawah ambang klasifikasi 50%; ini bukan jaminan bahwa penerbangan akan tepat waktu."
+
 def predict_delay(flight_inputs: dict | None) -> dict:
     required = FEATURES
     if not flight_inputs:
@@ -60,6 +73,7 @@ def predict_delay(flight_inputs: dict | None) -> dict:
             "ok": True,
             "predicted_delay_15": predicted,
             "probability": probability,
+            "interpretation": _interpret_probability(predicted, probability),
             "message": "Model memperkirakan risiko keberangkatan terlambat minimal 15 menit." if predicted else "Model tidak mengklasifikasikan penerbangan ini sebagai delay ≥15 menit.",
             "features": row,
             "caveat": "Estimasi berbasis pola historis, bukan status real-time dan bukan jaminan hasil aktual.",

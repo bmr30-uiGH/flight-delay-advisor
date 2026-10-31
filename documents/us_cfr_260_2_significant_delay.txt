@@ -1,0 +1,20 @@
+DOCUMENT: eCFR — 14 CFR §260.2 SIGNIFICANTLY DELAYED OR CHANGED FLIGHT
+DOCUMENT TYPE: Curated local summary of the current eCFR provision; not verbatim legal text.
+JURISDICTION: Covered scheduled flights to, from, or within the United States.
+OFFICIAL SOURCE: https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.2
+SOURCE VERSION: eCFR Title 14 displayed as current on October 29, 2026.
+
+REGULATORY DEFINITION
+14 CFR §260.2 defines a "significantly delayed or changed flight" for purposes of the refund rules in Part 260. Relevant triggers include a scheduled arrival at least 3 hours after the original scheduled arrival for a domestic itinerary, or at least 6 hours after the original scheduled arrival for an international itinerary.
+
+EARLY DEPARTURE
+The same definition includes a flight scheduled to depart at least 3 hours earlier than its original scheduled departure for a domestic itinerary, or at least 6 hours earlier for an international itinerary. An early departure is different from a departure that is merely late.
+
+OTHER SIGNIFICANT CHANGES
+The definition also includes specified changes such as a different origin or destination airport, more connection points, or an involuntary downgrade, subject to the detailed rule text and applicable conditions.
+
+HOW TO USE THIS SOURCE
+For the definition of a significantly delayed or changed flight, cite 14 CFR §260.2. For the carrier's refund obligation after cancellation or significant delay/change, see the separate 14 CFR §260.6 source. Do not cite 14 CFR §250.13 as the refund authority.
+
+LIMITS
+This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. Consult the linked eCFR section for the complete text, conditions, exceptions, and current amendments.

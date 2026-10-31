@@ -11,7 +11,7 @@ from src.config import CHUNKS_PATH
 
 # Small bilingual expansions help Indonesian questions match English DOT summaries.
 _QUERY_EXPANSIONS = {
-    "refund": "refund ticket price original form of payment",
+    "refund": "refund ticket price original form of payment 14 CFR Part 260 section 260.6 refund obligation full and prompt refund",
     "pengembalian dana": "refund ticket price original form of payment",
     "pengembalian uang": "refund ticket price original form of payment",
     "kedatangan": "late arrival scheduled arrival destination airport",
@@ -54,7 +54,7 @@ def _load_chunks(path_string: str, modified_ns: int) -> tuple[dict, ...]:
     return tuple(records)
 
 
-def retrieve_passenger_rights(query: str, top_k: int = 4) -> list[dict]:
+def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
     if not CHUNKS_PATH.exists() or not query.strip():
         return []
     chunks = _load_chunks(str(CHUNKS_PATH), CHUNKS_PATH.stat().st_mtime_ns)

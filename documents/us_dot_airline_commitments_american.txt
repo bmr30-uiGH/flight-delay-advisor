@@ -1,17 +1,35 @@
-### IMPORTANT DISTINCTION — CONTROLLABLE DELAY THRESHOLDS
+DOCUMENT: U.S. DOT — AMERICAN AIRLINES CUSTOMER SERVICE COMMITMENTS
+DOCUMENT TYPE: Curated local summary of the U.S. DOT Airline Customer Service Dashboard; not verbatim DOT text.
+JURISDICTION: American Airlines commitments for controllable cancellations and delays shown on the U.S. DOT dashboard.
+OFFICIAL SOURCE: https://www.transportation.gov/airconsumer/airline-customer-service-dashboard
+SOURCE PAGE LAST UPDATED: September 11, 2025
+LOCAL SUMMARY CHECKED: October 31, 2026
 
-The U.S. DOT Airline Customer Service Dashboard does not establish a universal 3-hour threshold for defining every significant controllable delay.
+SCOPE — CONTROLLABLE DELAYS ONLY
+The U.S. DOT dashboard describes services airlines commit to provide when a delay or cancellation is caused by circumstances within the airline's control. Examples given by DOT include maintenance or crew problems, cabin cleaning, baggage loading, and fueling. These commitments should not be described as automatic benefits for every delay, including delays caused by weather or other circumstances outside airline control.
 
-The dashboard describes American Airlines' commitment to provide:
-- No-cost rebooking on the same airline for significant controllable delays.
-- No-cost rebooking on a partner airline for significant controllable delays.
-- A meal or meal voucher when a flight delay results in a passenger waiting for 3 hours or more.
-- Hotel accommodation and ground transportation for passengers affected by an overnight delay.
+AMERICAN AIRLINES — CONTROLLABLE DELAY COMMITMENTS
+The dashboard marks American Airlines as committed to rebook passengers on the same airline at no additional cost for significant controllable delays.
 
-The 3-hour waiting condition for meal assistance must not be confused with the separate U.S. DOT refund rule.
+The dashboard marks American Airlines as committed to rebook passengers on a partner airline, or another airline with which it has an agreement, at no additional cost for significant controllable delays.
 
-For domestic itineraries, the federal refund threshold is based on a scheduled arrival at least 3 hours later than the original scheduled arrival time.
+The dashboard marks American Airlines as committed to provide a meal or meal cash/voucher when a flight delay results in a passenger waiting 3 hours or more. This is a waiting-time condition for meal assistance. It is not the federal refund threshold and must not be confused with the late-arrival test used by the DOT refund rule.
 
-The dashboard does not promise cash compensation, travel credits/vouchers, or frequent-flyer miles for delays resulting in a wait of 3 hours or more from the scheduled departure time.
+The dashboard marks American Airlines as committed to complimentary hotel accommodations and ground transportation to and from the hotel for passengers affected by an overnight controllable delay.
 
-**Source limitation:** The DOT alternative-text dashboard used for this local summary displays an update date of December 3, 2024. Verify the live dashboard and American Airlines customer service plan before presenting these entries as current policy.
+The dashboard does not mark American Airlines as committed to cash compensation, a credit or travel voucher, or frequent-flyer miles when a controllable delay results in a passenger waiting 3 hours or more from the scheduled departure time. Do not convert this absence of a dashboard commitment into a claim that a passenger can never receive a discretionary offer or other remedy under a different rule or policy.
+
+IMPORTANT DISTINCTION — REFUND VS. SERVICE COMMITMENT
+A federal DOT refund right is separate from an airline's service commitments. For a domestic itinerary, the refund significant-delay test is based on scheduled arrival at least 3 hours later than the original scheduled arrival time, and the passenger must choose not to travel or accept the alternative offered. The AA meal commitment instead uses a wait of 3 hours or more. A 4-hour arrival delay does not by itself prove that the passenger waited 3 hours at the airport; assess the actual waiting condition separately.
+
+SIGNIFICANT DELAY IS NOT A UNIVERSAL 3-HOUR RULE
+The dashboard describes no-cost rebooking for "significant delays" but does not set a universal numeric 3-hour definition for every significant controllable delay. Do not infer such a definition from the separate 3-hour meal-wait commitment or from the federal refund threshold.
+
+DOT ACCOUNTABILITY
+The U.S. DOT dashboard states that airlines are required to adhere to the promises in their customer service plans and that DOT will hold airlines accountable if they fail to fulfill a commitment. DOT advises passengers to contact the airline first; if dissatisfied with the airline's response or conduct, the passenger may file a complaint with DOT. Do not claim that enforcement is exclusively internal or that DOT has no role in accountability.
+
+IMPORTANT LIMITS
+This is an educational local summary, not legal advice. The dashboard is a summary of airline commitments, not a statement that every delay qualifies. Check the live DOT dashboard and American Airlines customer service plan for any later changes before presenting this summary as current policy.
+
+SEARCH TERMS (ENGLISH AND INDONESIAN)
+American Airlines, AA, controllable delay, airline commitment, significant delay, rebooking, partner airline, meal voucher, meal cash, overnight hotel, ground transportation, DOT accountability, cash compensation, travel voucher, frequent flyer miles, keterlambatan dalam kendali maskapai, pemesanan ulang, voucher makanan, hotel, transportasi darat, komitmen layanan maskapai.

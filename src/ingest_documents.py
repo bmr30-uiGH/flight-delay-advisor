@@ -16,8 +16,16 @@ DOCUMENT_SOURCES = {
         "url": "https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays",
     },
     "us_dot_airline_commitments_american.txt": {
-        "title": "U.S. DOT Dashboard — American Airlines local summary (not verbatim)",
-        "url": "https://www.transportation.gov/resources/individuals/aviation-consumer-protection/airline-cancellation-delay-dashboard-html",
+        "title": "U.S. DOT Airline Customer Service Dashboard — American Airlines local summary (not verbatim)",
+        "url": "https://www.transportation.gov/airconsumer/airline-customer-service-dashboard",
+    },
+    "us_cfr_260_2_significant_delay.txt": {
+        "title": "eCFR — 14 CFR §260.2 Significant Delay Definition (local summary)",
+        "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.2",
+    },
+    "us_cfr_260_6_refunds.txt": {
+        "title": "eCFR — 14 CFR §260.6 Refund Obligation (local summary)",
+        "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.6",
     },
 }
 

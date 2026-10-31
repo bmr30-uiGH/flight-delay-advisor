@@ -1,0 +1,23 @@
+DOCUMENT: eCFR — 14 CFR §260.6 REFUNDING FARE FOR CANCELLED OR SIGNIFICANTLY DELAYED OR CHANGED FLIGHTS
+DOCUMENT TYPE: Curated local summary of the current eCFR provision; not verbatim legal text.
+JURISDICTION: Refunds for covered airline tickets on scheduled flights to, from, or within the United States.
+OFFICIAL SOURCE: https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.6
+SOURCE VERSION: eCFR Title 14 displayed as current on October 29, 2026.
+
+CARRIER REFUND OBLIGATION
+14 CFR §260.6 addresses a covered carrier's obligation to provide a full and prompt refund of airfare, including taxes and ancillary fees, for a cancelled or significantly delayed or changed flight when the consumer chooses not to fly on the affected flight or accept rebooking on an alternative flight, and does not accept a voucher, credit, or other compensation offered in place of the refund.
+
+AUTOMATIC REFUND CONDITIONS
+Section 260.6(a)(2) describes situations in which the refund is due automatically, including when a consumer rejects the significantly delayed or changed flight, an alternative flight, or an offer of voucher, credit, or other compensation. It also covers specified cases where the consumer does not respond to an offer and does not use the offered transportation.
+
+ALTERNATIVE TO A REFUND
+Section 260.6(c) allows a covered carrier to offer a voucher, credit, or other compensation as an explicit alternative to a required refund only with clear and conspicuous notice of the consumer's right to a full refund and other stated conditions. Do not say a passenger automatically loses a refund simply because the airline mentions a voucher; the consumer must affirmatively accept the alternative compensation under the applicable rules.
+
+RELATED DEFINITION
+The definition of a "significantly delayed or changed flight," including the 3-hour domestic and 6-hour international late-arrival thresholds, is in 14 CFR §260.2. See https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.2.
+
+HOW TO CITE THIS SOURCE
+For the carrier's refund obligation, cite 14 CFR §260.6. For the definition of a significantly delayed or changed flight, cite 14 CFR §260.2. Do not cite 14 CFR §250.13 as the refund authority. The linked U.S. DOT Refunds page provides public-facing guidance about these rules.
+
+LIMITS
+This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. Consult the linked eCFR section for the complete text, conditions, exceptions, and current amendments.
