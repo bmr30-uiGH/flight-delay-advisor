@@ -1,0 +1,57 @@
+services:
+  mlflow:
+    build: .
+    command: >
+      sh -c "mkdir -p /app/storage/mlartifacts &&
+      mlflow server --host 0.0.0.0 --port 5000
+      --backend-store-uri sqlite:////app/storage/mlflow.db
+      --default-artifact-root /app/storage/mlartifacts"
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      MLFLOW_SERVER_ALLOWED_HOSTS: "mlflow,mlflow:5000,localhost,localhost:5000,127.0.0.1,127.0.0.1:5000"
+    volumes:
+      - ./storage:/app/storage
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    restart: unless-stopped
+
+  bootstrap:
+    build: .
+    command: ["python", "-m", "src.bootstrap"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      BTS_MONTHS: ${BTS_MONTHS:-3}
+      MAX_TRAIN_ROWS: ${MAX_TRAIN_ROWS:-50000}
+    volumes:
+      - .:/app
+    depends_on:
+      mlflow:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    build: .
+    command: ["streamlit", "run", "app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      PORT: 8501
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    restart: unless-stopped
