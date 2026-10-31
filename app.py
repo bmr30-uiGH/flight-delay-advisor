@@ -1,11 +1,44 @@
 from __future__ import annotations
 
 from datetime import date, time
+import importlib
 import os
+import sys
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+
+# Set page configuration before rendering Streamlit elements.
+st.set_page_config(page_title="Flight Delay Advisor", page_icon="✈️", layout="wide")
+
+# Load Streamlit Community Cloud Secrets into the environment BEFORE importing
+# the agent. The agent reads GROQ_API_KEY and model settings from os.environ.
+# In local Docker, existing environment variables take precedence.
+for _secret_name in ("GROQ_API_KEY", "LLM_BASE_URL", "OPENAI_MODEL", "MODEL_SOURCE"):
+    try:
+        _secret_value = st.secrets.get(_secret_name)
+    except Exception:
+        # Local development may not have a .streamlit/secrets.toml file.
+        _secret_value = None
+    if _secret_value and not os.getenv(_secret_name):
+        os.environ[_secret_name] = str(_secret_value)
+
+# Explicitly put this repository root first on the import path. Streamlit Cloud
+# may launch the script with a working directory different from the repo root.
+PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT_STR = str(PROJECT_ROOT)
+if PROJECT_ROOT_STR in sys.path:
+    sys.path.remove(PROJECT_ROOT_STR)
+sys.path.insert(0, PROJECT_ROOT_STR)
+importlib.invalidate_caches()
+
+# Fail with a clear message if the repository's local src package is missing.
+LOCAL_SRC_INIT = PROJECT_ROOT / "src" / "__init__.py"
+if not LOCAL_SRC_INIT.is_file():
+    raise FileNotFoundError(
+        f"Package 'src' tidak ditemukan. File yang diperlukan: {LOCAL_SRC_INIT}"
+    )
 
 from src.agent import answer_user
 from src.config import FLIGHTS_PATH
@@ -18,7 +51,6 @@ from src.reference_data import (
     load_carrier_directory,
 )
 
-st.set_page_config(page_title="Flight Delay Advisor", page_icon="✈️", layout="wide")
 st.title("✈️ Flight Delay + Passenger Rights Advisor")
 st.caption(
     "Estimasi risiko keberangkatan terlambat ≥15 menit dan pencarian informasi hak penumpang berdasarkan sumber."
@@ -197,7 +229,7 @@ with st.sidebar:
     elif os.getenv("OPENAI_API_KEY", "").strip():
         st.success("LLM agent: API key terdeteksi")
     else:
-        st.warning("LLM agent belum aktif: isi GROQ_API_KEY atau OPENAI_API_KEY di .env lalu restart Docker.")
+        st.warning("LLM agent belum aktif: tambahkan GROQ_API_KEY pada Streamlit Secrets atau environment variable aplikasi.")
     st.caption("Model menggunakan pola data historis BTS. Ini bukan pelacakan status penerbangan real-time.")
 
 if "flight_inputs" not in st.session_state:
