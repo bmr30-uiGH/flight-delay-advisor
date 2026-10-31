@@ -7,17 +7,6 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-# Streamlit Community Cloud keeps credentials in st.secrets. Copy only the
-# explicitly supported settings into the process environment before the
-# agent module is imported, because the agent reads os.environ.
-for _secret_name in ("GROQ_API_KEY", "LLM_BASE_URL", "OPENAI_MODEL", "MODEL_SOURCE"):
-    try:
-        _secret_value = st.secrets.get(_secret_name)
-    except Exception:
-        _secret_value = None
-    if _secret_value and not os.getenv(_secret_name):
-        os.environ[_secret_name] = str(_secret_value)
-
 from src.agent import answer_user
 from src.config import FLIGHTS_PATH
 from src.reference_data import (
@@ -34,6 +23,26 @@ st.title("✈️ Flight Delay + Passenger Rights Advisor")
 st.caption(
     "Estimasi risiko keberangkatan terlambat ≥15 menit dan pencarian informasi hak penumpang berdasarkan sumber."
 )
+
+
+def _render_sources(sources: list[dict], *, expanded: bool = False) -> None:
+    """Render retrieval-backed sources once per source URL, with their supporting sections."""
+    if not sources:
+        return
+    with st.expander("Sumber yang digunakan", expanded=expanded):
+        for index, source in enumerate(sources, start=1):
+            title = str(source.get("title", "Sumber") or "Sumber")
+            url = str(source.get("url", "") or "").strip()
+            if url:
+                st.markdown(f"{index}. [{title}]({url})")
+            else:
+                st.markdown(f"{index}. **{title}**")
+            section = str(source.get("section", "") or "").strip()
+            if section:
+                st.caption(f"Bagian dokumen: {section}")
+            excerpt = str(source.get("excerpt", "") or "").strip()
+            if excerpt:
+                st.markdown(excerpt)
 
 
 @st.cache_data(show_spinner=False, ttl=24 * 60 * 60)
@@ -126,9 +135,9 @@ with st.sidebar:
             key="flight_date_selector",
         )
         departure_time = st.time_input(
-            "Jam keberangkatan terjadwal",
+            "Jam keberangkatan terjadwal (waktu lokal bandara asal)",
             value=time(8, 44),
-            help="Waktu lokal terjadwal bandara asal. Aplikasi mengubahnya ke format jam BTS, misalnya 08:44 menjadi 0844.",
+            help="Masukkan waktu lokal di bandara asal, bukan otomatis WIB berdasarkan lokasi perangkat. Aplikasi mengubahnya ke format jam BTS, misalnya 08:44 menjadi 0844.",
             key="flight_time_selector",
         )
 
@@ -160,7 +169,9 @@ with st.sidebar:
             st.session_state.flight_summary = {
                 "carrier": carrier_label(carrier),
                 "origin": airport_label(origin, airport_directory),
+                "origin_code": origin,
                 "destination": airport_label(destination, airport_directory),
+                "destination_code": destination,
                 "flight_date": flight_date.isoformat(),
                 "departure_time": departure_time.strftime("%H:%M"),
                 "distance": int(distance),
@@ -174,7 +185,7 @@ with st.sidebar:
                 st.write(f"**Asal:** {saved['origin']}")
                 st.write(f"**Tujuan:** {saved['destination']}")
                 st.write(f"**Tanggal:** {saved['flight_date']}")
-                st.write(f"**Jam terjadwal:** {saved['departure_time']}")
+                st.write(f"**Jam terjadwal:** {saved['departure_time']} (waktu lokal di {saved.get('origin_code', 'bandara asal')})")
                 st.write(f"**Jarak:** {saved['distance']:,} miles")
     else:
         st.error("Daftar rute belum dapat dimuat. " + (reference_error or "Periksa dataset hasil bootstrap."))
@@ -186,7 +197,7 @@ with st.sidebar:
     elif os.getenv("OPENAI_API_KEY", "").strip():
         st.success("LLM agent: API key terdeteksi")
     else:
-        st.warning("LLM agent belum aktif: tambahkan GROQ_API_KEY pada Streamlit Secrets atau environment aplikasi.")
+        st.warning("LLM agent belum aktif: isi GROQ_API_KEY atau OPENAI_API_KEY di .env lalu restart Docker.")
     st.caption("Model menggunakan pola data historis BTS. Ini bukan pelacakan status penerbangan real-time.")
 
 if "flight_inputs" not in st.session_state:
@@ -204,12 +215,7 @@ with st.expander("Contoh pertanyaan", expanded=not st.session_state.messages):
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-        if message.get("sources"):
-            with st.expander("Sumber yang digunakan"):
-                for source in message["sources"]:
-                    st.markdown(
-                        f"- [{source.get('title', 'Sumber')}]({source.get('url', '#')}) — {source.get('excerpt', '')}"
-                    )
+        _render_sources(message.get("sources", []))
         if message.get("tools_used"):
             st.caption("Tool yang dijalankan: " + ", ".join(message["tools_used"]))
         if message.get("mode"):
@@ -222,14 +228,13 @@ if prompt:
         st.markdown(prompt)
     with st.chat_message("assistant"):
         with st.spinner("Menganalisis pertanyaan dan memilih tool yang diperlukan..."):
-            answer, sources, tools_used, mode = answer_user(prompt, st.session_state.flight_inputs)
+            answer, sources, tools_used, mode = answer_user(
+                prompt,
+                st.session_state.flight_inputs,
+                st.session_state.get("flight_summary"),
+            )
         st.markdown(answer)
-        if sources:
-            with st.expander("Sumber yang digunakan", expanded=True):
-                for source in sources:
-                    st.markdown(
-                        f"- [{source.get('title', 'Sumber')}]({source.get('url', '#')}) — {source.get('excerpt', '')}"
-                    )
+        _render_sources(sources, expanded=True)
         if tools_used:
             st.caption("Tool yang dijalankan: " + ", ".join(tools_used))
         st.caption("Mode: " + mode)
