@@ -1,23 +1,39 @@
-DOCUMENT: eCFR — 14 CFR §260.6 REFUNDING FARE FOR CANCELLED OR SIGNIFICANTLY DELAYED OR CHANGED FLIGHTS
-DOCUMENT TYPE: Curated local summary of the current eCFR provision; not verbatim legal text.
-JURISDICTION: Refunds for covered airline tickets on scheduled flights to, from, or within the United States.
+DOCUMENT: eCFR — 14 CFR §260.6 REFUNDING FARE FOR FLIGHTS CANCELLED OR SIGNIFICANTLY DELAYED OR CHANGED BY CARRIERS
+DOCUMENT TYPE: Curated local educational summary of the current eCFR provision; not verbatim legal text and not legal advice.
+JURISDICTION: Covered carrier refund obligations for scheduled flights to, from, or within the United States.
 OFFICIAL SOURCE: https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.6
-SOURCE VERSION: eCFR Title 14 displayed as current on October 29, 2026.
+SOURCE VERSION: eCFR Title 14 displayed as current on October 29, 2026; last amended October 15, 2026.
+LOCAL SUMMARY CHECKED: November 1, 2026
 
-CARRIER REFUND OBLIGATION
-14 CFR §260.6 addresses a covered carrier's obligation to provide a full and prompt refund of airfare, including taxes and ancillary fees, for a cancelled or significantly delayed or changed flight when the consumer chooses not to fly on the affected flight or accept rebooking on an alternative flight, and does not accept a voucher, credit, or other compensation offered in place of the refund.
+SCOPE AND NON-REFUNDABLE TICKETS
+The text of 14 CFR §260.6(a)(1) specifically addresses a consumer holding a NONREFUNDABLE ticket on a scheduled flight to, from, or within the United States. A covered carrier that is the merchant of record must provide a full and prompt refund of airfare, including applicable taxes and ancillary fees, for a cancelled or significantly delayed/changed flight when the consumer chooses not to:
+- Fly on the significantly delayed or changed flight or accept rebooking on an alternative flight; and
+- Accept a voucher, credit, or other form of compensation offered as an explicit alternative to the refund under paragraph (c).
 
-AUTOMATIC REFUND CONDITIONS
-Section 260.6(a)(2) describes situations in which the refund is due automatically, including when a consumer rejects the significantly delayed or changed flight, an alternative flight, or an offer of voucher, credit, or other compensation. It also covers specified cases where the consumer does not respond to an offer and does not use the offered transportation.
+Do not rewrite this subsection as though it expressly applies to refundable and non-refundable fares in an identical way. Fully refundable tickets are addressed separately in U.S. DOT consumer guidance: consumers who purchase a fully refundable ticket are entitled to a refund when they do not use the purchased ticket. Cite the DOT Refunds page for that separate point.
 
-ALTERNATIVE TO A REFUND
-Section 260.6(c) allows a covered carrier to offer a voucher, credit, or other compensation as an explicit alternative to a required refund only with clear and conspicuous notice of the consumer's right to a full refund and other stated conditions. Do not say a passenger automatically loses a refund simply because the airline mentions a voucher; the consumer must affirmatively accept the alternative compensation under the applicable rules.
+AUTOMATIC REFUNDS
+The provision identifies circumstances in which a full refund is due automatically, including:
+- A cancelled flight where the consumer is not offered an alternative flight or voucher/credit/other compensation under the relevant provision.
+- The consumer rejects the significantly delayed or changed flight, a rebooking on an alternative flight, or a voucher/credit/other offered compensation.
+- The consumer does not respond to an offer of the significantly delayed/changed flight or an alternative flight and the offered flight departs without the consumer; or does not respond to an offer of voucher, credit, or other compensation by the date specified in the regulation.
 
-RELATED DEFINITION
-The definition of a "significantly delayed or changed flight," including the 3-hour domestic and 6-hour international late-arrival thresholds, is in 14 CFR §260.2. See https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.2.
+Do not state that any silence in any situation automatically creates a refund. Establish what offer was made, whether the relevant departure date passed, and whether the passenger used the affected or alternative transportation. DOT's public guidance explains that when a consumer does not respond to an alternative-flight offer and does not fly on the offered alternative, the refund is issued automatically.
 
-HOW TO CITE THIS SOURCE
-For the carrier's refund obligation, cite 14 CFR §260.6. For the definition of a significantly delayed or changed flight, cite 14 CFR §260.2. Do not cite 14 CFR §250.13 as the refund authority. The linked U.S. DOT Refunds page provides public-facing guidance about these rules.
+CERTAIN ACCESSIBILITY-RELATED CHANGES
+The regulation has separate refund provisions for an individual with a disability who does not want to continue travel because specified significant changes make needed accessibility features unavailable, and for certain other passengers in the same reservation. When the user's circumstances involve disability or accessibility, retrieve and explain the exact subsection rather than applying only the general rule in paragraph (a).
 
-LIMITS
-This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. Consult the linked eCFR section for the complete text, conditions, exceptions, and current amendments.
+VOUCHER OR CREDIT AS AN EXPLICIT ALTERNATIVE
+A covered carrier may offer a voucher, credit, or other compensation as an explicit alternative to a refund required by paragraph (a) only if the offer clearly and conspicuously notifies the consumer of the right to a full refund and the applicable offer terms, and the alternative remains valid and redeemable for at least five years. The carrier must notify the recipient of the expiration date. Do not state that merely receiving or hearing about a voucher automatically waives a refund right; determine whether the consumer accepted the alternative and check the complete rule.
+
+TICKET AGENTS AND MERCHANT OF RECORD
+When a ticket agent is the merchant of record, the regulation describes the carrier's obligations to notify the agent about refund eligibility and, in specified circumstances, transfer funds to the ticket agent. For a passenger who booked through an online travel agency or another ticket agent, determine who appears as merchant of record on the payment statement before saying which entity processes the refund.
+
+WHAT HAPPENS WHEN THE PASSENGER TRAVELS
+A passenger who chooses to take the significantly delayed/changed flight or an alternative flight generally is not entitled to a refund of the full ticket price under the ordinary DOT significant-delay/change rule. Do not equate an actual late arrival with a full refund entitlement after travel has been completed. Certain different remedies may exist; for example, DOT guidance says an involuntary downgrade followed by continued travel generally entitles the passenger to the difference between the original and downgraded fare, not the full airfare. Apply an independently retrieved source to that fact pattern.
+
+RELATED DEFINITION AND PAYMENT TIMING
+For the definition of a significantly delayed or changed flight, including the scheduled-arrival thresholds of 3 hours domestic and 6 hours international, see 14 CFR §260.2. The same section defines prompt refund as 7 business days after the applicable earliest date for credit-card purchases and 20 calendar days for cash, check, debit card, or other payment methods. The applicable starting date may differ depending on whether the passenger rejects an offer or does not respond and does not use the alternative transportation. Return the refund to the original form of payment as described in DOT guidance.
+
+IMPORTANT LIMITS
+This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. The regulation is limited to covered carriers and covered scheduled flights. Consult the linked eCFR section and U.S. DOT Refunds page for complete text, definitions, conditions, exceptions, and current amendments. Do not cite 14 CFR §250.13 as the refund authority.

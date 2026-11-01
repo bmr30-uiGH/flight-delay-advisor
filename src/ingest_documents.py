@@ -8,15 +8,15 @@ from src.config import DOCUMENTS_DIR, CHUNKS_PATH, PROCESSED_DIR
 
 DOCUMENT_SOURCES = {
     "us_dot_refunds.txt": {
-        "title": "U.S. DOT Refunds — Local summary (not verbatim)",
+        "title": "U.S. DOT — Refunds (local educational summary)",
         "url": "https://www.transportation.gov/individuals/aviation-consumer-protection/refunds",
     },
     "us_dot_tarmac_delays.txt": {
-        "title": "U.S. DOT Tarmac Delays — Local summary (not verbatim)",
+        "title": "U.S. DOT — Tarmac Delays (local educational summary)",
         "url": "https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays",
     },
     "us_dot_airline_commitments_american.txt": {
-        "title": "U.S. DOT Airline Customer Service Dashboard — American Airlines local summary (not verbatim)",
+        "title": "U.S. DOT Airline Customer Service Dashboard — American Airlines (local summary)",
         "url": "https://www.transportation.gov/airconsumer/airline-customer-service-dashboard",
     },
     "us_cfr_260_2_significant_delay.txt": {
@@ -36,10 +36,35 @@ def _normalise(text: str) -> str:
 
 def _is_heading(line: str) -> bool:
     value = line.strip()
-    if not value or len(value) > 110:
+    if not value:
         return False
-    if value.startswith(("DOCUMENT:", "JURISDICTION:", "OFFICIAL SOURCE:", "SOURCE CHECKED:", "DOCUMENT TYPE:", "SOURCE PAGE LAST UPDATED:", "LOCAL SUMMARY CHECKED:", "DASHBOARD PAGE LAST-UPDATED LABEL:", "SEARCH TERMS (")):
+
+    metadata_prefixes = (
+        "DOCUMENT:",
+        "JURISDICTION:",
+        "OFFICIAL SOURCE:",
+        "SOURCE CHECKED:",
+        "SOURCE VERSION:",
+        "DOCUMENT TYPE:",
+        "SOURCE PAGE LAST UPDATED:",
+        "LOCAL SUMMARY CHECKED:",
+        "DASHBOARD PAGE LAST-UPDATED LABEL:",
+        "SEARCH TERMS (",
+    )
+    # Metadata can be longer than 110 characters, so detect it first.
+    if value.startswith(metadata_prefixes):
         return True
+
+    # Allow subsection headings containing lowercase CFR labels such as (a)(1).
+    if re.match(
+        r"^(?:SECTION|§)\s*\d+(?:\.\d+)?(?:\([a-z0-9]+\))*(?:\s+AND\s+\([a-z0-9]+\))*\s*(?:—|-|:)\s*.+$",
+        value,
+        flags=re.IGNORECASE,
+    ):
+        return True
+
+    if len(value) > 110:
+        return False
     letters = [char for char in value if char.isalpha()]
     return bool(letters) and value == value.upper() and len(value.split()) <= 14
 

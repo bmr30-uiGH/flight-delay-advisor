@@ -1,20 +1,36 @@
-DOCUMENT: eCFR — 14 CFR §260.2 SIGNIFICANTLY DELAYED OR CHANGED FLIGHT
-DOCUMENT TYPE: Curated local summary of the current eCFR provision; not verbatim legal text.
+DOCUMENT: eCFR — 14 CFR §260.2 DEFINITIONS, INCLUDING SIGNIFICANTLY DELAYED OR CHANGED FLIGHT
+DOCUMENT TYPE: Curated local educational summary of the current eCFR provision; not verbatim legal text and not legal advice.
 JURISDICTION: Covered scheduled flights to, from, or within the United States.
 OFFICIAL SOURCE: https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.2
-SOURCE VERSION: eCFR Title 14 displayed as current on October 29, 2026.
+SOURCE VERSION: eCFR Title 14 displayed as current on October 29, 2026; last amended October 15, 2026.
+LOCAL SUMMARY CHECKED: November 1, 2026
 
-REGULATORY DEFINITION
-14 CFR §260.2 defines a "significantly delayed or changed flight" for purposes of the refund rules in Part 260. Relevant triggers include a scheduled arrival at least 3 hours after the original scheduled arrival for a domestic itinerary, or at least 6 hours after the original scheduled arrival for an international itinerary.
+COVERED FLIGHT
+The definition applies to a covered flight itinerary operated or marketed by a covered carrier to, from, or within the United States, subject to the full regulatory definition and any applicable conditions.
+
+SIGNIFICANTLY DELAYED OR CHANGED FLIGHT
+14 CFR §260.2 defines a significantly delayed or changed flight as a covered itinerary with a delay or change made by a covered carrier where, as a result, one or more listed conditions applies.
+
+LATE ARRIVAL — SCHEDULED ARRIVAL, NOT ACTUAL LANDING TIME
+For a domestic itinerary, the consumer must be scheduled to arrive at the destination airport 3 hours or more after the original scheduled arrival time. For an international itinerary, the consumer must be scheduled to arrive 6 hours or more after the original scheduled arrival time.
+
+Compare the original scheduled arrival with the revised scheduled arrival resulting from the carrier's delay or change. The wording is about when the consumer is scheduled to arrive. A plane's actual landing time being 3 hours late, by itself, is not the same as proof that the revised schedule met this definition. Do not replace revised scheduled arrival with actual arrival when applying this specific threshold.
 
 EARLY DEPARTURE
-The same definition includes a flight scheduled to depart at least 3 hours earlier than its original scheduled departure for a domestic itinerary, or at least 6 hours earlier for an international itinerary. An early departure is different from a departure that is merely late.
+The definition also includes a departure scheduled at least 3 hours earlier than the original scheduled departure for a domestic itinerary, or at least 6 hours earlier for an international itinerary. Early departure means earlier than the original schedule; it does not mean a departure that is late.
 
-OTHER SIGNIFICANT CHANGES
-The definition also includes specified changes such as a different origin or destination airport, more connection points, or an involuntary downgrade, subject to the detailed rule text and applicable conditions.
+OTHER LISTED CHANGES
+The definition also includes:
+- The consumer is scheduled to depart from a different origin airport or arrive at a different destination airport.
+- The consumer is scheduled to travel on an itinerary with more connection points than the original itinerary.
+- The consumer is involuntarily downgraded to a lower class of service.
+- For an individual with a disability, certain changes to connecting airports or substitute aircraft that make needed accessibility features unavailable.
 
-HOW TO USE THIS SOURCE
-For the definition of a significantly delayed or changed flight, cite 14 CFR §260.2. For the carrier's refund obligation after cancellation or significant delay/change, see the separate 14 CFR §260.6 source. Do not cite 14 CFR §250.13 as the refund authority.
+REFUND DEADLINE DEFINITION
+The definition of prompt refund specifies 7 business days after the applicable earliest date for credit-card purchases and 20 calendar days after the applicable earliest date for cash, check, debit card, or other payment methods. See the refund provision and official DOT guidance for the event-specific starting date. Do not call 20 calendar days 20 business days.
+
+RELATED REFUND PROVISION
+The definition in §260.2 is not itself the full refund obligation. For refund eligibility and the covered carrier's obligations for a non-refundable ticket, see 14 CFR §260.6. Also consult the U.S. DOT Refunds page for consumer-facing explanations, fully refundable tickets, downgrades, alternative flights, and refund processing.
 
 LIMITS
-This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. Consult the linked eCFR section for the complete text, conditions, exceptions, and current amendments.
+This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. Consult the linked eCFR section for complete text, conditions, exceptions, and current amendments.
