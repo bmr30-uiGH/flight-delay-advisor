@@ -109,6 +109,13 @@ else:
 airport_directory = _load_airports_directory()
 carrier_directory = _load_carrier_directory()
 
+V3_ASSET_PATHS = (
+    PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.joblib",
+    PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.metadata.json",
+    PROJECT_ROOT / "data" / "processed" / "flights_historical_features_experiment_jan_aug_v3.parquet",
+)
+V3_DEMO_AVAILABLE = all(path.is_file() for path in V3_ASSET_PATHS)
+
 with st.sidebar:
     st.header("Detail penerbangan")
     st.caption(
@@ -116,6 +123,25 @@ with st.sidebar:
         "Daftar rute berasal dari penerbangan historis BTS yang sudah diproses."
     )
     st.caption("Perubahan pada formulir baru dipakai chatbot setelah tombol Simpan detail penerbangan ditekan.")
+
+    prediction_mode = st.selectbox(
+        "Mesin prediksi",
+        options=(["production", "v3_candidate_historical"] if V3_DEMO_AVAILABLE else ["production"]),
+        format_func=lambda value: (
+            "Production — MLflow Champion"
+            if value == "production"
+            else "V3 Candidate — Demonstrasi Historis (Agustus 2026)"
+        ),
+        key="prediction_mode_selector",
+    )
+
+    if prediction_mode == "v3_candidate_historical":
+        st.warning(
+            "Mode demonstrasi historis untuk menguji kandidat V3 pada "
+            "periode validasi Agustus 2026. Ini bukan prediksi real-time "
+            "atau penerbangan mendatang. MLflow Champion tetap menjadi "
+            "model Production."
+        )
 
     if flight_reference:
         carriers = flight_reference["carriers"]
@@ -160,18 +186,47 @@ with st.sidebar:
             )
             distance = distance_by_route.get((origin, destination))
 
-        flight_date = st.date_input(
-            "Tanggal keberangkatan",
-            value=date.today(),
-            help="Tanggal digunakan untuk memperoleh bulan dan hari dalam minggu. Prediksi tetap berdasarkan pola historis, bukan data real-time.",
-            key="flight_date_selector",
-        )
+        if prediction_mode == "v3_candidate_historical":
+            flight_date = st.date_input(
+                "Tanggal demonstrasi historis",
+                value=date(2026, 8, 31),
+                min_value=date(2026, 8, 1),
+                max_value=date(2026, 8, 31),
+                help="Tanggal dibatasi ke periode validasi kandidat V3, 1–31 Agustus 2026.",
+                key="flight_date_selector_v3_demo",
+            )
+        else:
+            flight_date = st.date_input(
+                "Tanggal keberangkatan",
+                value=date.today(),
+                help="Tanggal digunakan untuk memperoleh bulan dan hari dalam minggu. Prediksi tetap berdasarkan pola historis, bukan data real-time.",
+                key="flight_date_selector",
+            )
+
         departure_time = st.time_input(
             "Jam keberangkatan terjadwal (waktu lokal bandara asal)",
             value=time(8, 44),
-            help="Masukkan waktu lokal di bandara asal, bukan otomatis WIB berdasarkan lokasi perangkat. Aplikasi mengubahnya ke format jam BTS, misalnya 08:44 menjadi 0844.",
+            help="Masukkan waktu lokal di bandara asal. Contoh 08:44 akan diubah ke format jam BTS 0844.",
             key="flight_time_selector",
         )
+
+        arrival_time = None
+        elapsed_minutes = None
+        if prediction_mode == "v3_candidate_historical":
+            st.markdown("**Jadwal tambahan untuk fitur V3**")
+            arrival_time = st.time_input(
+                "Jam kedatangan terjadwal (waktu lokal bandara tujuan)",
+                value=time(11, 0),
+                key="flight_arrival_time_v3_demo",
+            )
+            elapsed_minutes = st.number_input(
+                "Durasi penerbangan terjadwal (menit)",
+                min_value=1,
+                max_value=1500,
+                value=360,
+                step=5,
+                key="flight_elapsed_minutes_v3_demo",
+            )
 
         st.text_input(
             "Jarak rute (miles) — otomatis dari BTS",
@@ -188,8 +243,11 @@ with st.sidebar:
             disabled=not can_save,
         )
         if submitted and can_save:
-            bts_day_of_week = ((flight_date.weekday() + 1) % 7) + 1  # Sunday=1 ... Saturday=7
-            st.session_state.flight_inputs = {
+            # Existing Production predictor retains BTS weekday convention.
+            # V3 derives its own Monday=1 ... Sunday=7 weekday from FL_DATE.
+            bts_day_of_week = ((flight_date.weekday() + 1) % 7) + 1
+
+            flight_inputs = {
                 "OP_CARRIER": carrier,
                 "ORIGIN": origin,
                 "DEST": destination,
@@ -197,8 +255,19 @@ with st.sidebar:
                 "MONTH": flight_date.month,
                 "DAY_OF_WEEK": bts_day_of_week,
                 "DISTANCE": float(distance),
+                "FL_DATE": flight_date.isoformat(),
+                "PREDICTION_MODE": prediction_mode,
             }
-            st.session_state.flight_summary = {
+
+            if prediction_mode == "v3_candidate_historical":
+                flight_inputs.update({
+                    "CRS_ARR_TIME": arrival_time.hour * 100 + arrival_time.minute,
+                    "CRS_ELAPSED_TIME": float(elapsed_minutes),
+                })
+
+            st.session_state.flight_inputs = flight_inputs
+
+            flight_summary = {
                 "carrier": carrier_label(carrier),
                 "origin": airport_label(origin, airport_directory),
                 "origin_code": origin,
@@ -207,7 +276,16 @@ with st.sidebar:
                 "flight_date": flight_date.isoformat(),
                 "departure_time": departure_time.strftime("%H:%M"),
                 "distance": int(distance),
+                "prediction_mode": prediction_mode,
             }
+
+            if prediction_mode == "v3_candidate_historical":
+                flight_summary.update({
+                    "arrival_time": arrival_time.strftime("%H:%M"),
+                    "elapsed_minutes": int(elapsed_minutes),
+                })
+
+            st.session_state.flight_summary = flight_summary
             st.success("Detail penerbangan tersimpan untuk sesi ini.")
 
         if st.session_state.get("flight_summary"):
@@ -219,6 +297,12 @@ with st.sidebar:
                 st.write(f"**Tanggal:** {saved['flight_date']}")
                 st.write(f"**Jam terjadwal:** {saved['departure_time']} (waktu lokal di {saved.get('origin_code', 'bandara asal')})")
                 st.write(f"**Jarak:** {saved['distance']:,} miles")
+                if saved.get("prediction_mode") == "v3_candidate_historical":
+                    st.write(f"**Kedatangan terjadwal:** {saved['arrival_time']} (waktu lokal bandara tujuan)")
+                    st.write(f"**Durasi terjadwal:** {saved['elapsed_minutes']} menit")
+                    st.caption("Mode: V3 Candidate — Demonstrasi Historis Agustus 2026")
+                else:
+                    st.caption("Mode: Production — MLflow Champion")
     else:
         st.error("Daftar rute belum dapat dimuat. " + (reference_error or "Periksa dataset hasil bootstrap."))
         st.info("Pastikan data/processed/flights.parquet sudah tersedia dan berisi data BTS.")

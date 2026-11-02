@@ -211,6 +211,50 @@ _QUERY_EXPANSIONS.update({
         "does not respond to offer alternative flight flight departs without consumer "
         "automatic refund section 260.6(a)(2)(iii) original form of payment deadline"
     ),
+    "online travel agency": (
+        "ticket agent OTA merchant of record refund upon request 14 CFR 399.80(l) "
+        "7 business days after ticket agent receives information from carrier 260.6(d) "
+        "carrier transfer funds to ticket agent 260.6(e) original form of payment"
+    ),
+    "ota": (
+        "ticket agent online travel agency merchant of record refund upon request "
+        "14 CFR 399.80(l) 7 business days after information from carrier 260.6(d) "
+        "20 calendar days refund due original form of payment"
+    ),
+    "tarmac delay": (
+        "14 CFR 259.4 domestic tarmac delay aircraft on ground no opportunity to deplane "
+        "adequate food potable water within two hours pilot safety security exception "
+        "operable lavatory comfortable cabin temperature medical attention status notice exceeds 30 minutes "
+        "departing flight begin return suitable disembarkation point by three hours after main door closed "
+        "arriving flight opportunity to deplane before exceeds three hours "
+        "pilot safety security ATC significantly disrupt airport operations"
+    ),
+    "tertahan di landasan": (
+        "tarmac delay 14 CFR 259.4 aircraft on the ground no opportunity to leave "
+        "food and potable water two hours pilot safety security exception operable lavatory "
+        "comfortable cabin temperature status notice 30 minutes domestic three hour deplane limit "
+        "drinking water within two hours opportunity to deplane "
+        "departing flight begins return by three hours arriving flight opportunity to deplane before three hours "
+        "air traffic control significantly disrupt airport operations"
+    ),
+    "penundaan di landasan": (
+        "tarmac delay aircraft on the ground passengers cannot leave aircraft food water two hours "
+        "lavatory temperature medical attention opportunity to deplane three hours domestic"
+    ),
+    "pesawat tertahan": (
+        "tarmac delay aircraft on the ground passengers cannot deplane opportunity to leave aircraft "
+        "food drinking water toilets medical attention three hours domestic"
+    ),
+    "deplane": (
+        "tarmac delay opportunity to deplane aircraft on the ground domestic three hours international four hours"
+    ),
+    "penolakan eksplisit": (
+        "explicit rejection rejected alternative flight 14 CFR 260.6(a)(2)(ii) automatic refund "
+        "7 business days after rejection 20 calendar days after rejection merchant of record "
+        "ticket agent online travel agency OTA upon request 14 CFR 399.80(l) "
+        "7 business days after ticket agent receives information from carrier under 260.6(d) "
+        "20 calendar days from refund becoming due carrier notify agent transfer funds 260.6(e)"
+    ),
 })
 
 
@@ -290,6 +334,21 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
         any(term in lowered_query for term in ("tidak merespons", "tidak menanggapi", "did not respond", "no response"))
         and any(term in lowered_query for term in ("penerbangan alternatif", "alternative flight", "alternative transportation"))
     )
+    tarmac_intent = any(term in lowered_query for term in (
+        "tarmac", "landasan", "di landasan", "tertahan di landasan",
+        "penundaan di landasan", "pesawat tertahan", "deplane", "turun dari pesawat",
+    ))
+    explicit_rejection_alt_intent = (
+        any(term in lowered_query for term in (
+            "menolak", "menolaknya", "saya tolak", "penolakan", "rejected", "reject", "declined",
+        ))
+        and any(term in lowered_query for term in (
+            "penerbangan alternatif", "alternatif tersebut", "penerbangan pengganti",
+            "alternative flight", "rebooking",
+        ))
+    )
+    tarmac_document_indices: list[int] = []
+    tarmac_cfr_document_indices: list[int] = []
 
     for chunk_index, chunk in enumerate(chunks):
         title = str(chunk.get("title", "")).lower()
@@ -297,6 +356,54 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
         body = str(chunk.get("text", "")).lower()
         url = str(chunk.get("url", "")).lower()
         title_section_body = title + " " + section + " " + body
+
+        is_tarmac_document = (
+            "transportation.gov/individuals/aviation-consumer-protection/tarmac-delays" in url
+            or ("tarmac" in title and "delay" in title)
+        )
+        is_tarmac_cfr_document = "part-259/section-259.4" in url
+        if tarmac_intent and is_tarmac_document:
+            tarmac_document_indices.append(chunk_index)
+            scores[chunk_index] += 2.0
+        if tarmac_intent and is_tarmac_cfr_document:
+            tarmac_cfr_document_indices.append(chunk_index)
+            # The deterministic tarmac answer needs both the DOT guidance and
+            # the underlying §259.4 text. Boost the CFR chunks so at least one
+            # is retained in the six-source retrieval window.
+            scores[chunk_index] += 4.0
+
+        if explicit_rejection_alt_intent:
+            is_explicit_rejection_chunk = (
+                "260.6(a)(2)(ii)" in body
+                or "penolakan eksplisit" in section
+                or "explicit rejection" in section
+            )
+            is_explicit_rejection_deadline_chunk = (
+                "7 business days" in body
+                and "20 calendar days" in body
+                and ("after you reject" in body or "after the consumer rejects" in body)
+            )
+            is_no_response_only_chunk = (
+                "260.6(a)(2)(iii)(a)" in body
+                or ("no response" in section and "explicit rejection" not in section)
+            )
+            if is_explicit_rejection_chunk:
+                scores[chunk_index] += 2.5
+            is_nonrefundable_obligation_chunk = (
+                "260.6(a)(1)" in body
+                and ("nonrefundable" in body or "non-refundable" in body)
+                and "merchant of record" in body
+            )
+            if is_nonrefundable_obligation_chunk:
+                scores[chunk_index] += 3.5
+            if is_explicit_rejection_deadline_chunk or (
+                "tenggat setelah penolakan eksplisit" in section
+                and "7 business days" in body
+                and "20 calendar days" in body
+            ):
+                scores[chunk_index] += 2.5
+            if is_no_response_only_chunk:
+                scores[chunk_index] *= 0.10
 
         # Give the actual §260.2 late-arrival definition a strong rank boost.
         # A general refund/payment chunk is not an adequate substitute.
@@ -341,7 +448,46 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
         ):
             scores[chunk_index] += 1.00
 
-    ranked = scores.argsort()[::-1]
+    # For tarmac-delay questions, prefer the dedicated DOT guidance together
+    # with the controlling §259.4 source. Generic refund chunks should not crowd
+    # either source out of the retrieval window.
+    if tarmac_intent and (tarmac_document_indices or tarmac_cfr_document_indices):
+        tarmac_indices = sorted(
+            set(tarmac_document_indices + tarmac_cfr_document_indices),
+            key=lambda index: float(scores[index]),
+            reverse=True,
+        )
+        # The deterministic answer requires a complete evidence bundle: DOT's
+        # food/water, facilities/temperature, and notification guidance, plus
+        # the controlling CFR deplaning distinction. Select those source
+        # categories first, then fill remaining slots by relevance.
+        ranked = []
+        preferred_dot_sections = (
+            ("FOOD AND POTABLE WATER", "FOOD AND WATER"),
+            ("TOILETS", "LAVATORY", "CABIN TEMPERATURE"),
+            ("STATUS NOTIFICATION", "UPDATES AND NOTIFICATIONS"),
+        )
+        for section_terms in preferred_dot_sections:
+            candidates = [
+                index for index in tarmac_document_indices
+                if any(term in str(chunks[index].get("section", "")).upper() for term in section_terms)
+            ]
+            if candidates:
+                ranked.append(max(candidates, key=lambda index: float(scores[index])))
+
+        preferred_cfr_sections = [
+            index for index in tarmac_cfr_document_indices
+            if "THREE-HOUR LIMIT" in str(chunks[index].get("section", "")).upper()
+            or "DEPARTING AND ARRIVING" in str(chunks[index].get("section", "")).upper()
+        ]
+        if preferred_cfr_sections:
+            ranked.append(max(preferred_cfr_sections, key=lambda index: float(scores[index])))
+        elif tarmac_cfr_document_indices:
+            ranked.append(max(tarmac_cfr_document_indices, key=lambda index: float(scores[index])))
+
+        ranked.extend(index for index in tarmac_indices if index not in ranked)
+    else:
+        ranked = scores.argsort()[::-1]
     results: list[dict] = []
     limit = max(1, min(int(top_k), 6))
     for index in ranked:

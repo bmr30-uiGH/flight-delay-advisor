@@ -69,6 +69,27 @@ The merchant of record is the entity shown on the passenger's financial statemen
 WHAT THIS RULE DOES NOT ESTABLISH
 A refund right is not the same as a right to extra cash compensation. Do not invent a universal cash-compensation amount for a delay. Meals, hotels, ground transportation, rebooking, and other services may depend on separate airline commitments, the cause of the disruption, and other applicable rules. Retrieve the airline's official commitment source before describing a particular airline's promise.
 
+
+PENOLAKAN EKSPLISIT ATAS TAWARAN PENERBANGAN ALTERNATIF — REFUND OTOMATIS
+Untuk penerbangan yang dibatalkan atau mengalami significant delay/change, apabila konsumen secara eksplisit menolak penerbangan yang berubah atau rebooking pada penerbangan alternatif, refund harus diterbitkan otomatis tanpa konsumen harus mengajukan permintaan refund tambahan. Kondisi penolakan eksplisit ini sesuai dengan 14 CFR §260.6(a)(2)(ii). Jangan mengutip §260.6(a)(2)(iii)(A) untuk penolakan eksplisit; subbagian (iii)(A) adalah kondisi berbeda ketika konsumen tidak merespons tawaran flight dan flight yang ditawarkan berangkat tanpa konsumen.
+
+TENGGAT SETELAH PENOLAKAN EKSPLISIT
+Halaman resmi U.S. DOT menyatakan bahwa refund jatuh tempo dalam 7 business days setelah konsumen menolak tawaran jika tiket dibayar dengan kartu kredit, atau 20 calendar days setelah penolakan jika pembayaran memakai metode lain. In other words, the DOT describes these deadlines as after the consumer rejects the offer. Gunakan tanggal ketika penolakan disampaikan kepada pihak yang memproses tawaran sebagai trigger penolakan eksplisit. Jangan menunggu sampai penerbangan alternatif berangkat pada skenario penolakan eksplisit. Trigger keberangkatan penerbangan adalah aturan yang berbeda untuk konsumen yang tidak merespons tawaran alternatif.
+
+TIDAK MERESPONS BUKAN SAMA DENGAN MENOLAK
+Untuk konsumen yang tidak merespons tawaran penerbangan yang berubah atau alternatif, 14 CFR §260.6(a)(2)(iii)(A) mensyaratkan bahwa flight yang ditawarkan berangkat tanpa konsumen. Untuk konsumen yang tidak merespons voucher/credit, §260.6(a)(2)(iii)(B) menggunakan tanggal berbeda: tanggal ketika flight yang dibatalkan semula dijadwalkan berangkat atau tanggal flight yang significantly delayed/changed berangkat. Jangan menyamakan kedua kondisi tersebut atau menyimpulkan bahwa setiap bentuk diam otomatis memicu refund.
+
+MERCHANT OF RECORD DAN PEMESANAN MELALUI AGEN/OTA
+Merchant of record adalah entitas (carrier atau ticket agent) yang memproses pembayaran tiket dan tercantum pada financial charge statement, misalnya mutasi kartu debit/kredit. Bank atau penerbit kartu bukan merchant of record hanya karena kartu tersebut digunakan untuk membayar. Merchant of record dapat berupa maskapai atau ticket agent/online travel agency (OTA).
+
+JALUR REFUND JIKA MASKAPAI ADALAH MERCHANT OF RECORD
+Untuk tiket yang dibeli langsung dari maskapai, U.S. DOT menjelaskan bahwa ketika maskapai membatalkan atau mengubah penerbangan secara signifikan dan konsumen menolak alternatif/kompensasi, refund harus diterbitkan otomatis tanpa konsumen mengajukan permintaan refund terpisah. Untuk kartu kredit, DOT menyebut 7 business days setelah penolakan eksplisit; untuk metode pembayaran lain, 20 calendar days setelah penolakan eksplisit.
+
+JALUR REFUND JIKA TICKET AGENT/OTA ADALAH MERCHANT OF RECORD
+14 CFR §399.80(l) mewajibkan ticket agent yang menjadi merchant of record memberikan refund prompt ATAS PERMINTAAN konsumen untuk penerbangan yang dibatalkan atau berubah signifikan, jika konsumen memilih tidak bepergian atau tidak menerima kompensasi pengganti refund sesuai kondisi aturan. Karena itu jangan menyatakan proses refund OTA otomatis tanpa permintaan konsumen. DOT menyarankan konsumen yang membeli melalui OTA/agen menghubungi agen tersebut untuk memperoleh refund. Untuk pembelian kartu kredit, refund prompt dari ticket agent harus dilakukan dalam 7 business days sejak ticket agent menerima informasi dari carrier sebagaimana §260.6(d), sesuai 12 CFR Part 1026. Untuk pembayaran cash, check, debit card, atau metode lain, §399.80(l) menetapkan 20 calendar days sejak refund menjadi jatuh tempo. Refund dikembalikan ke bentuk pembayaran awal, kecuali konsumen setuju menerima bentuk lain yang cash-equivalent.
+
+Berdasarkan 14 CFR §260.6(d), setelah konsumen mengajukan permintaan refund melalui ticket agent, carrier yang membatalkan/mengubah penerbangan harus memberi tahu ticket agent tanpa penundaan apakah konsumen memenuhi syarat refund. Berdasarkan §260.6(e), carrier yang memegang dana harus segera mentransfer dana kepada ticket agent jika agent bertanggung jawab mengeluarkan refund tetapi tidak memegang dana tersebut. Jangan menganggap bank/penerbit kartu sebagai merchant of record.
+
 FACTS NEEDED FOR A CASE-SPECIFIC ASSESSMENT
 When these details are missing and they materially affect the answer, establish: (1) whether the itinerary is covered by U.S. DOT rules; (2) whether the airline cancelled or changed the schedule; (3) the original and revised scheduled arrival times, or the other relevant significant change; (4) whether the passenger flew on the changed flight or an alternative flight, rejected it, or did not respond and did not travel; (5) whether the ticket was non-refundable or fully refundable; and (6) who was the merchant of record. Do not ask for information that is not needed to answer the user's question.
 

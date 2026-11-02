@@ -27,6 +27,14 @@ DOCUMENT_SOURCES = {
         "title": "eCFR — 14 CFR §260.6 Refund Obligation (local summary)",
         "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-260/section-260.6",
     },
+    "us_cfr_399_80_ticket_agents.txt": {
+        "title": "eCFR - 14 CFR 399.80 Ticket Agent Refund Obligation (local summary)",
+        "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-399/section-399.80",
+    },
+    "us_cfr_259_4_tarmac.txt": {
+        "title": "eCFR - 14 CFR 259.4 Tarmac Delay Requirements (local summary)",
+        "url": "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-259/section-259.4",
+    },
 }
 
 

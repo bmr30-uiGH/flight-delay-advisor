@@ -77,3 +77,26 @@ def test_no_response_alternative_query_expands_to_departure_without_consumer_con
     assert "does not respond" in query
     assert "flight departs without consumer" in query
     assert "automatic refund" in query
+
+
+
+def test_indonesian_tarmac_phrases_expand_to_tarmac_delay_rules():
+    query = _expand_query(
+        "Pesawat tertahan di landasan selama 3 jam 20 menit, bagaimana aturan makanan dan air?"
+    ).lower()
+    assert "tarmac delay" in query
+    assert "drinking water within two hours" in query
+    assert "opportunity to deplane" in query
+
+
+def test_ota_query_expands_to_ticket_agent_upon_request_rule():
+    query = _expand_query("Saya beli tiket melalui OTA, siapa yang proses refund?").lower()
+    assert "399.80(l)" in query
+    assert "upon request" in query
+    assert "ticket agent" in query
+
+def test_tarmac_query_expands_departure_arrival_and_exceptions():
+    query = _expand_query("Pesawat domestik tertahan di landasan, kapan penumpang bisa turun?").lower()
+    assert "departing flight" in query
+    assert "arriving flight" in query
+    assert "air traffic control" in query

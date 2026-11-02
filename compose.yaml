@@ -8,11 +8,11 @@ services:
       --default-artifact-root /app/storage/mlartifacts"
     environment:
       MLFLOW_TRACKING_URI: http://mlflow:5000
-      MLFLOW_SERVER_ALLOWED_HOSTS: "mlflow,mlflow:5000,localhost,localhost:5000,127.0.0.1,127.0.0.1:5000"
+      MLFLOW_SERVER_ALLOWED_HOSTS: "localhost:5001,127.0.0.1:5001,mlflow:5000"
     volumes:
       - ./storage:/app/storage
     ports:
-      - "5000:5000"
+      - "5001:5000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health', timeout=3)"]
       interval: 10s
@@ -50,7 +50,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "8501:8501"
+      - "8502:8501"
     depends_on:
       bootstrap:
         condition: service_completed_successfully

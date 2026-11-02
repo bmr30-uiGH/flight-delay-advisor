@@ -12,13 +12,22 @@ The text of 14 CFR §260.6(a)(1) specifically addresses a consumer holding a NON
 
 Do not rewrite this subsection as though it expressly applies to refundable and non-refundable fares in an identical way. Fully refundable tickets are addressed separately in U.S. DOT consumer guidance: consumers who purchase a fully refundable ticket are entitled to a refund when they do not use the purchased ticket. Cite the DOT Refunds page for that separate point.
 
-AUTOMATIC REFUNDS
-The provision identifies circumstances in which a full refund is due automatically, including:
-- A cancelled flight where the consumer is not offered an alternative flight or voucher/credit/other compensation under the relevant provision.
-- The consumer rejects the significantly delayed or changed flight, a rebooking on an alternative flight, or a voucher/credit/other offered compensation.
-- The consumer does not respond to an offer of the significantly delayed/changed flight or an alternative flight and the offered flight departs without the consumer; or does not respond to an offer of voucher, credit, or other compensation by the date specified in the regulation.
+AUTOMATIC REFUNDS — EXPLICIT REJECTION AND NO-RESPONSE ARE DIFFERENT SUBSECTIONS
+14 CFR §260.6(a)(2)(ii) covers EXPLICIT REJECTION: a consumer rejects the significantly delayed or changed flight, rebooking on an alternative flight, or a voucher/credit/other compensation offered under paragraph (c). For this branch, the refund is due automatically; do not cite §260.6(a)(2)(iii)(A), which is a separate no-response provision.
+
+14 CFR §260.6(a)(2)(iii)(A) covers NO RESPONSE to an offer of the significantly delayed/changed flight or an alternative flight, AND the offered flight departs without the consumer. Silence alone is not enough before the offered flight departs.
+
+14 CFR §260.6(a)(2)(iii)(B) covers NO RESPONSE to an offer of voucher, credit, or other compensation by the date on which the cancelled flight was scheduled to depart or the date that the significantly delayed/changed flight departs. This is a different trigger from the alternative-flight branch.
+
+A cancelled flight where no alternative flight or voucher/credit/other compensation is offered is addressed separately in §260.6(a)(2)(i).
 
 Do not state that any silence in any situation automatically creates a refund. Establish what offer was made, whether the relevant departure date passed, and whether the passenger used the affected or alternative transportation. DOT's public guidance explains that when a consumer does not respond to an alternative-flight offer and does not fly on the offered alternative, the refund is issued automatically.
+
+
+EXPLICIT-REJECTION DEADLINE AND MERCHANT OF RECORD
+The U.S. DOT Refunds guidance states that after an explicit rejection of an alternative-flight offer, a credit-card refund is due within 7 business days after rejection; a refund for another payment method is due within 20 calendar days after rejection. Do not wait for the alternative flight to depart in an explicit-rejection case. For the no-response branch in §260.6(a)(2)(iii)(A), the departure-without-consumer condition and its separate timing rule apply.
+
+The merchant of record is the carrier or ticket agent shown on the consumer's financial charge statement as responsible for processing payment. A card issuer/bank is not the merchant of record merely because it issued the payment card. When the airline is merchant of record, U.S. DOT consumer guidance describes the refund after an explicit rejection as automatic without a separate refund request. When a ticket agent/OTA is merchant of record, do not claim its processing is automatic without a consumer request: 14 CFR §399.80(l) requires the ticket agent to provide a prompt refund upon request. For credit-card purchases, the agent's 7-business-day deadline runs from the ticket agent receiving information from the carrier under §260.6(d); for other payment methods, the deadline is 20 calendar days after the refund becomes due. Under §260.6(d), after the consumer requests a refund through the ticket agent, the carrier must inform the agent without delay whether the consumer is eligible. Under §260.6(e), the carrier holding the funds must promptly transfer them to the agent when the agent is responsible for the refund but does not possess the funds.
 
 CERTAIN ACCESSIBILITY-RELATED CHANGES
 The regulation has separate refund provisions for an individual with a disability who does not want to continue travel because specified significant changes make needed accessibility features unavailable, and for certain other passengers in the same reservation. When the user's circumstances involve disability or accessibility, retrieve and explain the exact subsection rather than applying only the general rule in paragraph (a).
@@ -37,3 +46,7 @@ For the definition of a significantly delayed or changed flight, including the s
 
 IMPORTANT LIMITS
 This file is a concise educational summary, not legal advice and not a verbatim reproduction of the regulation. The regulation is limited to covered carriers and covered scheduled flights. Consult the linked eCFR section and U.S. DOT Refunds page for complete text, definitions, conditions, exceptions, and current amendments. Do not cite 14 CFR §250.13 as the refund authority.
+
+
+TICKET AGENT REFUND OBLIGATION — 14 CFR §399.80(l)
+A ticket agent that is the merchant of record must provide a prompt refund of airfare (including applicable taxes and ancillary fees) upon consumer request for a cancelled or significantly delayed/changed flight when the consumer chooses not to travel or accept compensation in lieu of a refund under the relevant 14 CFR §260.6(a) conditions. For credit-card purchases, prompt means within 7 business days after the ticket agent receives information from the carrier under §260.6(d), as required by 12 CFR Part 1026. For cash, check, debit card, and other purchase methods, prompt means within 20 calendar days after the refund becomes due. The agent must return funds to the original payment method unless the consumer agrees to another cash-equivalent method. The definition of business days excludes Saturdays, Sundays, and U.S. federal holidays.

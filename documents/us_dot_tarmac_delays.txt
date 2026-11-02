@@ -1,26 +1,35 @@
 DOCUMENT: U.S. DOT — TARMAC DELAYS
-DOCUMENT TYPE: Curated local summary based on the linked U.S. DOT page; not verbatim DOT text.
-JURISDICTION: Covered carriers at U.S. airports under the U.S. DOT tarmac-delay rule.
-OFFICIAL SOURCE: https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays
-SOURCE PAGE LAST UPDATED: September 26, 2025
-LOCAL SUMMARY CHECKED: October 30, 2026
+DOCUMENT TYPE: Curated local educational summary based on U.S. DOT consumer guidance and 14 CFR §259.4; not verbatim regulatory text and not legal advice.
+JURISDICTION: Covered tarmac delays at U.S. airports. Check that the carrier/flight is covered by the rule.
+OFFICIAL SOURCES:
+- https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays
+- https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-259/section-259.4
+LOCAL SUMMARY CHECKED: November 1, 2026
 
 WHAT IS A TARMAC DELAY
-A tarmac delay occurs when an aircraft is on the ground, either waiting to take off or after landing, and passengers do not have an opportunity to get off the plane. The DOT tarmac-delay rule applies to covered carriers at U.S. airports. Waiting in the terminal or at a gate is not, by itself, a tarmac delay.
+A tarmac delay occurs when an aircraft is on the ground, either waiting to take off or after landing, and passengers do not have an opportunity to get off the aircraft. Waiting in a terminal is not a tarmac delay. Apply the tarmac-delay requirements only to covered flights/carriers at U.S. airports.
 
-OPPORTUNITY TO LEAVE THE AIRCRAFT
-For flights departing from a U.S. airport, airlines must begin moving the aircraft to a place where passengers can safely get off before 3 hours for domestic flights and before 4 hours for international flights. For arriving flights landing at U.S. airports, passengers must be given an opportunity to safely get off before 3 hours for domestic flights and before 4 hours for international flights.
+FOOD AND POTABLE WATER — TWO HOURS
+Under 14 CFR §259.4(c)(4), during a covered tarmac delay the carrier must provide adequate food and potable water no later than two hours after the start of the tarmac delay. The pilot-in-command may withhold this service only when the pilot determines that safety or security considerations preclude it. DOT consumer guidance describes the service as a snack and drinking water; a full meal is not required. The carrier must have or obtain enough food and water to serve all passengers onboard. Do not apply the exceptions to the three-hour deplaning limit as general exceptions to this food-and-water requirement.
 
-Exceptions to the time limits are allowed for safety, security, or air-traffic-control reasons. Passengers should not leave the aircraft unless the airline tells them it is safe. The airline is not required to let a passenger back on the aircraft after the passenger chooses to get off during a tarmac delay.
+TOILETS, MEDICAL ATTENTION, AND CABIN TEMPERATURE
+Under 14 CFR §259.4(c)(5), covered carriers must ensure operable lavatory facilities and adequate medical attention if needed during a tarmac delay. The DOT passenger guidance also lists working toilets, comfortable cabin temperatures, and adequate medical attention if needed among the protections during a tarmac delay. The carrier's contingency plan must describe how it will maintain comfortable cabin temperatures. Do not invent a blanket technical-failure exception for the toilet or cabin-temperature assurances. The specific safety/security exception for food and water is stated separately in §259.4(c)(4); the specific exceptions to the deplaning time limit are in §259.4(c)(3).
 
-FOOD AND DRINKING WATER
-During a covered tarmac delay, airlines must provide a snack and drinking water no later than 2 hours after the start of the tarmac delay. The rule does not require a full meal during a tarmac delay. Food and water may be withheld only when the pilot determines service cannot be provided for safety or security reasons.
+STATUS NOTIFICATION — 30 MINUTES
+Under 14 CFR §259.4(c)(6), the carrier must notify passengers onboard about the status of the delay when the tarmac delay exceeds 30 minutes. Subsequent updates, including status changes, may be provided as the carrier deems appropriate; the rule does not establish a mandatory update every 30 minutes. Under §259.4(c)(7), for departing flights and diversions, whenever an opportunity to deplane exists at a suitable disembarkation point, the carrier must timely notify passengers onboard that they may deplane.
 
-OTHER PROTECTIONS AND UPDATES
-During a tarmac delay, airlines must provide working toilets, comfortable cabin temperatures, and adequate medical attention when needed. Airlines must notify passengers about the status of the delay when the tarmac delay exceeds 30 minutes. If passengers can safely leave, the airline must timely notify them of the opportunity.
+DOMESTIC THREE-HOUR LIMIT — DEPARTING FLIGHTS
+Under 14 CFR §259.4(c)(1), for domestic flights a covered U.S. air carrier must provide passengers an opportunity to deplane before the tarmac delay exceeds three hours, subject to §259.4(c)(3). For a departing flight, §259.4(c)(3)(i) provides a specific way to satisfy the requirement: the flight must begin to return to a suitable disembarkation point no later than three hours after the main aircraft door is closed in order to deplane passengers. If the aircraft is in an area not under the carrier's control, the return begins when a request is made to the FAA control tower, airport authority, or other relevant authority directing the aircraft. If the aircraft is in an area under the carrier's control, the return begins when the pilot starts maneuvering the aircraft toward the suitable disembarkation point. This specific return-start provision is written for departing flights, not arriving flights.
 
-IMPORTANT DISTINCTION
-The 3-hour domestic and 4-hour international limits concern the opportunity to leave an aircraft during a covered tarmac delay. They do not mean that every 3- or 4-hour delay while waiting in an airport terminal automatically creates a federal right to a hotel or meal under the tarmac-delay rule. For terminal delays, check the airline's customer-service commitments and the separate DOT refund rules.
+DOMESTIC THREE-HOUR LIMIT — ARRIVING FLIGHTS
+For an arriving domestic flight landing at a U.S. airport, passengers must be provided an opportunity to deplane before the tarmac delay exceeds three hours, subject to the applicable safety/security and air-traffic-control exceptions in §259.4(c)(3)(ii)-(iii). Do not state that merely beginning to move back toward a gate before three hours is sufficient for an arriving flight; the return-start language in §259.4(c)(3)(i) applies to departing flights.
 
-SEARCH TERMS (ENGLISH AND INDONESIAN)
-tarmac delay, aircraft on the ground, opportunity to deplane, leave the aircraft, snack, drinking water, food, toilet, cabin temperature, medical attention, penundaan di landasan, tertahan di pesawat, kesempatan turun dari pesawat, makanan ringan, air minum, toilet pesawat, suhu kabin, bantuan medis.
+EXCEPTIONS TO THE THREE-HOUR DEPLANING LIMIT
+Under §259.4(c)(3)(ii), deplaning may be excepted if the pilot-in-command determines that deplaning at a suitable point would jeopardize passenger safety or security, or there is a safety-related or security-related reason the aircraft cannot leave its tarmac position to deplane. Under §259.4(c)(3)(iii), the exception also applies if air traffic control advises the pilot-in-command that returning to a suitable disembarkation point to deplane would significantly disrupt airport operations. For departing flights, the special timely return-start provision in §259.4(c)(3)(i) also applies. These are exceptions to the deplaning-time requirement; do not reuse them as blanket exceptions to food/water, lavatory, temperature, or status-notification assurances. The food-and-water safety/security exception has its own separate pilot-in-command condition in §259.4(c)(4).
+
+APPLYING THE RULE TO A 3-HOUR-20-MINUTE SCENARIO
+If passengers remain onboard after 3 hours and 20 minutes, determine whether the aircraft was departing or arriving, when the tarmac delay began, and whether one of the applicable §259.4(c)(3) exceptions applied. For a departing flight, also establish whether the aircraft began returning to a suitable disembarkation point by the three-hour limit as specified in §259.4(c)(3)(i). For an arriving flight, establish whether a safe opportunity to deplane was offered before the delay exceeded three hours, unless a qualifying safety/security or ATC exception applied. Separately check whether adequate food and potable water were made available by two hours and whether the lavatory, cabin-temperature, and notification assurances were met. A 3-hour-20-minute duration alone is not enough to determine a violation without the relevant flight stage and exception facts.
+
+IMPORTANT DISTINCTION — TARMAC DELAY VS. TERMINAL OR GATE WAITING
+
+A tarmac delay occurs when an aircraft is on the ground, either waiting to take off or after landing, and passengers do not have an opportunity to get off the aircraft. Waiting in the terminal or at a gate is not, by itself, a tarmac delay. The tarmac-delay time limits apply to covered situations where passengers remain onboard without an opportunity to deplane.

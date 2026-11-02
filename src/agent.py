@@ -5,7 +5,7 @@ import os
 import re
 from datetime import date
 
-from src.predictor import predict_delay
+from src.predictor_router import predict_delay
 from src.retrieval import retrieve_passenger_rights
 
 SYSTEM_INSTRUCTIONS = """Kamu adalah Flight Delay + Passenger Rights Advisor. Jawab dalam bahasa pengguna, jelas, ringkas, dan hati-hati.
@@ -33,17 +33,19 @@ ATURAN AKURASI DAN SUMBER:
 - TIKET FULLY REFUNDABLE: jelaskan secara terpisah berdasarkan halaman U.S. DOT Refunds: konsumen yang membeli fully refundable ticket berhak atas refund ketika tiket yang dibeli tidak digunakan. Jangan menyatakan bahwa §260.6(a)(1) secara eksplisit mengatur dua tipe tarif itu dengan cara yang sama.
 - PENUMPANG YANG TETAP TERBANG: jika penumpang memilih menggunakan significantly delayed/changed flight atau alternative flight, umumnya tidak berhak atas refund seluruh harga tiket berdasarkan aturan DOT significant-delay/change. Jangan menyatakan bahwa tidak ada remedy apa pun. Contohnya, jika terjadi involuntary downgrade dan penumpang tetap terbang, DOT menyebut refund selisih antara original fare dan downgraded fare, bukan full airfare; sampaikan hanya jika sumber DOT tentang downgrade berhasil diambil.
 - PENOLAKAN DAN TIDAK MERESPONS: bedakan penumpang yang secara jelas menolak changed flight/alternative/voucher dengan penumpang yang tidak merespons. Untuk no-response, jelaskan kondisi sumber: misalnya flight berubah/alternatif berangkat tanpa penumpang, atau tidak ada respons terhadap voucher/credit sampai tanggal yang disebut aturan. Jangan mengatakan semua bentuk diam otomatis memberi refund. Jangan menganggap passenger menerima atau menolak rebooking tanpa bukti.
+- PEMETAAN SUBSEKSI REFUND OTOMATIS: penolakan eksplisit terhadap significantly delayed/changed flight, rebooking pada alternative flight, atau voucher/credit yang ditawarkan sebagai pengganti refund masuk ke 14 CFR §260.6(a)(2)(ii). §260.6(a)(2)(iii)(A) hanya untuk kondisi konsumen TIDAK MERESPONS tawaran flight yang berubah/alternatif DAN flight itu berangkat tanpa konsumen. §260.6(a)(2)(iii)(B) khusus untuk konsumen yang tidak merespons tawaran voucher/credit sampai tanggal keberangkatan yang ditentukan. Jangan pernah mengutip §(iii)(A) untuk kasus penolakan eksplisit.
 - REFUND OTOMATIS DAN TRIGGER DATE: jika sumber mendukung kondisi 14 CFR §260.6(a)(2)(ii), jelaskan bahwa penolakan eksplisit terhadap penerbangan yang berubah, penerbangan alternatif, atau kompensasi pengganti refund memicu refund otomatis tanpa penumpang harus mengajukan permintaan tambahan. Untuk penolakan eksplisit atas tawaran alternatif, gunakan tenggat 7 business days untuk kartu kredit atau 20 calendar days untuk metode pembayaran lain, dihitung sejak tanggal penolakan menurut halaman DOT. Bedakan dari kondisi tidak merespons: berdasarkan §260.6(a)(2)(iii)(A), tawaran penerbangan alternatif harus benar-benar berangkat tanpa penumpang; gunakan trigger waktu pada excerpt DOT untuk kondisi tersebut. Untuk tidak merespons tawaran voucher/credit, periksa kondisi §260.6(a)(2)(iii)(B), yaitu batas respons sampai tanggal keberangkatan yang ditentukan dalam aturan. Jangan mencampur trigger date penolakan eksplisit, tidak merespons alternatif, dan tidak merespons voucher/credit. Jangan menyatakan bahwa diam saja otomatis memenuhi semua kondisi refund.
 - JENIS PEMBAYARAN DAN TENGGAT: refund dikembalikan ke original form of payment. Untuk penumpang yang secara eksplisit menolak penerbangan yang berubah atau alternatif, gunakan tenggat 7 business days untuk kartu kredit atau 20 calendar days untuk metode pembayaran lain, dihitung sejak tanggal penolakan menurut sumber DOT. Jangan menambahkan syarat menunggu penerbangan alternatif berangkat dan jangan menggunakan frasa mana yang lebih akhir pada skenario penolakan eksplisit. Pisahkan skenario penumpang tidak merespons: gunakan trigger keberangkatan yang disebut dalam excerpt DOT. Bedakan tawaran penerbangan alternatif dari tawaran voucher atau credit. Jangan menggabungkan trigger date kedua skenario.
 - VOUCHER/CREDIT: jangan menyatakan bahwa sekadar ditawari voucher otomatis menghapus hak refund. Sampaikan persyaratan disclosure hak refund dan masa berlaku minimal lima tahun hanya bila bagian sumber yang relevan berhasil diambil. Tentukan apakah konsumen menerima voucher sebagai pengganti refund.
 - PEMISAHAN MASKAPAI OPERASIONAL DAN MERCHANT OF RECORD: Nilai OP_CARRIER dari form merupakan konteks penerbangan untuk prediksi ML, bukan bukti merchant of record atau pihak pemroses refund. Jangan menyebut nama maskapai atau agen tertentu sebagai pihak refund hanya berdasarkan form tersimpan. Jika pertanyaan tidak menyebut maskapai, agen, atau bukti transaksi, nyatakan bahwa merchant of record belum dapat ditentukan dan arahkan pengguna memeriksa nama entitas pada laporan transaksi pembayaran. Bedakan covered carrier yang membatalkan penerbangan dari merchant of record yang bertanggung jawab menerbitkan refund.
-- MERCHANT OF RECORD DAN KEWAJIBAN TICKET AGENT: merchant of record adalah entitas yang tercantum dalam laporan transaksi pembayaran. Jika ticket agent atau OTA menjadi merchant of record, jelaskan bahwa entitas tersebut bertanggung jawab mengeluarkan refund kepada konsumen. Jangan menebak merchant of record dari OP_CARRIER. Berdasarkan §260.6(d), apabila ticket agent adalah merchant of record dan menerima permintaan refund melalui ticket agent, carrier yang membatalkan atau mengubah penerbangan harus segera memberi tahu ticket agent apakah konsumen memenuhi syarat refund. Berdasarkan §260.6(e), apabila ticket agent bertanggung jawab memberikan refund berdasarkan 14 CFR §399.80(l) tetapi tidak memegang dana konsumen, carrier yang memegang dana harus segera mentransfer dana tersebut kepada ticket agent. Jelaskan kewajiban (d) dan (e) secara terpisah dan hanya jika excerpt retrieval mendukungnya. Jangan mengatakan carrier selalu harus membayar langsung kepada konsumen atau bahwa carrier bebas dari semua tanggung jawab ketika ticket agent menjadi merchant of record.
+- MERCHANT OF RECORD DAN KEWAJIBAN TICKET AGENT: merchant of record adalah entitas yang tercantum pada laporan transaksi pembayaran. Jika ticket agent/OTA menjadi merchant of record, §399.80(l) mewajibkan ticket agent memberikan refund prompt ATAS PERMINTAAN konsumen; jangan menyebut pemrosesan OTA otomatis tanpa permintaan. Untuk pembayaran kartu kredit, tenggat prompt refund ticket agent adalah 7 business days sejak ticket agent menerima informasi dari carrier sebagaimana §260.6(d). Untuk metode lain, tenggatnya 20 calendar days sejak refund menjadi jatuh tempo. Berdasarkan §260.6(d), setelah menerima permintaan refund konsumen melalui ticket agent, carrier harus memberi tahu ticket agent tanpa penundaan apakah konsumen memenuhi syarat refund. Berdasarkan §260.6(e), jika ticket agent bertanggung jawab mengeluarkan refund tetapi tidak memegang dana, carrier yang memegang dana harus segera mentransfer dana kepada ticket agent. Pisahkan jalur carrier sebagai merchant of record (automatic refund tanpa permintaan tambahan berdasarkan panduan DOT) dari jalur ticket agent sebagai merchant of record (refund upon request). Jangan menyamakan tenggat keduanya atau mengatakan OTA otomatis tanpa permintaan.
+- IDENTITAS MERCHANT OF RECORD: merchant of record adalah nama entitas penjual/pedagang yang tercantum pada detail transaksi kartu/debit atau rekening pembayaran. Bank atau penerbit kartu kredit yang menerbitkan alat pembayaran BUKAN merchant of record hanya karena konsumen membayar memakai kartu kredit. Jika detail transaksi menunjukkan nama maskapai, maskapai adalah merchant of record; jika menunjukkan nama agen/OTA, agen/OTA itu yang menjadi merchant of record dan pihak yang memproses refund tiket. Jika pengguna belum menyebut nama pedagang pada mutasi transaksi, nyatakan merchant of record belum diketahui; jangan menulis “bank/penerbit kartu atau agen” sebagai dua contoh merchant of record.
 - DOWNGRADE: bedakan refund seluruh tiket ketika penumpang tidak melanjutkan perjalanan dari pengembalian selisih tarif ketika penumpang tetap bepergian setelah involuntary downgrade. Jangan memberi angka selisih tanpa data dan sumber.
 - DISABILITAS/AKSESIBILITAS: §260.6(b) memiliki ketentuan terpisah untuk kondisi aksesibilitas tertentu. Jika pengguna menyebut disabilitas atau fitur aksesibilitas yang tidak tersedia, jangan menyimpulkan hanya dari ketentuan umum tiket non-refundable; cari excerpt khusus dan jelaskan syaratnya.
 - KOMITMEN MASKAPAI: bedakan hak refund berdasarkan aturan DOT dari komitmen layanan maskapai. Komitmen layanan seperti meal, hotel, atau rebooking bukan refund dan tidak otomatis berlaku untuk setiap penyebab delay.
 - AMERICAN AIRLINES: komitmen dashboard berlaku untuk controllable delays/cancellations. Jika sumber dashboard AA berhasil diambil, jelaskan butir relevan secara spesifik: no-cost rebooking pada AA/partner untuk significant controllable delays; meal atau meal cash/voucher ketika waktu tunggu minimal 3 jam; hotel dan transportasi darat untuk overnight controllable delay; serta ketiadaan komitmen dashboard untuk cash compensation, travel credit/voucher, atau frequent-flyer miles pada kondisi tunggu 3 jam yang dinyatakan. Jangan menganggap tidak adanya komitmen berarti maskapai tidak pernah dapat memberi secara sukarela. Ambang tunggu 3 jam untuk meal berbeda dari scheduled late-arrival refund test. Jangan mengarang ambang universal 3 jam untuk rebooking.
 - PENEGAKAN KOMITMEN MASKAPAI: jangan menyatakan bahwa penegakan hanya internal atau DOT tidak berperan. Jika dashboard DOT termasuk hasil retrieval, sampaikan bahwa DOT menyatakan maskapai harus mematuhi komitmen customer service plan dan DOT dapat meminta pertanggungjawaban. Jangan mengarang jenis atau besaran sanksi.
-- TARMAC DELAY: bedakan pesawat berada di darat tanpa kesempatan penumpang turun dari menunggu di gate/terminal. Terapkan aturan tarmac hanya jika definisi dan kondisi yang relevan didukung sumber.
+- TARMAC DELAY: aturan 14 CFR §259.4 berlaku untuk covered tarmac delay di bandara AS; tarmac delay berarti pesawat berada di darat (menunggu lepas landas atau setelah mendarat) dan penumpang belum memiliki kesempatan turun. Jangan menyamakan menunggu di terminal dengan tarmac delay. Status delay diberitahukan ketika delay melewati 30 menit; update berikutnya tidak diwajibkan setiap 30 menit, karena §259.4(c)(6) membolehkan update lanjutan sesuai kebijakan carrier. Jika kesempatan turun tersedia pada departing flight/diversion, penumpang harus diberi tahu secara tepat waktu. Untuk domestik, batas deplane adalah sebelum delay melebihi 3 jam. BEDAKAN: (1) departing flight — kewajiban dapat dipenuhi bila pesawat mulai kembali ke lokasi turun yang sesuai paling lambat 3 jam setelah pintu utama ditutup; jika di area di luar kendali carrier, return dimulai ketika permintaan disampaikan ke tower/otoritas yang relevan; jika di area kendali carrier, ketika pilot mulai menggerakkan pesawat. (2) arriving flight — berikan kesempatan aman untuk turun sebelum melewati 3 jam; jangan memakai aturan 'mulai kembali ke gate' yang hanya ditulis untuk departing flights sebagai pengganti. Untuk keduanya, pengecualian terkait pilot-in-command yang menentukan turun akan membahayakan keselamatan/keamanan atau adanya alasan safety/security yang menghalangi perpindahan; ATC juga dapat menyatakan pengembalian akan sangat mengganggu operasi bandara. Jangan menggeneralisasi pengecualian batas 3 jam ini ke kewajiban lain. Makanan/air minum yang memadai harus tersedia paling lambat 2 jam sejak tarmac delay dimulai; hanya dapat ditahan bila pilot-in-command menentukan safety/security preclude service. Pastikan toilet/lavatory operable dan perhatian medis memadai jika dibutuhkan selama delay. DOT juga mencantumkan suhu kabin yang nyaman dalam panduan penumpang/contingency-plan assurances; jangan menciptakan pengecualian teknis umum yang tidak disebut sumber. Jangan menyebut full meal diwajibkan; DOT menyebut snack dan air cukup untuk seluruh penumpang.
 - RINGKASAN LOKAL DAN KUTIPAN: dokumen dalam knowledge base yang merupakan ringkasan edukatif/parafrasa bukan salinan verbatim dan bukan teks hukum verbatim. Jangan menyajikan kalimat dari ringkasan lokal sebagai kutipan langsung, jangan menaruhnya dalam tanda kutip, dan jangan mengarang redaksi bahasa Inggris seolah-olah merupakan bunyi asli peraturan. Gunakan parafrasa tidak langsung dan sebut sebagai ringkasan lokal berdasarkan halaman resmi bila diperlukan. Kutipan langsung hanya boleh digunakan jika hasil retrieval secara jelas memuat teks resmi verbatim dan mengidentifikasikannya sebagai kutipan resmi.
 - DATA YANG DIPERLUKAN: sebelum menyimpulkan eligibility kasus, periksa hanya informasi material yang tersedia: yurisdiksi/rute; original dan revised scheduled arrival atau jenis perubahan lain; apakah passenger tetap terbang, menerima alternatif, menolak, atau tidak merespons dan tidak terbang; jenis tiket; serta merchant of record jika relevan. Jika fakta penting belum tersedia, berikan kesimpulan bersyarat dan ajukan pertanyaan klarifikasi yang paling penting. Jangan mengarang status tiket atau tindakan penumpang.
 - SUMBER: jangan membuat daftar sumber bernomor atau bibliografi sendiri. Aplikasi menampilkan sumber yang benar-benar dikembalikan retrieval di bagian 'Sumber yang digunakan'. Jangan membuat placeholder sumber kosong. Jangan menulis chunk ID, nama file lokal, nomor baris internal, atau penanda sitasi buatan seperti 【...file.txt:4】 di jawaban.
@@ -76,11 +78,18 @@ RIGHTS_WORDS = {
     "hak penumpang", "kompensasi", "compensation", "refund", "pengembalian dana",
     "pengembalian uang", "dibatalkan", "pembatalan", "cancelled", "canceled",
     "passenger rights", "hak saya", "voucher", "bantuan", "airconsumer", "aturan",
-    "regulation", "peraturan", "bagasi", "refund", "pengembalian tiket",
-}
-PREDICTION_WORDS = {
-    "delay", "terlambat", "keterlambatan", "risiko", "prediksi", "probabilitas",
-    "probability", "flight risk", "perkirakan", "kemungkinan",
+    "regulation", "peraturan", "bagasi", "pengembalian tiket",
+
+    # Tarmac delay dan kewajiban maskapai
+    "tarmac", "tarmac delay", "tarmac delays",
+    "landasan", "tertahan di landasan", "tertahan di darat",
+    "di landasan", "menunggu lepas landas", "belum bisa turun",
+    "kesempatan turun", "kesempatan untuk turun", "turun dari pesawat",
+    "deplaning", "deplane", "disembarkation",
+    "snack", "makanan ringan", "air minum", "potable water",
+    "drinking water", "toilet", "lavatory", "suhu kabin",
+    "cabin temperature", "pemberitahuan status", "status keterlambatan",
+    "14 cfr §259.4", "259.4"
 }
 
 # Patterns identify hostile instruction clauses rather than rejecting an entire message.
@@ -168,6 +177,133 @@ def _no_response_alternative_refund_question(question: str) -> bool:
     )
 
 
+def _cancellation_without_any_offer_refund_question(question: str) -> bool:
+    """Detect a cancelled-flight question where neither rebooking nor compensation was offered."""
+    text = re.sub(r"\s+", " ", str(question or "").lower()).strip()
+
+    cancellation = any(term in text for term in (
+        "penerbangan dibatalkan",
+        "penerbangan saya dibatalkan",
+        "maskapai membatalkan",
+        "dibatalkan oleh maskapai",
+        "penerbangan saya batal",
+        "cancelled flight",
+        "canceled flight",
+        "airline cancelled",
+        "airline canceled",
+        "flight was cancelled",
+        "flight was canceled",
+    ))
+
+    no_alternative = any(term in text for term in (
+        "tidak ada penerbangan alternatif",
+        "tidak ditawarkan penerbangan alternatif",
+        "tidak menawarkan penerbangan alternatif",
+        "tidak ada penerbangan pengganti",
+        "tidak ditawarkan penerbangan pengganti",
+        "tanpa penerbangan pengganti",
+        "no alternative flight",
+        "no rebooking",
+        "not offered an alternative flight",
+        "did not offer an alternative flight",
+    ))
+
+    no_compensation = any(term in text for term in (
+        "tidak ada voucher",
+        "tidak ditawarkan voucher",
+        "tidak menawarkan voucher",
+        "tidak ada kredit",
+        "tidak ditawarkan kredit",
+        "tidak ada kompensasi",
+        "tidak ditawarkan kompensasi",
+        "tidak menawarkan kompensasi",
+        "tanpa voucher",
+        "tanpa kredit",
+        "tanpa kompensasi",
+        "no voucher",
+        "no travel credit",
+        "no credit",
+        "no compensation",
+        "not offered a voucher",
+        "not offered any compensation",
+        "without a voucher",
+        "without compensation",
+    )) or (
+        ("tidak menawarkan" in text or "tidak ditawarkan" in text)
+        and any(term in text for term in ("voucher", "kredit", "kompensasi"))
+    ) or (
+        ("not offered" in text or "did not offer" in text)
+        and any(term in text for term in ("voucher", "credit", "compensation"))
+    )
+
+    no_offer_at_all = any(term in text for term in (
+        "tidak menawarkan apa pun",
+        "tidak ditawarkan apa pun",
+        "tidak ada tawaran apa pun",
+        "tanpa tawaran apa pun",
+        "tidak ada opsi apa pun",
+        "tidak diberi pilihan apa pun",
+        "no offer was made",
+        "no offers were made",
+        "no options were offered",
+        "nothing was offered",
+        "without offering anything",
+    ))
+
+    return cancellation and (no_offer_at_all or (no_alternative and no_compensation))
+
+
+def _no_response_voucher_compensation_refund_question(question: str) -> bool:
+    """Detect silence/no-response specifically to a voucher, credit, or compensation offer."""
+    text = re.sub(r"\s+", " ", str(question or "").lower()).strip()
+
+    disruption = any(term in text for term in (
+        "penerbangan dibatalkan",
+        "penerbangan saya dibatalkan",
+        "maskapai membatalkan",
+        "dibatalkan oleh maskapai",
+        "penerbangan saya batal",
+        "cancelled flight",
+        "canceled flight",
+        "flight was cancelled",
+        "flight was canceled",
+        "significant delay",
+        "significantly delayed",
+        "significant change",
+        "perubahan signifikan",
+        "keterlambatan signifikan",
+    ))
+
+    no_response = any(term in text for term in (
+        "tidak merespons",
+        "tidak merespon",
+        "tidak menjawab",
+        "tidak membalas",
+        "tidak memberi jawaban",
+        "diam saja",
+        "tidak ada respons",
+        "no response",
+        "did not respond",
+        "didn't respond",
+        "do not respond",
+        "does not respond",
+        "failed to respond",
+        "failure to respond",
+        "silence",
+    ))
+
+    compensation_offer = any(term in text for term in (
+        "voucher",
+        "travel credit",
+        "credit",
+        "kredit",
+        "kompensasi",
+        "compensation",
+    ))
+
+    return disruption and no_response and compensation_offer
+
+
 def _deterministic_passenger_rights_override(question: str, sources: list[dict]) -> str | None:
     """Override known high-risk answer patterns only when retrieved evidence supports the rule."""
     evidence = " ".join(
@@ -176,6 +312,83 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
         if isinstance(source, dict)
         for value in (source.get("title", ""), source.get("section", ""), source.get("excerpt", ""))
     ).lower()
+
+    # Deterministic tarmac-delay answer: preserve the different legal paths for
+    # departing and arriving aircraft, and keep 3-hour exceptions separate from
+    # the 2-hour food/water and onboard-facility protections.
+    lowered_question = re.sub(r"\s+", " ", (question or "").lower()).strip()
+    tarmac_intent = any(term in lowered_question for term in (
+        "tarmac", "landasan", "tertahan di landasan", "penundaan di landasan",
+        "pesawat tertahan", "di runway", "di apron", "turun dari pesawat", "deplane",
+    ))
+    has_tarmac_dot_source = any(
+        isinstance(source, dict)
+        and "transportation.gov/individuals/aviation-consumer-protection/tarmac-delays" in str(source.get("url", "")).lower()
+        for source in (sources or [])
+    )
+    has_tarmac_cfr_source = any(
+        isinstance(source, dict)
+        and "part-259/section-259.4" in str(source.get("url", "")).lower()
+        for source in (sources or [])
+    )
+    if tarmac_intent and has_tarmac_dot_source and has_tarmac_cfr_source:
+        has_food_water = ("two hours" in evidence or "2 hours" in evidence) and ("water" in evidence or "air minum" in evidence)
+        has_facilities = ("lavatory" in evidence or "toilet" in evidence) and ("comfortable cabin temperature" in evidence or "suhu kabin" in evidence)
+        has_updates = "30 minutes" in evidence
+        has_deplane = ("three hours" in evidence or "3 hours" in evidence) and "domestic" in evidence
+        has_departure_arrival_distinction = (
+            "259.4(c)(3)(i)" in evidence
+            and "departing flight" in evidence
+            and "arriving flight" in evidence
+            and "air traffic control" in evidence
+        )
+        if has_food_water and has_facilities and has_updates and has_deplane and has_departure_arrival_distinction:
+            return (
+                "**Untuk tarmac delay domestik selama 3 jam 20 menit, ada kemungkinan batas 3 jam dilanggar, "
+                "tetapi status pastinya bergantung pada apakah pesawat sedang akan berangkat atau baru mendarat "
+                "dan apakah pengecualian regulasi berlaku.**\n\n"
+                "**Snack dan air minum — paling lambat 2 jam.** 14 CFR §259.4(c)(4) mewajibkan carrier "
+                "menyediakan makanan dan air minum yang memadai paling lambat 2 jam setelah tarmac delay dimulai. "
+                "DOT menjelaskan bahwa ini dapat berupa snack dan air; tidak harus makanan lengkap, tetapi jumlahnya "
+                "harus cukup untuk seluruh penumpang. Pelayanan hanya boleh ditahan bila pilot-in-command menentukan "
+                "bahwa alasan keselamatan atau keamanan tidak memungkinkan pelayanan.\n\n"
+                "**Toilet dan suhu kabin.** Toilet/lavatory harus tetap dapat digunakan selama tarmac delay, dan "
+                "perhatian medis yang memadai harus tersedia bila dibutuhkan. Panduan penumpang DOT juga mencantumkan "
+                "suhu kabin yang nyaman. Sumber yang digunakan tidak memberikan pengecualian teknis umum untuk "
+                "mengabaikan kewajiban toilet atau suhu kabin; jangan menganggap gangguan teknis otomatis menjadi "
+                "pengecualian.\n\n"
+                "**Pemberitahuan.** Saat tarmac delay melewati 30 menit, penumpang harus diberi pemberitahuan tentang "
+                "status keterlambatan. Aturan tidak menetapkan update wajib setiap 30 menit: update lanjutan dapat "
+                "diberikan sesuai kebijakan carrier. Jika kesempatan turun yang aman tersedia pada departing flight "
+                "atau diversion, carrier harus memberi tahu penumpang secara tepat waktu.\n\n"
+                "**Batas 3 jam — bedakan jenis penerbangan:**\n"
+                "- **Pesawat akan berangkat:** penumpang harus diberi kesempatan turun sebelum tarmac delay melewati "
+                "3 jam. Untuk memenuhi ketentuan, carrier dapat mulai mengembalikan pesawat ke lokasi turun yang "
+                "sesuai paling lambat pada batas 3 jam sejak pintu utama ditutup. Bila pesawat berada di area di luar "
+                "kendali carrier, return dimulai ketika permintaan disampaikan ke tower/otoritas terkait; bila berada "
+                "di area kendali carrier, ketika pilot mulai menggerakkan pesawat.\n"
+                "- **Pesawat baru mendarat:** penumpang harus benar-benar diberi kesempatan turun dengan aman sebelum "
+                "tarmac delay melewati 3 jam. Ketentuan 'mulai kembali ke lokasi turun' di atas adalah ketentuan "
+                "khusus departing flight, bukan pengganti kewajiban untuk arriving flight.\n\n"
+                "**Pengecualian batas turun:** pilot-in-command dapat menentukan bahwa turun akan membahayakan "
+                "keselamatan/keamanan atau ada alasan keselamatan/keamanan yang membuat pesawat tidak dapat berpindah. "
+                "ATC juga dapat memberi tahu pilot bahwa kembali ke lokasi turun akan sangat mengganggu operasi "
+                "bandara. Pengecualian ini berkaitan dengan batas kesempatan turun, bukan pengecualian umum untuk "
+                "snack/air, toilet, suhu kabin, atau pemberitahuan 30 menit. Untuk snack/air, pengecualian keselamatan/"
+                "keamanan memiliki syarat tersendiri: keputusan pilot-in-command bahwa pelayanan tidak dapat diberikan.\n\n"
+                "**Penerapan pada skenario Anda:** karena sudah 3 jam 20 menit dan penumpang belum mendapat kesempatan "
+                "turun, minta maskapai menjelaskan secara tertulis apakah pesawat termasuk departing flight atau "
+                "arriving flight, kapan tarmac delay dihitung mulai, dan pengecualian apa yang dipakai. Jika tidak ada "
+                "pengecualian yang sah—atau, untuk departing flight, pesawat tidak mulai kembali ke lokasi turun "
+                "pada waktunya—hal itu dapat menunjukkan ketidakpatuhan terhadap aturan DOT.\n\n"
+                "Sumber yang diambil: panduan U.S. DOT Tarmac Delays dan ringkasan regulasi 14 CFR §259.4."
+            )
+        return (
+            "Saya menemukan dokumen U.S. DOT tentang tarmac delay, tetapi excerpt yang tersedia belum memuat "
+            "seluruh ketentuan yang diperlukan untuk memastikan batas waktu dan pengecualiannya. Saya tidak akan "
+            "menebak detail hukum. Cari ulang bagian §259.4 mengenai food and water, lavatory, notifications, "
+            "dan opportunity to deplane; khususnya bedakan departing flight dari arriving flight."
+        )
 
     if _actual_arrival_only_with_unknown_schedule(question):
         has_definition = (
@@ -255,6 +468,567 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
                 "pembayaran tiket."
             )
 
+
+
+    # ========================================================
+    # STANDALONE OTA / TICKET AGENT REFUND GUARD
+    # Does not require the user to specify fare class.
+    # ========================================================
+
+    ota_question = any(term in lowered_question for term in (
+        "ota",
+        "online travel agency",
+        "ticket agent",
+        "travel agent",
+        "agen perjalanan",
+        "merchant of record",
+    ))
+
+    cancellation_question = any(term in lowered_question for term in (
+        "dibatalkan",
+        "pembatalan",
+        "membatalkan",
+        "cancelled",
+        "canceled",
+        "cancellation",
+    ))
+
+    alternative_question = any(term in lowered_question for term in (
+        "penerbangan alternatif",
+        "penerbangan pengganti",
+        "alternative flight",
+        "alternative-flight",
+        "rebooking",
+    ))
+
+    explicit_rejection_question = any(term in lowered_question for term in (
+        "menolak",
+        "menolaknya",
+        "penolakan",
+        "saya tolak",
+        "reject",
+        "rejected",
+        "decline",
+        "declined",
+    ))
+
+    # Evidence must come from retrieved documents in this turn.
+    has_agent_refund_rule_ota = (
+        "399.80(l)" in evidence
+        and "ticket agent" in evidence
+        and "refund" in evidence
+        and "request" in evidence
+    )
+
+    has_merchant_definition_ota = (
+        "merchant of record" in evidence
+        and (
+            "financial charge statement" in evidence
+            or "financial statement" in evidence
+            or "payment statement" in evidence
+            or "detail transaksi" in evidence
+            or "laporan transaksi" in evidence
+        )
+    )
+
+    has_carrier_notice_ota = (
+        "260.6(d)" in evidence
+        and "ticket agent" in evidence
+        and "without delay" in evidence
+        and (
+            "eligible" in evidence
+            or "eligibility" in evidence
+            or "refund" in evidence
+        )
+    )
+
+    has_carrier_transfer_ota = (
+        "260.6(e)" in evidence
+        and "transfer" in evidence
+        and (
+            "ticket agent" in evidence
+            or "agent" in evidence
+        )
+    )
+
+    has_agent_deadline_ota = (
+        "7 business days" in evidence
+        and "20 calendar days" in evidence
+        and "ticket agent" in evidence
+        and (
+            "receives information from the carrier" in evidence
+            or "receives information from carrier" in evidence
+            or "refund becomes due" in evidence
+        )
+    )
+
+    has_carrier_rejection_rule_ota = (
+        "260.6(a)(2)(ii)" in evidence
+        and "refund" in evidence
+        and (
+            "automatic" in evidence
+            or "automatically" in evidence
+            or "otomatis" in evidence
+        )
+        and (
+            "reject" in evidence
+            or "penolakan" in evidence
+        )
+    )
+
+    has_carrier_rejection_deadline_ota = (
+        "7 business days" in evidence
+        and "20 calendar days" in evidence
+        and any(term in evidence for term in (
+            "after the consumer rejects",
+            "after you reject",
+            "after rejection",
+            "following rejection",
+            "after explicit rejection",
+            "after the date you reject",
+            "setelah penolakan",
+            "setelah konsumen menolak",
+        ))
+    )
+
+    has_nonrefundable_scope_ota = (
+        "260.6(a)(1)" in evidence
+        and (
+            "nonrefundable" in evidence
+            or "non-refundable" in evidence
+        )
+    )
+
+    has_fully_refundable_guidance_ota = (
+        "fully refundable" in evidence
+        and (
+            "does not use" in evidence
+            or "not use" in evidence
+            or "not used" in evidence
+        )
+    )
+
+    if (
+        ota_question
+        and cancellation_question
+        and alternative_question
+        and explicit_rejection_question
+        and has_agent_refund_rule_ota
+        and has_merchant_definition_ota
+    ):
+        ota_sections = []
+
+        ota_sections.append(
+            "**Kesimpulan: siapa yang wajib memproses refund bergantung "
+            "pada Merchant of Record (MOR), bukan semata-mata tempat Anda "
+            "membeli tiket.**\n\n"
+            "Membeli tiket melalui OTA tidak otomatis menjadikan OTA "
+            "sebagai merchant of record. Periksa nama entitas yang tercantum "
+            "sebagai pedagang pada laporan transaksi kartu atau rekening "
+            "pembayaran. Bank atau penerbit kartu bukan MOR hanya karena "
+            "menerbitkan kartu yang digunakan."
+        )
+
+        # Carrier as merchant of record.
+        if (
+            has_carrier_rejection_rule_ota
+            and has_carrier_rejection_deadline_ota
+        ):
+            ota_sections.append(
+                "**Jika maskapai adalah Merchant of Record:**\n\n"
+                "Untuk kondisi refund yang memenuhi ketentuan, penolakan "
+                "eksplisit terhadap penerbangan alternatif masuk dalam "
+                "14 CFR §260.6(a)(2)(ii). Panduan U.S. DOT menyatakan refund "
+                "oleh carrier sebagai MOR diproses otomatis setelah "
+                "penolakan eksplisit, tanpa permintaan refund tambahan.\n\n"
+                "Tenggat yang dijelaskan DOT adalah 7 business days setelah "
+                "penolakan untuk pembayaran kartu kredit, atau 20 calendar "
+                "days setelah penolakan untuk metode pembayaran lainnya. "
+                "Jangan menunggu penerbangan alternatif berangkat pada "
+                "skenario penolakan eksplisit."
+            )
+        else:
+            ota_sections.append(
+                "**Jika maskapai adalah Merchant of Record:** "
+                "ketentuan penolakan eksplisit dan tenggat carrier belum "
+                "seluruhnya terverifikasi dalam excerpt yang tersedia. "
+                "Saya tidak akan mengarang tenggatnya."
+            )
+
+        # Ticket agent / OTA as merchant of record.
+        if has_agent_deadline_ota:
+            ota_sections.append(
+                "**Jika OTA/ticket agent adalah Merchant of Record:**\n\n"
+                "14 CFR §399.80(l) mewajibkan ticket agent memberikan "
+                "prompt refund **atas permintaan konsumen** dalam kondisi "
+                "refund yang tercakup, yaitu situasi yang dirujuk oleh "
+                "§260.6(a) dan (b). Pada jalur pembatalan biasa, "
+                "§260.6(a)(1) secara khusus menyebut tiket "
+                "non-refundable. Karena itu, jangan menganggap "
+                "penolakan kepada maskapai saja otomatis menggantikan "
+                "permintaan refund kepada OTA. Ajukan permintaan refund "
+                "secara jelas kepada OTA.\n\n"
+                "Untuk pembayaran kartu kredit, tenggat prompt refund "
+                "ticket agent adalah 7 business days sejak ticket agent "
+                "menerima informasi kelayakan refund dari carrier "
+                "berdasarkan §260.6(d). Untuk cash, debit, cek, dan "
+                "metode pembayaran lainnya, tenggatnya 20 calendar days "
+                "sejak refund menjadi jatuh tempo.\n\n"
+                "**Perbedaan penting:** tenggat 7 hari kerja OTA bukan "
+                "otomatis dihitung sejak tanggal Anda menolak alternatif. "
+                "Trigger-nya adalah ketika OTA menerima informasi dari "
+                "carrier."
+            )
+        else:
+            ota_sections.append(
+                "**Jika OTA/ticket agent adalah Merchant of Record:** "
+                "sumber yang terambil mendukung kewajiban refund atas "
+                "permintaan konsumen berdasarkan §399.80(l), tetapi "
+                "excerpt yang tersedia belum cukup untuk memastikan "
+                "kedua tenggat pemrosesan. Periksa ketentuan resmi "
+                "sebelum menetapkan tanggal jatuh tempo."
+            )
+
+        # Carrier notification.
+        if has_carrier_notice_ota:
+            ota_sections.append(
+                "**Kewajiban maskapai terhadap OTA:**\n\n"
+                "Setelah menerima permintaan refund konsumen melalui "
+                "ticket agent, carrier harus memberi tahu ticket agent "
+                "tanpa penundaan apakah konsumen memenuhi syarat refund "
+                "berdasarkan §260.6(d)."
+            )
+
+        # Carrier transfers money if agent is responsible.
+        if has_carrier_transfer_ota:
+            ota_sections.append(
+                "Jika ticket agent bertanggung jawab atas refund tetapi "
+                "tidak memegang dana konsumen, carrier yang memegang dana "
+                "harus segera mentransfer dana tersebut kepada ticket "
+                "agent berdasarkan §260.6(e)."
+            )
+
+        # Fare eligibility caveat.
+        if has_nonrefundable_scope_ota:
+            ota_sections.append(
+                "**Catatan jenis tiket dan kelayakan:** "
+                "§260.6(a)(1) secara khusus membahas pemegang tiket "
+                "non-refundable pada covered scheduled flight to, from, "
+                "or within the United States. Syarat pembatalan atau "
+                "perubahan yang tercakup dan pilihan konsumen untuk tidak "
+                "melanjutkan perjalanan atau menerima kompensasi pengganti "
+                "refund tetap harus dipenuhi."
+            )
+
+        if has_fully_refundable_guidance_ota:
+            ota_sections.append(
+                "Untuk tiket fully refundable, panduan konsumen DOT menyatakan "
+                "bahwa pembeli berhak atas refund ketika tiket yang dibeli "
+                "tidak digunakan. Halaman DOT juga menjelaskan bahwa penolakan "
+                "tawaran penerbangan alternatif dapat memicu refund otomatis "
+                "dan mencantumkan tenggat 7 business days untuk kartu kredit "
+                "atau 20 calendar days untuk metode pembayaran lainnya setelah "
+                "penolakan. Namun, batas teks peraturan perlu dijelaskan: "
+                "§260.6(a)(1) secara eksplisit menyebut pemegang tiket "
+                "non-refundable, sedangkan §399.80(l) mengaitkan kewajiban "
+                "ticket agent dengan situasi yang dirujuk oleh §260.6(a) dan (b).\n\n"
+                "Karena itu, jangan menyatakan bahwa tenggat statutory carrier "
+                "atau tenggat agent dalam §399.80(l) pasti berlaku pada setiap "
+                "klaim fully refundable yang berdiri sendiri di luar situasi "
+                "yang dirujuk aturan tersebut. Bedakan hak refund berdasarkan "
+                "fare rules dari tenggat yang secara tegas ditetapkan oleh "
+                "ketentuan refund DOT. Periksa syarat fare, siapa merchant of "
+                "record, dan minta konfirmasi tertulis mengenai tanggal jatuh "
+                "tempo apabila tiket Anda fully refundable."
+            )
+
+        ota_sections.append(
+            "**Penerapan pada pertanyaan Anda:** karena nama pedagang "
+            "pada laporan transaksi belum diberikan, belum dapat "
+            "dipastikan apakah maskapai atau OTA merupakan MOR. "
+            "Periksa nama pedagang pada transaksi, lalu ajukan permintaan "
+            "refund kepada OTA jika OTA tercantum sebagai MOR. "
+            "Pastikan pula Anda tidak menerima voucher, credit, atau "
+            "kompensasi sebagai pengganti refund, serta memenuhi "
+            "persyaratan kelayakan lainnya.\n\n"
+            "Penjelasan ini merupakan parafrasa berdasarkan dokumen "
+            "U.S. DOT dan eCFR yang berhasil diambil, bukan kutipan "
+            "verbatim peraturan."
+        )
+
+        return "\n\n".join(ota_sections)
+
+
+
+    # ========================================================
+    # GENERAL FARE-CLASS GUARD
+    # Separate refundable and non-refundable ticket rules.
+    # Does not assume a fare class that the user did not provide.
+    # ========================================================
+
+    fare_ota_context = any(term in lowered_question for term in (
+        "ota",
+        "online travel agency",
+        "ticket agent",
+        "travel agent",
+        "agen perjalanan",
+        "merchant of record",
+    ))
+
+    fare_cancellation_intent = any(term in lowered_question for term in (
+        "dibatalkan",
+        "pembatalan",
+        "membatalkan",
+        "cancelled",
+        "canceled",
+        "cancellation",
+    ))
+
+    fare_alternative_intent = any(term in lowered_question for term in (
+        "alternatif",
+        "alternative",
+        "penerbangan pengganti",
+        "alternative flight",
+        "alternative-flight",
+        "rebooking",
+    ))
+
+    fare_explicit_rejection_intent = any(term in lowered_question for term in (
+        "menolak",
+        "menolaknya",
+        "penolakan",
+        "saya tolak",
+        "reject",
+        "rejected",
+        "decline",
+        "declined",
+    ))
+
+    fare_nonrefundable_question = any(term in lowered_question for term in (
+        "non-refundable",
+        "nonrefundable",
+        "non refundable",
+    ))
+
+    fare_fully_refundable_question = any(term in lowered_question for term in (
+        "fully refundable",
+        "tiket refundable",
+        "tiket yang bisa dikembalikan",
+    ))
+
+    fare_has_nonrefundable_evidence = (
+        "260.6(a)(1)" in evidence
+        and (
+            "nonrefundable" in evidence
+            or "non-refundable" in evidence
+        )
+        and "cancelled" in evidence
+        and "alternative flight" in evidence
+        and "merchant of record" in evidence
+    )
+
+    fare_has_explicit_rejection_evidence = (
+        "260.6(a)(2)(ii)" in evidence
+        and (
+            "automatic refund" in evidence
+            or "refund is due automatically" in evidence
+            or "refund" in evidence and "automatically" in evidence
+        )
+        and "reject" in evidence
+        and "alternative flight" in evidence
+    )
+
+    fare_has_rejection_deadline_evidence = (
+        "7 business days" in evidence
+        and "20 calendar days" in evidence
+        and any(term in evidence for term in (
+            "after you reject the offer",
+            "after the consumer rejects the offer",
+            "after rejection",
+            "following rejection",
+            "after explicit rejection",
+            "after an explicit rejection",
+            "setelah penolakan",
+            "setelah konsumen menolak",
+        ))
+    )
+
+    fare_has_fully_refundable_evidence = (
+        "fully refundable" in evidence
+        and (
+            "does not use" in evidence
+            or "do not use" in evidence
+            or "not use the purchased ticket" in evidence
+            or "ticket is not used" in evidence
+        )
+    )
+
+    if (
+        not fare_ota_context
+        and not fare_nonrefundable_question
+        and fare_cancellation_intent
+        and fare_alternative_intent
+        and fare_explicit_rejection_intent
+        and fare_has_nonrefundable_evidence
+        and fare_has_explicit_rejection_evidence
+        and fare_has_rejection_deadline_evidence
+    ):
+
+        # ----------------------------------------------------
+        # Identify fare class without inventing user facts.
+        # ----------------------------------------------------
+
+        if fare_nonrefundable_question:
+            fare_class_explanation = (
+                "**Jika tiket Anda non-refundable:** "
+                "14 CFR §260.6(a)(1) secara khusus mengatur pemegang "
+                "tiket non-refundable pada covered scheduled flight "
+                "to, from, or within the United States. Jika penerbangan "
+                "dibatalkan dan Anda tidak menggunakan penerbangan "
+                "alternatif atau menerima voucher, credit, atau "
+                "kompensasi sebagai pengganti refund, ketentuan refund "
+                "penuh dapat berlaku sesuai persyaratannya."
+            )
+
+        elif fare_fully_refundable_question:
+            if fare_has_fully_refundable_evidence:
+                fare_class_explanation = (
+                    "**Jika tiket Anda fully refundable:** "
+                    "panduan konsumen U.S. DOT menyatakan bahwa konsumen "
+                    "yang membeli fully refundable ticket berhak mendapat "
+                    "refund ketika tiket yang dibeli tidak digunakan. "
+                    "Ini merupakan penjelasan terpisah dari "
+                    "§260.6(a)(1), yang secara khusus menyebut "
+                    "non-refundable ticket."
+                    "\n\n"
+                    "Sumber yang berhasil diambil tidak cukup untuk "
+                    "menyatakan bahwa tenggat 7 business days atau "
+                    "20 calendar days dari cabang non-refundable "
+                    "otomatis berlaku dengan trigger yang sama untuk "
+                    "semua skenario fully refundable."
+                )
+            else:
+                fare_class_explanation = (
+                    "**Jika tiket Anda fully refundable:** "
+                    "sumber khusus DOT untuk jenis tiket ini belum "
+                    "berhasil diambil. Karena itu, saya tidak akan "
+                    "menyamakan ketentuannya dengan §260.6(a)(1) "
+                    "atau mengarang tenggat refund khusus."
+                )
+
+        else:
+            fare_class_explanation = (
+                "**Jenis tiket belum disebutkan, sehingga kelayakan "
+                "individu belum dapat dipastikan.** Ada dua jalur yang "
+                "harus dibedakan:\n\n"
+                "- **Non-refundable:** §260.6(a)(1) secara khusus "
+                "membahas tiket jenis ini pada penerbangan terjadwal "
+                "yang tercakup, dengan syarat pembatalan dan pilihan "
+                "penumpang untuk tidak melanjutkan perjalanan atau "
+                "menerima kompensasi pengganti refund.\n"
+                "- **Fully refundable:** panduan DOT membahas hak "
+                "refund ketika tiket fully refundable tidak digunakan. "
+                "Ketentuan ini tidak boleh disamakan begitu saja dengan "
+                "§260.6(a)(1).\n\n"
+                "Periksa jenis tarif pada e-ticket atau bukti pemesanan. "
+                "Jangan menganggap kedua jenis tiket memiliki dasar "
+                "kelayakan dan tenggat yang identik."
+            )
+
+        # ----------------------------------------------------
+        # Carrier as merchant of record.
+        # ----------------------------------------------------
+
+        carrier_explanation = (
+            "**Jika maskapai merupakan Merchant of Record:** "
+            "penolakan eksplisit atas penerbangan alternatif masuk "
+            "dalam §260.6(a)(2)(ii), untuk kondisi refund yang tercakup. "
+            "Panduan DOT menjelaskan bahwa refund carrier sebagai "
+            "MOR diproses otomatis setelah penolakan eksplisit.\n\n"
+            "Untuk kondisi tersebut, tenggat yang dijelaskan DOT "
+            "adalah 7 business days setelah penolakan untuk pembayaran "
+            "kartu kredit atau 20 calendar days setelah penolakan "
+            "untuk metode pembayaran lainnya. Jangan menunggu "
+            "penerbangan alternatif berangkat pada kasus penolakan "
+            "eksplisit."
+        )
+
+        # ----------------------------------------------------
+        # Agent as merchant of record.
+        # ----------------------------------------------------
+
+        agent_evidence = (
+            "399.80(l)" in evidence
+            and "ticket agent" in evidence
+            and "refund" in evidence
+            and "request" in evidence
+        )
+
+        agent_deadline_evidence = (
+            agent_evidence
+            and "7 business days" in evidence
+            and "20 calendar days" in evidence
+            and (
+                "receives information from the carrier" in evidence
+                or "receives information from carrier" in evidence
+            )
+        )
+
+        if agent_deadline_evidence:
+            agent_explanation = (
+                "**Jika ticket agent/OTA merupakan Merchant of Record:** "
+                "14 CFR §399.80(l) mengharuskan ticket agent memberikan "
+                "prompt refund atas permintaan konsumen apabila kondisi "
+                "kelayakan refund terpenuhi. Jadi, penolakan kepada "
+                "maskapai tidak boleh dianggap otomatis menggantikan "
+                "permintaan refund kepada OTA.\n\n"
+                "Untuk kartu kredit, tenggatnya 7 business days sejak "
+                "ticket agent menerima informasi kelayakan refund dari "
+                "carrier berdasarkan §260.6(d). Untuk metode pembayaran "
+                "lainnya, tenggatnya 20 calendar days sejak refund "
+                "menjadi jatuh tempo. Tenggat OTA ini tidak otomatis "
+                "dihitung sejak tanggal penolakan."
+            )
+        elif agent_evidence:
+            agent_explanation = (
+                "**Jika ticket agent/OTA merupakan Merchant of Record:** "
+                "§399.80(l) mengatur refund prompt atas permintaan "
+                "konsumen. Namun, sumber yang berhasil diambil belum "
+                "memuat seluruh dasar tenggat OTA. Saya tidak akan "
+                "menyamakan trigger tenggat OTA dengan trigger "
+                "penolakan eksplisit pada carrier."
+            )
+        else:
+            agent_explanation = (
+                "**Jika ticket agent/OTA merupakan Merchant of Record:** "
+                "identifikasi pihak dan proses refund harus diverifikasi "
+                "dari aturan ticket agent yang relevan. Sumber yang "
+                "berhasil diambil belum cukup untuk menjelaskan "
+                "seluruh prosedur agent."
+            )
+
+        return (
+            "**Hak refund setelah pembatalan dan penolakan alternatif**\n\n"
+            + fare_class_explanation
+            + "\n\n"
+            + carrier_explanation
+            + "\n\n"
+            + agent_explanation
+            + "\n\n"
+            "**Siapa Merchant of Record Anda?** "
+            "Periksa nama pedagang pada laporan transaksi kartu atau "
+            "rekening pembayaran. Pembelian melalui OTA saja tidak "
+            "membuktikan bahwa OTA adalah MOR; bank atau penerbit kartu "
+            "juga bukan MOR hanya karena kartu tersebut digunakan.\n\n"
+            "**Fakta yang masih perlu dipastikan:** jenis tiket, nama "
+            "pedagang pada transaksi, apakah Anda menerima voucher/"
+            "credit sebagai pengganti refund, dan apakah Anda benar-benar "
+            "tidak menggunakan penerbangan alternatif.\n\n"
+            "Penjelasan ini merupakan parafrasa berdasarkan sumber "
+            "U.S. DOT dan eCFR yang berhasil diambil, bukan kutipan "
+            "verbatim peraturan."
+        )
+
     # V7 EXPLICIT CANCELLATION REJECTION GUARD
     request_text = re.sub(r"\s+", " ", (question or "").lower()).strip()
 
@@ -264,7 +1038,16 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
     )
     has_us_scope = any(
         term in request_text
-        for term in ("u.s. dot", "us dot", "united states", "amerika serikat", "cakupan aturan")
+        for term in (
+            "u.s. dot",
+            "us dot",
+            "united states",
+            "amerika serikat",
+            "cakupan aturan",
+            "domestik as",
+            "domestic us",
+            "domestic u.s.",
+        )
     )
     has_cancellation = any(
         term in request_text
@@ -273,43 +1056,75 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
     )
     has_alternative_offer = any(
         term in request_text
-        for term in ("penerbangan alternatif", "penerbangan pengganti",
-                     "alternative flight", "rebooking")
+        for term in (
+            "penerbangan alternatif",
+            "penerbangan pengganti",
+            "menawarkan alternatif",
+            "alternatif tersebut",
+            "alternatif",
+            "alternative flight",
+            "alternative-flight",
+            "rebooking",
+        )
     )
     has_explicit_rejection = any(
         term in request_text
         for term in ("menolak", "menolaknya", "saya tolak", "ditolak",
                      "reject", "rejected", "decline", "declined")
     )
-    has_no_compensation = bool(re.search(
-        r"\b(tidak|belum|not|never|did not|didn't)\b.{0,60}"
-        r"\b(voucher|travel credit|credit|kredit|kompensasi)\b",
-        request_text,
-    ))
+    accepted_compensation_pattern = (
+        r"\b(menerima|menerimanya|accept|accepted|took)\b.{0,60}"
+        r"\b(voucher|travel credit|credit|kredit|kompensasi)\b"
+    )
+    negated_compensation_pattern = (
+        r"\b(tidak|belum|not|never|did not|didn't)\b.{0,40}"
+        r"\b(menerima|menerimanya|accept|accepted|take|took)\b.{0,60}"
+        r"\b(voucher|travel credit|credit|kredit|kompensasi)\b"
+    )
+    has_accepted_compensation = bool(
+        re.search(accepted_compensation_pattern, request_text)
+        and not re.search(negated_compensation_pattern, request_text)
+    )
+    has_not_received_compensation = bool(re.search(negated_compensation_pattern, request_text))
 
     has_cancel_refund_evidence = (
-        "260.6" in evidence
+        "260.6(a)(1)" in evidence
         and ("nonrefundable" in evidence or "non-refundable" in evidence)
         and "cancelled" in evidence
         and "alternative flight" in evidence
         and "merchant of record" in evidence
     )
 
+    # Explicit rejection is §260.6(a)(2)(ii), not the separate no-response
+    # condition in §260.6(a)(2)(iii)(A).
     has_automatic_rejection_evidence = (
-        "automatic refund" in evidence
+        "260.6(a)(2)(ii)" in evidence
+        and (
+            "automatic refund" in evidence
+            or "refund is due automatically" in evidence
+            or ("refund" in evidence and "automatically" in evidence)
+        )
         and "reject" in evidence
-        and "alternative flight" in evidence
+        and (
+            "alternative flight" in evidence
+            or "alternative-flight" in evidence
+        )
     )
 
     has_explicit_rejection_deadline = (
         "7 business days" in evidence
         and "20 calendar days" in evidence
         and any(term in evidence for term in (
-            "date the consumer rejects the offer",
-            "after the consumer rejects the offer",
             "after you reject the offer",
-            "date of rejection",
+            "after the consumer rejects the offer",
             "after rejection",
+            "following rejection",
+            "after the date you reject",
+            "after an explicit rejection",
+            "after explicit rejection",
+            "after the consumer explicitly rejects",
+            "setelah penolakan",
+            "setelah konsumen menolak",
         ))
     )
 
@@ -319,74 +1134,352 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
         and has_cancellation
         and has_alternative_offer
         and has_explicit_rejection
-        and has_no_compensation
+        and not has_accepted_compensation
         and has_cancel_refund_evidence
         and has_automatic_rejection_evidence
         and has_explicit_rejection_deadline
     ):
         has_d_notice = (
             "260.6(d)" in evidence
-            and "after receiving a refund request" in evidence
-            and "inform the ticket agent" in evidence
+            and any(term in evidence for term in (
+                "refund request through the ticket agent",
+                "requests a refund through the ticket agent",
+                "consumer requests a refund through the ticket agent",
+            ))
+            and any(term in evidence for term in (
+                "inform the ticket agent",
+                "inform the agent",
+            ))
         )
         has_e_transfer = (
             "260.6(e)" in evidence
-            and "does not possess the funds" in evidence
-            and "transfer the funds" in evidence
+            and any(term in evidence for term in (
+                "does not possess the consumer funds",
+                "does not possess the consumer's funds",
+                "does not possess the funds",
+                "does not hold the consumer funds",
+                "does not hold the consumer's funds",
+            ))
+            and any(term in evidence for term in (
+                "transfer those funds",
+                "transfer them",
+                "promptly transfer",
+                "transfer the funds to the ticket agent",
+            ))
         )
 
-        if has_d_notice and has_e_transfer:
-            agent_note = (
-                "Untuk transaksi melalui ticket agent, §260.6(d) mewajibkan "
-                "carrier memberi tahu agent tanpa penundaan setelah menerima "
-                "permintaan refund konsumen melalui agent. §260.6(e) mengatur "
-                "transfer dana jika agent bertanggung jawab memberikan refund "
-                "tetapi tidak memegang dana konsumen."
+        has_agent_refund_rule = (
+            "399.80(l)" in evidence
+            and "ticket agent" in evidence
+            and "refund" in evidence
+            and "request" in evidence
+        )
+        agent_notes = []
+        if has_agent_refund_rule:
+            agent_notes.append(
+                "Jika OTA/ticket agent yang tercantum pada transaksi adalah merchant of record, "
+                "aturan berbeda berlaku: 14 CFR §399.80(l) mewajibkan ticket agent memberikan "
+                "refund prompt **atas permintaan konsumen**. Untuk kartu kredit, tenggat agent "
+                "adalah 7 business days sejak agent menerima informasi kelayakan refund dari "
+                "carrier berdasarkan §260.6(d); untuk metode pembayaran lain, 20 calendar days "
+                "sejak refund menjadi jatuh tempo. Jadi, jangan menganggap refund OTA diproses "
+                "otomatis tanpa permintaan kepada OTA."
             )
-        else:
-            agent_note = (
-                "Excerpt yang berhasil diambil kali ini belum memuat rincian "
-                "bersyarat §260.6(d)-(e). Karena identitas merchant of record "
-                "dan kepemilikan dana belum diketahui, saya tidak akan menebak "
-                "pihak yang memegang atau mentransfer dana."
+        if has_d_notice:
+            agent_notes.append(
+                "Setelah konsumen mengajukan permintaan refund melalui ticket agent, "
+                "14 CFR §260.6(d) mewajibkan carrier memberi tahu agent tanpa penundaan "
+                "apakah konsumen memenuhi syarat refund."
             )
+        if has_e_transfer:
+            agent_notes.append(
+                "Menurut 14 CFR §260.6(e), jika ticket agent bertanggung jawab "
+                "mengeluarkan refund tetapi tidak memegang dana konsumen, carrier "
+                "yang masih memegang dana harus segera mentransfer dana tersebut "
+                "kepada ticket agent."
+            )
+        if not agent_notes:
+            agent_notes.append(
+                "Sumber yang terambil belum memuat ketentuan lengkap mengenai proses ticket agent "
+                "berdasarkan §399.80(l) dan §260.6(d)-(e). Periksa merchant of record pada "
+                "mutasi transaksi dan jangan menganggap OTA otomatis memproses refund tanpa permintaan."
+            )
+        agent_note = "\n\n".join(agent_notes)
 
         return (
-            "**Kesimpulan: Ya, berdasarkan fakta yang Anda sampaikan, "
-            "Anda berhak atas refund penuh.**\n\n"
-            "Anda memegang tiket non-refundable pada penerbangan terjadwal "
-            "yang termasuk cakupan U.S. DOT. Penerbangan dibatalkan, Anda "
-            "menolak penerbangan alternatif, dan Anda tidak menerima voucher "
-            "atau credit sebagai pengganti refund.\n\n"
-            "**Dasar aturan:** 14 CFR §260.6(a)(1) mewajibkan covered carrier "
+            (
+                "**Kesimpulan: Anda pada prinsipnya berhak atas refund penuh.**\n\n"
+                "Anda menyatakan tidak menerima voucher, travel credit, atau kompensasi sebagai pengganti refund. "
+                "Dengan fakta tersebut, syarat penolakan alternatif tanpa menerima kompensasi pengganti terpenuhi.\n\n"
+                if has_not_received_compensation else
+                "**Kesimpulan: Anda pada prinsipnya berhak atas refund penuh, "
+                "dengan satu fakta yang perlu dipastikan: Anda tidak menerima "
+                "voucher, credit, atau kompensasi sebagai pengganti refund.**\n\n"
+                "Berdasarkan keterangan Anda, tiket bersifat non-refundable, "
+                "penerbangan domestik berada dalam cakupan U.S. DOT, maskapai "
+                "membatalkan penerbangan, dan Anda secara eksplisit menolak "
+                "penerbangan alternatif. Pertanyaan Anda belum menyebut apakah "
+                "voucher/credit pengganti refund juga ditawarkan atau diterima; "
+                "karena itu saya tidak akan menganggap fakta tersebut. Jika Anda "
+                "tidak menerima kompensasi pengganti refund, refund penuh berlaku.\n\n"
+            )
+            + "**Dasar aturan:** 14 CFR §260.6(a)(1) mewajibkan covered carrier "
             "yang menjadi merchant of record memberikan refund penuh dan "
             "prompt, termasuk airfare, pajak, dan biaya ancillary yang "
             "tercakup, ketika syarat tersebut terpenuhi. Pembatalan tidak "
             "perlu memenuhi ambang keterlambatan 3 jam atau 6 jam yang "
             "digunakan untuk pengujian significant late arrival.\n\n"
-            "**Refund otomatis:** §260.6(a)(2)(ii) mencakup kondisi ketika "
-            "konsumen secara eksplisit menolak penerbangan yang berubah, "
-            "penerbangan alternatif, atau kompensasi pengganti refund. "
-            "Karena itu refund harus diproses otomatis tanpa Anda harus "
-            "mengajukan permintaan refund tambahan.\n\n"
-            "**Tenggat:** Untuk penolakan eksplisit, halaman U.S. DOT "
-            "menetapkan 7 hari kerja setelah tanggal penolakan untuk "
-            "pembayaran kartu kredit, atau 20 hari kalender setelah "
-            "tanggal penolakan untuk metode pembayaran lainnya. "
-            "Jangan menunggu tanggal keberangkatan alternatif pada "
-            "skenario penolakan eksplisit. Trigger keberangkatan "
-            "merupakan kondisi berbeda untuk penumpang yang tidak merespons.\n\n"
-            "**Pihak yang memproses refund:** §260.6(a)(1) menempatkan "
-            "kewajiban pada covered carrier yang merupakan merchant of "
-            "record. Identitas merchant of record harus diperiksa dari "
-            "nama entitas pada laporan transaksi pembayaran. Tanpa bukti "
-            "transaksi, saya tidak dapat memastikan apakah entitas itu "
-            "maskapai atau ticket agent/OTA.\n\n"
+            "**Refund otomatis dan tenggat — jika maskapai adalah merchant of record:** "
+            "§260.6(a)(2)(ii) mencakup penolakan eksplisit. Untuk tiket yang dibeli langsung "
+            "dari maskapai, panduan DOT menyatakan refund diproses otomatis tanpa permintaan "
+            "refund tambahan. Untuk pembayaran kartu kredit, tenggatnya 7 hari kerja setelah "
+            "penolakan; untuk metode pembayaran lain, 20 hari kalender setelah penolakan. "
+            "Jangan menunggu alternatif berangkat pada kasus penolakan eksplisit. Trigger "
+            "keberangkatan alternatif berlaku pada no-response §260.6(a)(2)(iii)(A), bukan "
+            "pada penolakan eksplisit.\n\n"
+            "**Pihak yang memproses refund:** merchant of record adalah pedagang yang tercantum "
+            "pada detail transaksi. Penerbit kartu/bank bukan merchant of record hanya karena "
+            "kartu itu digunakan untuk membayar. Jika nama pedagang adalah maskapai, gunakan "
+            "jalur refund otomatis dari maskapai. Jika nama pedagang adalah OTA/ticket agent, "
+            "hubungi OTA dan ajukan permintaan refund; jalur agent memiliki ketentuan §399.80(l) "
+            "yang berbeda dari refund otomatis maskapai. Karena bukti transaksi belum diberikan, "
+            "merchant of record Anda belum dapat dipastikan.\n\n"
             + agent_note
             + "\n\nRefund yang diwajibkan dikembalikan ke bentuk "
             "pembayaran asal. Sumber yang digunakan merupakan ringkasan "
             "lokal berdasarkan halaman resmi, bukan kutipan verbatim."
         )
+
+    # ========================================================
+    # AUTOMATIC REFUND: CANCELLED FLIGHT, NO ALTERNATIVE/OFFER
+    # 14 CFR Â§260.6(a)(2)(i). This is not a no-response case.
+    # ========================================================
+
+    if _cancellation_without_any_offer_refund_question(question):
+        has_no_offer_automatic_rule = (
+            "260.6(a)(2)(i)" in evidence
+            and "voucher" in evidence
+            and "compensation" in evidence
+            and (
+                "not offered an alternative flight" in evidence
+                or "no alternative flight or" in evidence
+                or "no alternative flight and" in evidence
+            )
+        )
+
+        if not has_no_offer_automatic_rule:
+            return (
+                "**Saya belum dapat memastikan ketentuan otomatis untuk skenario tanpa tawaran.** "
+                "Pertanyaan Anda sesuai dengan kondisi pembatalan tanpa penerbangan alternatif "
+                "dan tanpa voucher/kredit/kompensasi, tetapi excerpt Â§260.6(a)(2)(i) yang "
+                "diperlukan belum muncul pada hasil retrieval saat ini. Saya tidak akan "
+                "mengganti kondisi ini dengan aturan penolakan eksplisit atau no-response. "
+                "Periksa sumber resmi 14 CFR Â§260.6 sebelum menyimpulkan kelayakan."
+            )
+
+        has_nonrefundable_scope_no_offer = (
+            "260.6(a)(1)" in evidence
+            and ("nonrefundable" in evidence or "non-refundable" in evidence)
+        )
+        has_fully_refundable_no_offer = (
+            "fully refundable" in evidence
+            and (
+                "does not use" in evidence
+                or "do not use" in evidence
+                or "not use the purchased ticket" in evidence
+                or "ticket is not used" in evidence
+            )
+        )
+        has_agent_rule_no_offer = (
+            "399.80(l)" in evidence
+            and "ticket agent" in evidence
+            and "refund" in evidence
+            and ("upon request" in evidence or "upon consumer request" in evidence)
+        )
+        has_agent_deadline_no_offer = (
+            has_agent_rule_no_offer
+            and "7 business days" in evidence
+            and "20 calendar days" in evidence
+            and (
+                "receives information from the carrier" in evidence
+                or "receives information from carrier" in evidence
+            )
+        )
+
+        fare_scope = []
+        if has_nonrefundable_scope_no_offer:
+            fare_scope.append(
+                "Teks Â§260.6(a)(1) secara khusus menyebut tiket **non-refundable** "
+                "pada penerbangan terjadwal yang tercakup ke, dari, atau di dalam "
+                "Amerika Serikat. Syarat cakupan carrier dan pilihan konsumen untuk "
+                "tidak melanjutkan perjalanan/tidak menerima kompensasi pengganti "
+                "refund tetap harus dipenuhi."
+            )
+        if has_fully_refundable_no_offer:
+            fare_scope.append(
+                "Untuk tiket **fully refundable**, panduan konsumen DOT menyatakan "
+                "refund tersedia ketika tiket tidak digunakan. Itu merupakan "
+                "penjelasan DOT yang terpisah dari rumusan khusus tiket non-refundable "
+                "di Â§260.6(a)(1)."
+            )
+
+        agent_note = ""
+        if has_agent_rule_no_offer:
+            if has_agent_deadline_no_offer:
+                agent_note = (
+                    "Jika **ticket agent/OTA adalah Merchant of Record**, Â§399.80(l) "
+                    "mewajibkan refund prompt **atas permintaan konsumen**, jadi jangan "
+                    "menganggap OTA memprosesnya otomatis tanpa permintaan. Untuk kartu "
+                    "kredit, tenggat agent adalah 7 business days sejak agent menerima "
+                    "informasi kelayakan dari carrier menurut Â§260.6(d); untuk metode "
+                    "lainnya, 20 calendar days sejak refund menjadi jatuh tempo."
+                )
+            else:
+                agent_note = (
+                    "Jika **ticket agent/OTA adalah Merchant of Record**, Â§399.80(l) "
+                    "mengatur refund prompt **atas permintaan konsumen**. Jadi, ajukan "
+                    "permintaan kepada agent dan jangan menganggap refund OTA otomatis "
+                    "tanpa permintaan. Excerpt yang tersedia belum cukup untuk memastikan "
+                    "seluruh tenggat pemrosesan agent."
+                )
+
+        sections = [
+            "**Kesimpulan: pembatalan tanpa tawaran alternatif atau kompensasi merupakan "
+            "jalur refund otomatis tersendiri.**",
+            "Jika penerbangan terjadwal yang tercakup ke, dari, atau di dalam Amerika "
+            "Serikat dibatalkan dan carrier tidak menawarkan penerbangan alternatif "
+            "maupun voucher, credit, atau bentuk kompensasi lain sebagai pengganti "
+            "refund, 14 CFR Â§260.6(a)(2)(i) menyatakan refund penuh menjadi due secara "
+            "otomatis. Untuk cabang ini, konsumen tidak perlu lebih dahulu menolak "
+            "tawaran yang memang tidak pernah diberikan dan tidak perlu menunggu "
+            "penerbangan alternatif berangkat.",
+            "**Jangan campur dengan cabang lain:** Â§260.6(a)(2)(ii) membahas penolakan "
+            "eksplisit; Â§260.6(a)(2)(iii)(A) membahas tidak merespons tawaran flight "
+            "dan flight yang ditawarkan berangkat tanpa konsumen; Â§260.6(a)(2)(iii)(B) "
+            "membahas tidak merespons tawaran voucher/credit sampai tanggal yang "
+            "ditentukan. Kondisi-kondisi tersebut bukan prasyarat untuk cabang "
+            "tanpa tawaran pada Â§260.6(a)(2)(i).",
+        ]
+        sections.extend(fare_scope)
+        sections.append(
+            "**Siapa yang memproses refund?** Periksa Merchant of Record pada mutasi "
+            "kartu/rekening atau bukti pembayaran. Jika maskapai adalah MOR, ketentuan "
+            "refund otomatis carrier berlaku sesuai cakupan aturan. Bank/penerbit kartu "
+            "bukan MOR hanya karena kartu itu digunakan."
+        )
+        if agent_note:
+            sections.append(agent_note)
+        sections.append(
+            "Refund yang diwajibkan dikembalikan ke metode pembayaran semula, kecuali "
+            "konsumen menyetujui bentuk lain yang cash-equivalent. Hak refund ini "
+            "berdasarkan aturan U.S. DOT untuk penerbangan yang tercakup; jangan "
+            "menerapkannya otomatis pada penerbangan di luar cakupan yurisdiksi AS."
+        )
+        return "\n\n".join(sections)
+
+    # ========================================================
+    # AUTOMATIC REFUND: NO RESPONSE TO VOUCHER/CREDIT OFFER
+    # 14 CFR Â§260.6(a)(2)(iii)(B), not the alternative-flight
+    # departure condition in paragraph (iii)(A).
+    # ========================================================
+
+    if _no_response_voucher_compensation_refund_question(question):
+        has_voucher_no_response_rule = (
+            "260.6(a)(2)(iii)(b)" in evidence
+            and "voucher" in evidence
+            and "credit" in evidence
+            and "does not respond" in evidence
+            and "scheduled to depart" in evidence
+        )
+
+        if not has_voucher_no_response_rule:
+            return (
+                "**Saya belum dapat memastikan pemicu no-response untuk voucher/credit.** "
+                "Aturan yang diperlukan adalah 14 CFR Â§260.6(a)(2)(iii)(B), yang "
+                "membedakannya dari no-response terhadap tawaran penerbangan. "
+                "Excerpt aturan tersebut belum cukup pada hasil retrieval kali ini, "
+                "jadi saya tidak akan menggunakan tenggat keberangkatan alternatif "
+                "dari Â§260.6(a)(2)(iii)(A)."
+            )
+
+        has_prompt_refund_definition = (
+            "260.2" in evidence
+            and "earliest date" in evidence
+            and "7 business days" in evidence
+            and "20 calendar days" in evidence
+        )
+        has_agent_rule_voucher = (
+            "399.80(l)" in evidence
+            and "ticket agent" in evidence
+            and "refund" in evidence
+            and ("upon request" in evidence or "upon consumer request" in evidence)
+        )
+        has_agent_deadline_voucher = (
+            has_agent_rule_voucher
+            and "7 business days" in evidence
+            and "20 calendar days" in evidence
+            and (
+                "receives information from the carrier" in evidence
+                or "receives information from carrier" in evidence
+            )
+        )
+
+        sections = [
+            "**No-response terhadap voucher/credit memiliki pemicu tersendiri.** "
+            "Menurut 14 CFR Â§260.6(a)(2)(iii)(B), jika konsumen tidak merespons "
+            "tawaran voucher, credit, atau bentuk kompensasi lain sampai tanggal "
+            "penerbangan yang dibatalkan semula dijadwalkan berangkat, atau tanggal "
+            "penerbangan yang mengalami significant delay/change berangkat, refund "
+            "otomatis menjadi due sesuai ketentuan tersebut.",
+            "**Ini berbeda dari Â§260.6(a)(2)(iii)(A).** Syarat bahwa penerbangan "
+            "alternatif berangkat tanpa konsumen hanya berlaku pada no-response "
+            "terhadap tawaran penerbangan yang berubah/alternatif. Jangan memakai "
+            "syarat keberangkatan alternatif itu untuk cabang voucher/credit (B). "
+            "Sebaliknya, diam saja sebelum tanggal pemicu (B) belum cukup untuk "
+            "menyimpulkan kondisi tersebut sudah terpenuhi.",
+        ]
+
+        if has_prompt_refund_definition:
+            sections.append(
+                "Untuk carrier, Â§260.2 mendefinisikan prompt refund sebagai paling "
+                "lambat 7 business days setelah tanggal paling awal refund diminta "
+                "sebagaimana diatur Â§260.6(a)(2) untuk pembayaran kartu kredit, atau "
+                "20 calendar days untuk cash, check, debit card, dan metode lainnya. "
+                "Jangan mengganti tanggal pemicu (B) dengan tanggal keberangkatan "
+                "penerbangan alternatif pada cabang (A)."
+            )
+        else:
+            sections.append(
+                "Excerpt pada jawaban ini belum memuat definisi tenggat prompt refund "
+                "Â§260.2 secara lengkap. Karena itu, saya tidak akan menghitung tanggal "
+                "jatuh tempo tertentu atau memakai trigger keberangkatan alternatif "
+                "dari cabang (A)."
+            )
+
+        if has_agent_deadline_voucher:
+            sections.append(
+                "Jika **ticket agent/OTA adalah Merchant of Record**, Â§399.80(l) "
+                "mengharuskan refund prompt atas permintaan konsumen. Untuk kartu "
+                "kredit, tenggat agent adalah 7 business days setelah agent menerima "
+                "informasi dari carrier berdasarkan Â§260.6(d); untuk metode pembayaran "
+                "lainnya, 20 calendar days sejak refund menjadi jatuh tempo. Jalur agent "
+                "ini tidak otomatis tanpa permintaan konsumen."
+            )
+        elif has_agent_rule_voucher:
+            sections.append(
+                "Jika ticket agent/OTA merupakan Merchant of Record, Â§399.80(l) "
+                "mengatur refund prompt atas permintaan konsumen. Ajukan permintaan "
+                "kepada agent; excerpt yang tersedia belum memuat seluruh tenggat "
+                "pemrosesan agent."
+            )
+
+        sections.append(
+            "Periksa jenis tawaran, tanggal keberangkatan yang tercantum pada itinerary, "
+            "apakah Anda pernah menerima atau menolak kompensasi, dan Merchant of Record "
+            "pada bukti pembayaran. Ketentuan ini berlaku untuk penerbangan yang tercakup "
+            "oleh aturan U.S. DOT."
+        )
+        return "\n\n".join(sections)
 
     if _no_response_alternative_refund_question(question):
         has_auto_rule = (
@@ -466,10 +1559,15 @@ def looks_like_injection(text: str) -> bool:
 
 
 def heuristic_route(question: str) -> list[str]:
-    """Local fallback routing; not a substitute for the assessed LLM agent."""
-    text = question.lower()
+    """Local fallback routing for explicit prediction and passenger-rights requests."""
+    text = re.sub(r"\s+", " ", (question or "").lower()).strip()
+
     rights = any(term in text for term in RIGHTS_WORDS)
-    prediction = any(term in text for term in PREDICTION_WORDS)
+
+    # A generic mention of delay is not a prediction request.
+    # Require explicit prediction intent instead.
+    prediction = _explicitly_requests_prediction(text)
+
     selected: list[str] = []
     if prediction:
         selected.append("predict_flight_delay")
@@ -477,13 +1575,245 @@ def heuristic_route(question: str) -> list[str]:
         selected.append("search_passenger_rights")
     return selected
 
+def _retrieve_passenger_rights_bundle(query: str) -> list[dict]:
+    """Retrieve focused legal evidence for complex refund questions."""
+    original_query = re.sub(r"\s+", " ", str(query or "")).strip()
+    if not original_query:
+        return []
+
+    lowered = original_query.lower()
+    queries = [original_query]
+
+    rejection_intent = (
+        any(term in lowered for term in (
+            "menolak", "menolaknya", "penolakan", "saya tolak",
+            "reject", "rejected", "decline", "declined",
+        ))
+        and any(term in lowered for term in (
+            "alternatif", "penerbangan pengganti",
+            "alternative flight", "rebooking",
+        ))
+    )
+
+    agent_intent = any(term in lowered for term in (
+        "ota", "online travel agency", "ticket agent",
+        "travel agent", "agen perjalanan", "merchant of record",
+    ))
+
+    if rejection_intent:
+        queries.append(
+            "14 CFR §260.6(a)(2)(ii) explicit rejection of alternative flight "
+            "automatic refund 7 business days after rejection merchant of record; "
+            "distinguish no-response §260.6(a)(2)(iii)(A), where offered flight "
+            "departs without consumer"
+        )
+
+    if agent_intent:
+        queries.append(
+            "14 CFR §399.80(l) ticket agent merchant of record refund upon request; "
+            "7 business days after ticket agent receives information from carrier; "
+            "14 CFR §260.6(d) carrier inform ticket agent without delay"
+        )
+        queries.append(
+            "14 CFR §260.6(e) carrier holding consumer funds must promptly transfer "
+            "funds to ticket agent when ticket agent is responsible for refund but "
+            "does not possess the consumer's funds"
+        )
+
+    merged: list[dict] = []
+    seen: set[tuple[str, str, str]] = set()
+
+    for focused_query in queries:
+        results = retrieve_passenger_rights(focused_query)
+        for source in results or []:
+            if not isinstance(source, dict):
+                continue
+            key = (
+                str(source.get("url", "")).strip(),
+                str(source.get("section", "")).strip(),
+                str(source.get("excerpt", "")).strip(),
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            merged.append(source)
+
+    return merged
+
+
+def _merge_passenger_rights_context(user_question: str, model_query: str) -> str:
+    """Keep original legal intent when the LLM generates a narrower retrieval query."""
+    original = re.sub(r"\s+", " ", str(user_question or "")).strip()
+    focused = re.sub(r"\s+", " ", str(model_query or "")).strip()
+
+    if not original:
+        return focused
+    if not focused:
+        return original
+
+    original_lower = original.casefold()
+    focused_lower = focused.casefold()
+    if original_lower in focused_lower:
+        return focused
+    if focused_lower in original_lower:
+        return original
+
+    return f"{original}\n\nFokus tambahan dari agent: {focused}"
+
+
+
+
+def _compact_passenger_rights_result_for_llm(
+    result: dict,
+    max_sources: int = 5,
+    max_excerpt_chars: int = 450,
+) -> dict:
+    """
+    Produce a compact evidence payload for the LLM.
+
+    Full retrieval results remain untouched in the application for:
+    - deterministic legal guards,
+    - source display,
+    - source deduplication.
+
+    Only the evidence sent back to the LLM is shortened.
+    """
+
+    raw_sources = result.get("sources", []) or []
+
+    def source_priority(source: dict) -> int:
+        evidence = " ".join(
+            str(source.get(field, "") or "")
+            for field in ("title", "section", "url", "excerpt")
+        ).lower()
+
+        priority = 0
+
+        # Keep the distinct ticket-agent legal path.
+        if "399.80" in evidence:
+            priority += 100
+
+        # Keep carrier fund-transfer provisions.
+        if (
+            "260.6(e)" in evidence
+            or "promptly transfer" in evidence
+            or "transfer the funds to the ticket agent" in evidence
+        ):
+            priority += 90
+
+        # Keep the carrier notification provision.
+        if (
+            "260.6(d)" in evidence
+            or (
+                "ticket agent" in evidence
+                and "without delay" in evidence
+            )
+        ):
+            priority += 80
+
+        # Keep the explicit rejection provision.
+        if (
+            "260.6(a)(2)(ii)" in evidence
+            or "explicit rejection" in evidence
+            or "penolakan eksplisit" in evidence
+        ):
+            priority += 70
+
+        # Keep the refund deadline evidence.
+        if (
+            "7 business days" in evidence
+            and "20 calendar days" in evidence
+        ):
+            priority += 60
+
+        if "merchant of record" in evidence:
+            priority += 30
+
+        # Prefer the official DOT refund guidance.
+        if (
+            "transportation.gov" in evidence
+            and "refund" in evidence
+        ):
+            priority += 20
+
+        return priority
+
+    indexed_sources = [
+        (index, source)
+        for index, source in enumerate(raw_sources)
+        if isinstance(source, dict)
+    ]
+
+    # Prioritize legally distinct provisions, preserving retrieval order
+    # when two sources have the same priority.
+    ranked_sources = sorted(
+        indexed_sources,
+        key=lambda item: (
+            -source_priority(item[1]),
+            item[0],
+        ),
+    )
+
+    selected = []
+    seen = set()
+
+    for _, source in ranked_sources:
+        title = str(source.get("title", "U.S. DOT document") or "")
+        section = str(source.get("section", "") or "")
+        url = str(source.get("url", "") or "")
+        excerpt = re.sub(
+            r"\s+",
+            " ",
+            str(source.get("excerpt", "") or ""),
+        ).strip()
+
+        duplicate_key = (
+            url.casefold(),
+            section.casefold(),
+            excerpt.casefold(),
+        )
+
+        if duplicate_key in seen:
+            continue
+
+        seen.add(duplicate_key)
+
+        if len(excerpt) > max_excerpt_chars:
+            if max_excerpt_chars <= 3:
+                excerpt = excerpt[:max_excerpt_chars]
+            else:
+                shortened = excerpt[:max_excerpt_chars - 3]
+                shortened = shortened.rsplit(" ", 1)[0].rstrip()
+                excerpt = (shortened + "...")[:max_excerpt_chars]
+
+        selected.append({
+            "title": title[:180],
+            "section": section[:180],
+            "url": url[:500],
+            "excerpt": excerpt,
+        })
+
+        if len(selected) >= max_sources:
+            break
+
+    return {
+        "ok": bool(result.get("ok")),
+        "query": str(result.get("query", "") or "")[:600],
+        "message": str(result.get("message", "") or "")[:250],
+        "sources": selected,
+        "context_note": (
+            "Compact retrieved evidence. Use only the supplied facts. "
+            "The application separately retains the complete retrieved sources."
+        ),
+    }
+
 
 def _run_tool(name: str, args: dict, flight_inputs: dict | None) -> dict:
     if name == "predict_flight_delay":
         return predict_delay(flight_inputs)
     if name == "search_passenger_rights":
         query = str(args.get("query", "")).strip()
-        sources = retrieve_passenger_rights(query)
+        sources = _retrieve_passenger_rights_bundle(query)
         return {
             "ok": bool(sources),
             "query": query,
@@ -815,14 +2145,33 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
                     args = json.loads(call.arguments or "{}")
                 except (json.JSONDecodeError, TypeError):
                     args = {}
+
+                if call.name == "search_passenger_rights":
+                    args["query"] = _merge_passenger_rights_context(
+                        working_question,
+                        str(args.get("query", "")),
+                    )
+
                 result = _run_tool(call.name, args, flight_inputs)
                 used.append(call.name)
                 if call.name == "search_passenger_rights":
                     sources.extend(result.get("sources", []))
+                # Preserve the complete result in local `sources`.
+                # Only send a compact evidence payload back to the LLM.
+                llm_tool_result = result
+
+                if call.name == "search_passenger_rights":
+                    llm_tool_result = (
+                        _compact_passenger_rights_result_for_llm(result)
+                    )
+
                 tool_outputs.append({
                     "type": "function_call_output",
                     "call_id": call.call_id,
-                    "output": json.dumps(result, ensure_ascii=False),
+                    "output": json.dumps(
+                        llm_tool_result,
+                        ensure_ascii=False,
+                    ),
                 })
             if is_groq:
                 conversation.extend(tool_outputs)

@@ -1,0 +1,22 @@
+DOCUMENT: eCFR — 14 CFR §259.4, CONTINGENCY PLAN FOR LENGTHY TARMAC DELAYS
+DOCUMENT TYPE: Curated local educational summary of the regulation; not verbatim regulatory text and not legal advice.
+OFFICIAL SOURCE: https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-259/section-259.4
+LOCAL SUMMARY CHECKED: November 1, 2026
+
+COVERED PLANS AND DOMESTIC DEPLANING — §259.4(c)(1)
+For domestic flights at U.S. airports, a covered U.S. air carrier must provide passengers experiencing a tarmac delay an opportunity to deplane before the delay exceeds three hours, subject to the exceptions in §259.4(c)(3). The rule concerns aircraft on the ground when passengers do not have an opportunity to get off.
+
+DEPARTING FLIGHTS — RETURN MUST BEGIN BY THE THREE-HOUR MARK — §259.4(c)(3)(i)
+For a departing flight, the carrier may meet the deplaning requirement by beginning to return the aircraft to a suitable disembarkation point no later than three hours after the main aircraft door is closed, in order to deplane passengers. If the aircraft is in an area not under carrier control, return begins when a request is made to the FAA control tower, airport authority, or other relevant authority directing aircraft operations. If in an area under carrier control, return begins when the pilot begins maneuvering the aircraft toward the suitable disembarkation point. This special return-start provision is expressly for departing flights.
+
+ARRIVING FLIGHTS — OPPORTUNITY TO DEPLANE BEFORE THREE HOURS
+For an arriving domestic flight, the carrier must provide the opportunity to deplane before the tarmac delay exceeds three hours, subject to the safety/security and ATC exceptions in §259.4(c)(3)(ii)-(iii). Do not apply the departing-flight return-start rule in §259.4(c)(3)(i) to an arriving flight.
+
+EXCEPTIONS TO THE DEPLANING TIME LIMIT — §259.4(c)(3)(ii)-(iii)
+The deplaning requirement may be excepted when the pilot-in-command determines that deplaning at a suitable point would jeopardize passenger safety or security, or there is a safety/security reason why the aircraft cannot leave its tarmac position to deplane. It may also be excepted if air traffic control advises the pilot-in-command that returning to a suitable disembarkation point would significantly disrupt airport operations. These are exceptions to the deplaning deadline, not blanket exceptions to separate food/water and lavatory requirements.
+
+FOOD AND POTABLE WATER — §259.4(c)(4)
+The carrier must provide adequate food and potable water no later than two hours after the start of the tarmac delay, unless the pilot-in-command determines that safety or security considerations preclude the service.
+
+LAVATORIES, MEDICAL ATTENTION, AND STATUS NOTIFICATION — §259.4(c)(5)-(7)
+During a tarmac delay, the carrier must ensure operable lavatory facilities and adequate medical attention if needed. The carrier must notify onboard passengers of the delay status when the tarmac delay exceeds 30 minutes; later updates may be made as the carrier deems appropriate. For departing flights and diversions, passengers must be timely notified each time an opportunity to deplane exists at a suitable disembarkation point.

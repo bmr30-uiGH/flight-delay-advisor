@@ -1,0 +1,16 @@
+DOCUMENT: eCFR — 14 CFR §399.80(l), TICKET AGENT REFUND OBLIGATION
+DOCUMENT TYPE: Curated local educational summary of the current eCFR provision; not verbatim regulatory text and not legal advice.
+OFFICIAL SOURCE: https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-399/section-399.80
+LOCAL SUMMARY CHECKED: November 1, 2026
+
+TICKET AGENT REFUND OBLIGATION — UPON REQUEST
+A ticket agent that is the merchant of record must provide a prompt refund of airfare, including applicable taxes and ancillary fees, upon request by a consumer for a cancelled or significantly delayed/changed flight when the consumer chooses not to travel or accept compensation in lieu of a refund in the situations described in 14 CFR §260.6(a) and (b). Do not describe this ticket-agent obligation as an automatic refund that occurs without the consumer's request.
+
+DEADLINE
+For credit-card purchases, prompt refund means within 7 business days after the ticket agent receives information from the carrier as specified in 14 CFR §260.6(d), as required by 12 CFR Part 1026. For cash, check, debit card, or other forms of purchases, prompt refund means within 20 calendar days after the refund becomes due. Business days are Monday through Friday, excluding U.S. federal holidays.
+
+ORIGINAL PAYMENT METHOD
+The ticket agent must return the refund in the original form of payment unless the consumer agrees to receive another form of payment that is cash-equivalent.
+
+RELATIONSHIP WITH §260.6(d)-(e)
+After receiving a consumer refund request through the ticket agent, the carrier that cancelled or significantly delayed/changed the flight must inform the ticket agent without delay whether the consumer is eligible for a refund under §260.6. If the ticket agent is responsible for the refund but does not possess the consumer's funds, the carrier that has the funds must promptly transfer them to the ticket agent.

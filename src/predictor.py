@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import os
+from pathlib import Path
 
 from functools import lru_cache
 
@@ -14,12 +15,66 @@ from src.config import (
     MODEL_PATH,
     MODEL_DIR,
     MLFLOW_TRACKING_URI,
+    FLIGHTS_PATH,
+    TARGET,
+)
+
+from src.historical_features import (
+    MODEL_FEATURES,
+    prepare_historical_reference,
+    prepare_prediction_features,
 )
 
 
 CANDIDATE_MODEL_PATH = (
     MODEL_DIR / "flight_delay_model_cyclic_candidate.joblib"
 )
+
+HISTORICAL_CANDIDATE_MODEL_PATH = (
+    MODEL_DIR / "flight_delay_model_historical_candidate.joblib"
+)
+
+
+@lru_cache(maxsize=1)
+def _load_historical_reference_cached(
+    path: str,
+    modified_ns: int,
+):
+    """
+    Read and normalize historical data once per dataset version.
+
+    modified_ns is included in the cache key so replacing the
+    Parquet file results in a fresh cached reference.
+    """
+
+    columns = list(
+        dict.fromkeys([*FEATURES, TARGET, "FL_DATE"])
+    )
+
+    raw_history = pd.read_parquet(
+        Path(path),
+        columns=columns,
+    )
+
+    return prepare_historical_reference(raw_history)
+
+
+def load_historical_reference():
+    """Load the cached, normalized historical reference data."""
+
+    path = Path(FLIGHTS_PATH)
+
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Dataset historis tidak ditemukan: {path}"
+        )
+
+    modified_ns = path.stat().st_mtime_ns
+
+    return _load_historical_reference_cached(
+        str(path.resolve()),
+        modified_ns,
+    )
 
 
 def _validate_threshold(value):
@@ -68,7 +123,69 @@ def load_model_bundle():
     )
 
     # --------------------------------------------------------
-    # Candidate model
+    # Historical candidate model
+    # --------------------------------------------------------
+
+    if model_source in {
+        "historical_candidate",
+        "cyclical_historical_candidate",
+    }:
+
+        if not HISTORICAL_CANDIDATE_MODEL_PATH.exists():
+            raise RuntimeError(
+                "Model historical candidate tidak ditemukan: "
+                f"{HISTORICAL_CANDIDATE_MODEL_PATH}"
+            )
+
+        artifact = joblib.load(
+            HISTORICAL_CANDIDATE_MODEL_PATH
+        )
+
+        if not isinstance(artifact, dict):
+            raise RuntimeError(
+                "Format historical candidate tidak valid."
+            )
+
+        if "model" not in artifact or "threshold" not in artifact:
+            raise RuntimeError(
+                "Historical candidate tidak memiliki model atau threshold."
+            )
+
+        if list(artifact.get("feature_schema", [])) != list(MODEL_FEATURES):
+            raise RuntimeError(
+                "Feature schema historical candidate tidak cocok "
+                "dengan historical_features.py."
+            )
+
+        model = artifact["model"]
+
+        if not hasattr(model, "predict_proba"):
+            raise RuntimeError(
+                "Historical candidate tidak memiliki predict_proba."
+            )
+
+        model_schema = getattr(model, "feature_names_in_", None)
+
+        if model_schema is None or list(model_schema) != list(MODEL_FEATURES):
+            raise RuntimeError(
+                "Feature schema internal model tidak cocok."
+            )
+
+        return {
+            "model": model,
+            "threshold": _validate_threshold(
+                artifact["threshold"]
+            ),
+            "model_name": artifact.get(
+                "model_name",
+                "logistic_regression_cyclical_historical_rates",
+            ),
+            "model_source": "historical_candidate",
+            "requires_historical_features": True,
+        }
+
+    # --------------------------------------------------------
+    # Existing candidate model
     # --------------------------------------------------------
 
     if model_source in {
@@ -400,10 +517,61 @@ def predict_delay(
         model = bundle["model"]
         threshold = bundle["threshold"]
 
-        frame = pd.DataFrame(
-            [row],
-            columns=FEATURES,
-        )
+        if bundle.get("requires_historical_features", False):
+
+            raw_prediction_date = flight_inputs.get("FL_DATE")
+
+            if raw_prediction_date in (None, ""):
+                raise ValueError(
+                    "Model historical membutuhkan tanggal keberangkatan "
+                    "(FL_DATE). Silakan simpan ulang detail penerbangan."
+                )
+
+            prediction_date = pd.to_datetime(
+                raw_prediction_date,
+                errors="coerce",
+            )
+
+            if pd.isna(prediction_date):
+                raise ValueError(
+                    "Tanggal keberangkatan (FL_DATE) tidak valid."
+                )
+
+            if getattr(prediction_date, "tzinfo", None) is not None:
+                prediction_date = prediction_date.tz_localize(None)
+
+            # Prevent inconsistent calendar inputs.
+            if int(row["MONTH"]) != prediction_date.month:
+                raise ValueError(
+                    "MONTH tidak sesuai dengan FL_DATE."
+                )
+
+            expected_weekday = (
+                (prediction_date.weekday() + 1) % 7
+            ) + 1
+
+            if int(row["DAY_OF_WEEK"]) != expected_weekday:
+                raise ValueError(
+                    "DAY_OF_WEEK tidak sesuai dengan FL_DATE. "
+                    "Gunakan urutan BTS: Minggu=1 sampai Sabtu=7."
+                )
+
+            prediction_inputs = dict(row)
+            prediction_inputs["FL_DATE"] = prediction_date
+
+            historical_reference = load_historical_reference()
+
+            frame = prepare_prediction_features(
+                prediction_inputs,
+                historical_reference,
+            )
+
+        else:
+            # Original seven-feature prediction path remains unchanged.
+            frame = pd.DataFrame(
+                [row],
+                columns=FEATURES,
+            )
 
         probability = None
 
