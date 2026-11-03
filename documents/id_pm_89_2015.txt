@@ -1,0 +1,25 @@
+TITLE: Peraturan Menteri Perhubungan Nomor PM 89 Tahun 2015 — Penanganan Keterlambatan Penerbangan
+URL: https://peraturan.bpk.go.id/Download/94165/PM_89_TAHUN_2015.pdf
+STATUS: Basis Data Peraturan BPK mencantumkan status Berlaku pada saat penyusunan korpus (3 November 2026). Periksa status terbaru sebelum memberi nasihat hukum.
+JURISDICTION: Indonesia
+
+## Pasal 3 — Kategori keterlambatan
+PM 89 Tahun 2015 mengelompokkan keterlambatan penerbangan menjadi enam kategori: kategori 1 selama 30–60 menit; kategori 2 selama 61–120 menit; kategori 3 selama 121–180 menit; kategori 4 selama 181–240 menit; kategori 5 lebih dari 240 menit; dan kategori 6 berupa pembatalan penerbangan.
+
+## Pasal 4 — Penghitungan keterlambatan
+Menurut Pasal 4, keterlambatan dihitung dari selisih antara waktu keberangkatan atau kedatangan yang dijadwalkan dengan realisasinya. Realisasi keberangkatan ditandai saat pesawat block off meninggalkan tempat parkir pesawat (apron), sedangkan realisasi kedatangan ditandai saat pesawat block on dan parkir di apron bandara tujuan.
+
+## Pasal 5 — Faktor penyebab keterlambatan
+Pasal 5 membagi faktor keterlambatan menjadi faktor manajemen maskapai, teknis operasional, cuaca, dan faktor lain. Faktor manajemen maskapai antara lain keterlambatan pilot, kopilot, awak kabin, katering, penanganan di darat, menunggu penumpang, serta ketidaksiapan pesawat. Faktor teknis operasional berkaitan dengan kondisi bandar udara dan fasilitas yang memengaruhi operasi. Faktor cuaca antara lain hujan lebat, banjir, petir, badai, kabut, asap, jarak pandang di bawah standar, atau angin yang melampaui standar keselamatan. Pasal 5 juga mengatur kewajiban penyampaian informasi dan bukti surat keterangan resmi dari instansi terkait untuk kondisi yang disebut dalam ketentuan tersebut.
+
+## Pasal 6 — Tanggung jawab atas penyebab keterlambatan
+Pasal 6 menyatakan badan usaha angkutan udara bertanggung jawab atas keterlambatan yang disebabkan faktor manajemen maskapai. Pasal tersebut menyatakan maskapai dibebaskan dari tanggung jawab atas ganti kerugian akibat keterlambatan yang disebabkan faktor teknis operasional, cuaca, dan faktor lain sebagaimana dirujuk dalam Pasal 5. Penentuan kategori dan penyebab harus didasarkan pada fakta serta dokumen pendukung, bukan dugaan penumpang atau maskapai.
+
+## Pasal 9 — Kompensasi dan pilihan penumpang
+Pasal 9 menetapkan kompensasi: kategori 1 berupa minuman ringan; kategori 2 berupa minuman dan makanan ringan (snack box); kategori 3 berupa minuman dan makanan berat; kategori 4 berupa minuman, makanan ringan, dan makanan berat; kategori 5 berupa ganti rugi Rp300.000; dan kategori 6 berupa pengalihan ke penerbangan berikutnya atau pengembalian seluruh biaya tiket (refund). Pasal 9 juga menyebut bahwa untuk keterlambatan kategori 2 sampai kategori 5, penumpang dapat dialihkan ke penerbangan berikutnya atau memperoleh pengembalian seluruh biaya tiket. Pemberian kompensasi dilakukan secara aktif oleh petugas yang ditunjuk maskapai.
+
+## Pasal 10 - Pengembalian biaya tiket dan akomodasi
+Pasal 10 mengatur tata cara pengembalian biaya tiket dan pengalihan penerbangan. Untuk pembelian tunai, pengembalian dilakukan secara tunai ketika penumpang melapor kepada maskapai. Untuk pembayaran melalui kartu kredit, pengembalian dilakukan melalui transfer ke rekening kartu kredit paling lambat 30 hari kalender. Pengalihan ke penerbangan berikutnya atau maskapai lain dilakukan tanpa biaya tambahan; jika kelas atau subkelas layanan turun, penumpang wajib menerima pengembalian selisih harga tiket. Ayat (4) menyatakan bahwa apabila keterlambatan lebih dari 6 jam dan penumpang membutuhkan tempat penginapan, maskapai wajib menyediakan akomodasi.
+
+## Catatan status dan ruang lingkup PM 89 Tahun 2015
+Basis Data Peraturan BPK mencatat PM 89 Tahun 2015 tentang Penanganan Keterlambatan Penerbangan pada Badan Usaha Angkutan Udara Niaga Berjadwal di Indonesia dengan status Berlaku. Halaman status resmi: https://peraturan.bpk.go.id/Details/103484/permenhub-no-89-tahun-2015. Korpus ini merupakan ringkasan bagian tertentu, bukan konsolidasi lengkap seluruh peraturan penerbangan Indonesia.

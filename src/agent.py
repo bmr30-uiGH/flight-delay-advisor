@@ -22,6 +22,8 @@ ATURAN TOOL:
 - Jika hasil tool prediksi menyediakan field interpretation, sampaikan maknanya secara setia. Jangan mengganti interpretasi deterministik itu dengan klaim bahwa penerbangan pasti atau kemungkinan besar tepat waktu.
 
 ATURAN AKURASI DAN SUMBER:
+- HUKUM INDONESIA: untuk pertanyaan yang secara jelas berada dalam yurisdiksi Indonesia, gunakan sumber hukum Indonesia yang dikembalikan retrieval. Untuk keterlambatan berdasarkan PM 89/2015, kategori 4 adalah 181-240 menit dan kategori 5 hanya lebih dari 240 menit. Tepat 240 menit berarti kategori 4, bukan kategori 5. Pasal 9 mengatur bantuan/kompensasi kategori dan pilihan pengalihan atau refund untuk kategori 2?5. Pasal 10 ayat (4) mengatur akomodasi jika keterlambatan lebih dari 6 jam dan penumpang membutuhkan penginapan. Jangan menerapkan batas kategori U.S. DOT pada penerbangan Indonesia.
+- Penyebab keterlambatan menurut Pasal 5 dan Pasal 6 PM 89/2015 harus dijelaskan secara terpisah dari bentuk kompensasi Pasal 9. Jangan menyatakan penyebab atau kelayakan ganti kerugian tanpa bukti yang relevan.
 - Untuk klaim hukum/hak penumpang, gunakan HANYA fakta yang didukung oleh hasil tool search_passenger_rights pada giliran ini. Jika retrieval tidak menemukan sumber yang relevan, nyatakan keterbatasan sumber dan jangan membuat jawaban hukum spekulatif.
 - BATAS YURISDIKSI: dokumen dalam knowledge base ini merangkum aturan U.S. DOT untuk covered scheduled flights to, from, or within the United States. Jangan menerapkan aturan U.S. DOT secara otomatis pada penerbangan yang tidak tercakup. Jika yurisdiksi/rute tidak diketahui dan berpengaruh pada jawaban, tanyakan atau jelaskan bahwa kelayakan belum dapat dipastikan.
 - CITASI HUKUM: sebut nomor CFR hanya jika nomor yang sama tercantum jelas pada excerpt hasil retrieval di giliran ini. Untuk refund, rujukan utamanya 14 CFR §260.2 (definisi significantly delayed or changed flight) dan §260.6 (refund obligation). Jangan menyebut 14 CFR §250.13 sebagai aturan refund. Jika nomor pasal tidak tampak dalam sumber yang diambil, jangan menebak atau menyebut nomor pasal.
@@ -317,6 +319,172 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
     # departing and arriving aircraft, and keep 3-hour exceptions separate from
     # the 2-hour food/water and onboard-facility protections.
     lowered_question = re.sub(r"\s+", " ", (question or "").lower()).strip()
+
+    # --------------------------------------------------------
+    # INDONESIAN PM 89/2015 DELAY CATEGORY GUARD
+    # Keep Indonesian law separate from the U.S. DOT guards.
+    # --------------------------------------------------------
+    if _uses_indonesia_law(question):
+        indonesia_delay_intent = any(term in lowered_question for term in (
+            "keterlambatan", "terlambat", "delay", "delayed",
+        ))
+
+        has_pas3 = (
+            "pasal 3" in evidence
+            and "181" in evidence
+            and "240" in evidence
+        )
+
+        has_pas9 = (
+            "pasal 9" in evidence
+            and "snack box" in evidence
+            and "300.000" in evidence
+        )
+
+        has_pas10 = (
+            "pasal 10" in evidence
+            and "6 jam" in evidence
+            and "akomodasi" in evidence
+        )
+
+        is_cancellation_question = any(term in lowered_question for term in (
+            "pembatalan penerbangan",
+            "penerbangan dibatalkan",
+            "flight cancellation",
+            "cancelled flight",
+            "canceled flight",
+        ))
+
+        if (
+            indonesia_delay_intent
+            and not is_cancellation_question
+            and has_pas3
+            and has_pas9
+        ):
+            duration_match = re.search(
+                r"\b(\d+)\s*(?:jam|hours?)"
+                r"(?:[\s,]*(?:dan\s*)?(\d+)\s*(?:menit|minutes?))?\b",
+                lowered_question,
+            )
+
+            duration_minutes = None
+
+            if duration_match:
+                duration_minutes = (
+                    int(duration_match.group(1)) * 60
+                    + int(duration_match.group(2) or 0)
+                )
+            else:
+                minute_match = re.search(
+                    r"\b(\d+)\s*(?:menit|minutes?)\b",
+                    lowered_question,
+                )
+                if minute_match:
+                    duration_minutes = int(minute_match.group(1))
+
+            category = None
+            category_range = ""
+
+            if duration_minutes is not None:
+                if 30 <= duration_minutes <= 60:
+                    category, category_range = 1, "30?60 menit"
+                elif 61 <= duration_minutes <= 120:
+                    category, category_range = 2, "61?120 menit"
+                elif 121 <= duration_minutes <= 180:
+                    category, category_range = 3, "121?180 menit"
+                elif 181 <= duration_minutes <= 240:
+                    category, category_range = 4, "181-240 menit"
+                elif duration_minutes > 240:
+                    category, category_range = 5, "lebih dari 240 menit"
+
+            if category is not None:
+                category_compensation = {
+                    1: "minuman ringan",
+                    2: "minuman dan makanan ringan (snack box)",
+                    3: "minuman dan makanan berat (heavy meal)",
+                    4: "minuman, makanan ringan (snack box), dan makanan berat (heavy meal)",
+                    5: "ganti rugi sebesar Rp300.000",
+                }
+
+                parts = [
+                    f"**Kategori keterlambatan: kategori {category} ({category_range}).**",
+                    (
+                        f"Durasi yang disebutkan adalah **{duration_minutes} menit**. "
+                        f"Berdasarkan Pasal 3 PM 89/2015, kompensasi kategori ini "
+                        f"berupa **{category_compensation[category]}**."
+                    ),
+                ]
+
+                if duration_minutes == 240:
+                    parts.append(
+                        "**Batas 4 jam perlu diperhatikan:** tepat 240 menit masih "
+                        "termasuk kategori 4. Kategori 5 baru dimulai ketika "
+                        "keterlambatan **lebih dari 240 menit**. Jadi, keterlambatan "
+                        "tepat 4 jam bukan kategori 5 dan tidak otomatis memperoleh "
+                        "ganti rugi Rp300.000."
+                    )
+
+                if category == 5:
+                    parts.append(
+                        "Rp300.000 merupakan ganti rugi kategori 5 menurut "
+                        "Pasal 9 ayat (1) huruf e."
+                    )
+
+                if 2 <= category <= 5:
+                    parts.append(
+                        "Pasal 9 ayat (1) huruf g juga mengatur bahwa untuk "
+                        "kategori 2 sampai 5, penumpang dapat dialihkan ke "
+                        "penerbangan berikutnya atau memperoleh pengembalian "
+                        "seluruh biaya tiket (refund)."
+                    )
+
+                if has_pas10:
+                    if duration_minutes > 360:
+                        parts.append(
+                            "Untuk akomodasi, Pasal 10 ayat (4) menyatakan bahwa "
+                            "pada keterlambatan **di atas 6 jam**, maskapai wajib "
+                            "menyediakan akomodasi apabila penumpang membutuhkan "
+                            "tempat penginapan."
+                        )
+                    else:
+                        parts.append(
+                            f"Pada durasi **{duration_minutes} menit**, "
+                            "ketentuan akomodasi Pasal 10 ayat (4) belum "
+                            "terpenuhi. Pasal tersebut mensyaratkan "
+                            "keterlambatan **lebih dari 6 jam** serta "
+                            "kebutuhan penumpang akan tempat penginapan."
+                        )
+
+                if "pasal 6" in evidence:
+                    parts.append(
+                        "Penyebab keterlambatan juga perlu diperiksa. Pasal 6 "
+                        "menyatakan maskapai bertanggung jawab atas keterlambatan "
+                        "akibat faktor manajemen maskapai. Pasal tersebut juga "
+                        "mengatur pembebasan tanggung jawab atas ganti kerugian "
+                        "untuk faktor teknis operasional, cuaca, dan faktor lain "
+                        "sebagaimana dirujuk dalam Pasal 5. Mintalah alasan resmi "
+                        "dan bukti pendukung dari maskapai."
+                    )
+
+                if "pasal 4" in evidence:
+                    parts.append(
+                        "Menurut Pasal 4, keterlambatan dihitung dari selisih "
+                        "jadwal dan realisasi keberangkatan atau kedatangan. "
+                        "Realisasi keberangkatan ditandai saat block off, "
+                        "sedangkan kedatangan saat block on di apron tujuan."
+                    )
+
+                parts.append(
+                    "Jawaban ini menggunakan ringkasan ketentuan PM 89/2015 "
+                    "yang tersedia pada sumber aplikasi. Pastikan penyebab "
+                    "keterlambatan dan waktu aktualnya dikonfirmasi kepada maskapai."
+                )
+
+                return "\n\n".join(parts)
+
+        # Do not allow Indonesian questions to fall through to U.S. DOT guards.
+        return None
+
     tarmac_intent = any(term in lowered_question for term in (
         "tarmac", "landasan", "tertahan di landasan", "penundaan di landasan",
         "pesawat tertahan", "di runway", "di apron", "turun dari pesawat", "deplane",
@@ -1575,11 +1743,55 @@ def heuristic_route(question: str) -> list[str]:
         selected.append("search_passenger_rights")
     return selected
 
+# INDONESIA_RAG_PATCH_V1
+_INDONESIA_LAW_MARKERS = (
+    "indonesia", "indonesian law", "hukum indonesia", "peraturan indonesia",
+    "peraturan resmi indonesia", "kemenhub", "kementerian perhubungan",
+    "permenhub", "pm 89/2015", "pm 89 tahun 2015", "pm 77/2011",
+    "pm 77 tahun 2011", "penerbangan domestik indonesia",
+    "jakarta", "soekarno-hatta", "halim perdanakusuma", "denpasar",
+    "ngurah rai", "bali", "surabaya", "juanda", "yogyakarta", "kulon progo",
+    "bandung", "medan", "kualanamu", "makassar", "sultan hasanuddin",
+    "lombok", "praya", "semarang", "ahmad yani", "palembang",
+    "sultan mahmud badaruddin", "batam", "hang nadim", "balikpapan",
+    "samarinda", "pontianak", "supadio", "banjarmasin", "syamsudin noor",
+    "manado", "sam ratulangi", "ambon", "jayapura",
+)
+_INDONESIA_AIRPORT_CODES = ("cgk", "hlp", "dps", "sub", "yia", "kno", "upg", "lop")
+
+
+def _uses_indonesia_law(question: str) -> bool:
+    """Route questions by explicit jurisdiction before applying ID markers."""
+    text = re.sub(r"\s+", " ", str(question or "").casefold()).strip()
+
+    # Explicit U.S. jurisdiction takes priority over generic terms such as
+    # 'domestik' or 'penerbangan dalam negeri'.
+    explicit_us_markers = (
+        "amerika serikat",
+        "united states",
+        "u.s. dot",
+        "us dot",
+        "14 cfr",
+        "ecfr",
+    )
+    if any(marker in text for marker in explicit_us_markers):
+        return False
+
+    return (
+        any(marker in text for marker in _INDONESIA_LAW_MARKERS)
+        or any(re.search(rf"\\b{re.escape(code)}\\b", text) for code in _INDONESIA_AIRPORT_CODES)
+    )
 def _retrieve_passenger_rights_bundle(query: str) -> list[dict]:
     """Retrieve focused legal evidence for complex refund questions."""
     original_query = re.sub(r"\s+", " ", str(query or "")).strip()
     if not original_query:
         return []
+
+    # Keep Indonesian law in a separate corpus. Never rank Indonesian questions
+    # against the U.S. DOT/eCFR index.
+    if _uses_indonesia_law(original_query):
+        from src.indonesia_rights import retrieve_indonesia_passenger_rights
+        return retrieve_indonesia_passenger_rights(original_query)
 
     lowered = original_query.lower()
     queries = [original_query]
@@ -2071,11 +2283,20 @@ def _response_item_to_dict(item):
     raise TypeError(f"Unsupported Responses API item type: {type(item).__name__}")
 
 
-def answer_user(question: str, flight_inputs: dict | None = None, flight_summary: dict | None = None):
-    api_key = (os.getenv("GROQ_API_KEY", "").strip() or os.getenv("OPENAI_API_KEY", "").strip())
-    if not api_key:
-        return _fallback_answer(question, flight_inputs, flight_summary)
+# INDONESIA_RAG_PATCH_V1: jurisdiction and product-scope policy.
+SYSTEM_INSTRUCTIONS += """
 
+Jurisdiction and scope policy:
+- This assistant only handles flight-delay prediction and airline-passenger rights.
+- These jurisdiction rules supersede any earlier U.S.-only description of the knowledge base: the retrieval tool has separate U.S. and Indonesia corpora.
+- For a question explicitly about Indonesia, Indonesian law, or an Indonesian itinerary, use only Indonesian legal evidence returned by the retrieval tool. Do not apply U.S. DOT or 14 CFR rules to it.
+- For a question explicitly about the United States, use only the U.S. DOT/eCFR evidence.
+- Do not invent jurisdiction from the user's language or location. When the itinerary jurisdiction is unclear and changes the legal answer, ask which country governs the flight.
+- Do not answer unrelated topics. Do not state legal entitlements unless supported by retrieved evidence.
+"""
+
+
+def answer_user(question: str, flight_inputs: dict | None = None, flight_summary: dict | None = None):
     cleaned_question, injection_detected = sanitize_mixed_request(question)
     if injection_detected and not cleaned_question:
         return (
@@ -2085,6 +2306,20 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
         )
 
     working_question = cleaned_question if injection_detected else question
+
+    # INDONESIA_RAG_PATCH_V1: block unrelated requests before calling the LLM.
+    if not heuristic_route(working_question):
+        return (
+            "Saya dirancang untuk membantu memperkirakan risiko keterlambatan penerbangan "
+            "atau mencari informasi hak penumpang berdasarkan dokumen. Ajukan pertanyaan "
+            "yang berkaitan dengan prediksi delay, refund, pembatalan, kompensasi, atau "
+            "kewajiban maskapai.",
+            [], [], "scope guard (outside Flight Delay Advisor)",
+        )
+
+    api_key = (os.getenv("GROQ_API_KEY", "").strip() or os.getenv("OPENAI_API_KEY", "").strip())
+    if not api_key:
+        return _fallback_answer(question, flight_inputs, flight_summary)
     try:
         from openai import OpenAI
         base_url = (os.getenv("LLM_BASE_URL", "").strip() or os.getenv("OPENAI_BASE_URL", "").strip())
@@ -2105,7 +2340,7 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
             },
             {
                 "type": "function", "name": "search_passenger_rights",
-                "description": "Search indexed U.S. DOT passenger-rights documents. Call for refunds, delay rights, cancellations, assistance, or airline commitments. Use a focused query containing itinerary type and the exact right being asked about.",
+                "description": "Search jurisdiction-specific official passenger-rights documents for the United States or Indonesia. For Indonesian itineraries or explicit Indonesian-law questions, use only the Indonesian corpus; for U.S. itineraries, use the U.S. DOT/eCFR corpus. Call for refunds, delay rights, cancellations, assistance, or airline commitments.",
                 "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"], "additionalProperties": False},
             },
         ]
@@ -2120,8 +2355,12 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
         conversation = [{"role": "user", "content": contextual_question}]
         request_input = conversation if is_groq else contextual_question
         first_tool_choice = "auto"
-        if flight_inputs and _explicitly_requests_prediction(working_question):
+        routed_tools = heuristic_route(working_question)
+        if flight_inputs and routed_tools == ["predict_flight_delay"]:
             first_tool_choice = {"type": "function", "name": "predict_flight_delay"}
+        elif "search_passenger_rights" in routed_tools:
+            # Force retrieval for rights questions so the answer has auditable sources.
+            first_tool_choice = {"type": "function", "name": "search_passenger_rights"}
 
         response = client.responses.create(
             model=model,
@@ -2187,6 +2426,12 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
                 )
 
         answer = (getattr(response, "output_text", "") or "").strip()
+        if "search_passenger_rights" in used and not sources:
+            answer = (
+                "Saya belum menemukan kutipan dokumen resmi yang cukup relevan untuk menjawab pertanyaan ini. "
+                "Saya tidak akan menyimpulkan hak atau kompensasi tanpa sumber. Periksa kembali yurisdiksi "
+                "penerbangan dan ajukan detail keterlambatan atau pembatalannya."
+            )
         answer = _strip_llm_source_footer(
             _strip_internal_source_markers(
                 _remove_unsupported_cfr_citations(answer, sources)
