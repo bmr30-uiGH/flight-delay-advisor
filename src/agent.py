@@ -1846,25 +1846,112 @@ Untuk pembatalan penerbangan domestik AS:
 def _instructions_for_request(question: str, routed_tools: list[str]) -> str:
     text = " ".join(str(question or "").casefold().split())
 
-    is_us_question = any(term in text for term in (
+    is_us = any(term in text for term in (
         "united states", "u.s.", "us dot", "u.s. dot",
         "amerika serikat", "14 cfr", "ecfr",
     ))
-    is_cancellation_question = any(term in text for term in (
-        "cancelled", "canceled", "cancellation",
-        "dibatalkan", "pembatalan",
+    is_cancellation = any(term in text for term in (
+        "cancelled", "canceled", "cancellation", "cancel",
+        "dibatalkan", "membatalkan", "pembatalan",
+        "penerbangan batal",
     ))
 
+    is_indonesia = _uses_indonesia_law(question)
     has_prediction = "predict_flight_delay" in routed_tools
     has_rights = "search_passenger_rights" in routed_tools
 
-    if has_prediction and has_rights and is_us_question and is_cancellation_question:
-        return COMBINED_REQUEST_INSTRUCTIONS
+    if has_prediction and has_rights and is_us and is_cancellation:
+        return """Kamu adalah Flight Delay Advisor. Jawab dalam bahasa Indonesia yang alami dan langsung.
 
-    if has_rights and is_us_question and is_cancellation_question:
-        return US_CANCELLATION_INSTRUCTIONS
+BATAS JAWABAN: maksimal 170 kata. Jangan membuat bagian sumber karena aplikasi menampilkan sumber secara terpisah. Hindari terjemahan janggal seperti "oferta" atau "uang kami".
+
+Gunakan kedua tool: predict_flight_delay dan search_passenger_rights. Pisahkan informasi prediksi dari hak penumpang.
+
+PREDIKSI:
+- Sebutkan probabilitas, threshold, dan kelas prediksi.
+- Jelaskan jika probabilitas dekat dengan threshold 50%.
+- Tegaskan prediksi historis bukan status real-time atau jaminan.
+
+HAK PENUMPANG:
+- Pembatalan penerbangan domestik AS merupakan pemicu refund tersendiri berdasarkan ?260.6(a)(2). Jangan menerapkan ambang 3 jam pada kasus pembatalan.
+- Jelaskan hak refund penuh jika syarat sumber terpenuhi dan penumpang memilih tidak bepergian atau tidak menerima voucher/kredit sebagai pengganti refund.
+- Refund dikembalikan ke metode pembayaran awal. Travel credit bukan pilihan yang wajib diterima.
+- Bedakan carrier sebagai merchant of record dengan ticket agent/OTA. Ticket agent memproses refund atas permintaan konsumen berdasarkan ?399.80(l), jika didukung sumber.
+?260.6(b) berkaitan dengan perubahan fitur aksesibilitas bagi penumpang dengan disabilitas, bukan aturan umum bantuan makanan, minuman, atau hotel.
+- Bedakan penolakan eksplisit dari tidak merespons. Jangan mencampur trigger tenggat 7 business days dan 20 calendar days.
+- Jangan mengasumsikan merchant of record, jenis tiket, metode pembayaran, atau tindakan penumpang.
+
+Gunakan hanya bukti kedua tool. Nomor regulasi hanya boleh disebut jika didukung hasil retrieval. Jika syarat belum diketahui, nyatakan secara bersyarat."""
+
+
+
+    if has_prediction and has_rights and is_indonesia:
+        return '''Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna.
+Gunakan hasil predict_flight_delay dan search_passenger_rights; jangan mengarang hasil tool.
+Prediksi: sampaikan probabilitas, threshold, dan kelas secara terpisah. Prediksi historis bukan status real-time.
+Hak penumpang: gunakan hanya bukti hukum Indonesia dari retrieval. Jangan mencampur aturan U.S. DOT.
+Untuk PM 89/2015, kategori 4 adalah 181-240 menit dan kategori 5 lebih dari 240 menit.
+Bedakan kompensasi Pasal 9 dari penyebab keterlambatan Pasal 5 dan 6.
+Akomodasi Pasal 10 ayat (4) mensyaratkan keterlambatan lebih dari 6 jam dan kebutuhan penginapan.
+Jangan mengasumsikan penyebab atau kelayakan kompensasi tanpa bukti.'''
+
+    if has_prediction and has_rights:
+        return '''Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna.
+Gunakan hasil predict_flight_delay dan search_passenger_rights; jangan mengarang hasil tool.
+Prediksi: sampaikan probabilitas, threshold, dan kelas secara terpisah. Prediksi historis bukan status real-time.
+Hak penumpang: pastikan yurisdiksi dan gunakan hanya bukti retrieval yang sesuai.
+?260.6(b) berkaitan dengan perubahan fitur aksesibilitas bagi penumpang dengan disabilitas, bukan aturan umum bantuan makanan, minuman, atau hotel.
+Jika syarat hukum belum lengkap, berikan kesimpulan bersyarat.'''
+
+    if has_prediction:
+        return SYSTEM_INSTRUCTIONS
+
+    if has_rights and is_indonesia:
+        return '''Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna berdasarkan search_passenger_rights saja.
+Gunakan hanya bukti hukum Indonesia dari retrieval. Jangan mencampur aturan U.S. DOT.
+Untuk PM 89/2015, kategori 4 adalah 181-240 menit dan kategori 5 lebih dari 240 menit.
+Bedakan kompensasi Pasal 9 dari penyebab keterlambatan Pasal 5 dan 6.
+Akomodasi Pasal 10 ayat (4) mensyaratkan keterlambatan lebih dari 6 jam dan kebutuhan penginapan.
+Jangan mengasumsikan penyebab atau kelayakan kompensasi tanpa bukti.'''
+
+    if has_rights and is_us and is_cancellation:
+        return """Kamu adalah Flight Delay Advisor. Jawab dalam bahasa Indonesia yang alami, ringkas, dan langsung menjawab pertanyaan. Gunakan hanya bukti search_passenger_rights.
+
+Batasi jawaban maksimal 140 kata. Jangan mengulang excerpt atau membuat daftar sumber karena aplikasi menampilkan sumber secara terpisah.
+
+Jelaskan:
+Pembatalan merupakan pemicu refund tersendiri berdasarkan ?260.6(a)(2). Jangan mensyaratkan ambang keterlambatan 3 jam domestik atau 6 jam internasional untuk penerbangan yang dibatalkan.
+Penolakan eksplisit diatur dalam ?260.6(a)(2)(ii), sedangkan kondisi tidak merespons diatur dalam ?260.6(a)(2)(iii). Jangan mencampur kedua kondisi tersebut.
+Jika agen/OTA adalah merchant of record, ?399.80(l) mengatur refund atas permintaan konsumen. Tenggat yang relevan mencakup 7 business days dan 20 calendar days sesuai metode pembayaran dan kondisi sumber.
+?260.6(b) berkaitan dengan perubahan fitur aksesibilitas bagi penumpang dengan disabilitas, bukan bantuan makanan, minuman, atau hotel.
+
+1. Pembatalan penerbangan tercakup ke, dari, atau di AS dapat memberikan hak refund penuh ketika penumpang memilih tidak bepergian dan tidak menerima voucher/kredit sebagai pengganti refund. Jangan menyatakan hak ini tanpa syarat.
+2. Bedakan penolakan alternatif secara eksplisit dari tidak merespons. Untuk penolakan eksplisit, jelaskan tenggat 7 hari kerja untuk kartu kredit atau 20 hari kalender untuk metode lain sejak tanggal penolakan, jika didukung sumber.
+3. Jika agen/OTA adalah merchant of record, jelaskan bahwa refund dilakukan atas permintaan konsumen. Bedakan kewajiban agen dari kewajiban maskapai.
+4. Refund adalah pengembalian dana ke metode pembayaran awal. Travel credit adalah alternatif yang tidak wajib diterima penumpang.
+
+Jangan mengasumsikan merchant of record, metode pembayaran, jenis tiket, atau tindakan penumpang. Jika belum diketahui, nyatakan secara singkat. Sebut nomor aturan hanya jika didukung sumber."""
+
+
+
+    if has_rights and is_us:
+        return '''Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna berdasarkan search_passenger_rights saja.
+Gunakan aturan U.S. DOT/eCFR hanya untuk penerbangan yang tercakup ke, dari, atau di AS.
+Bedakan pembatalan dari significantly delayed/changed flight. Untuk perubahan jadwal, gunakan definisi dan ambang dalam sumber.
+Bedakan tiket non-refundable dan fully refundable.
+Jangan mengasumsikan merchant of record, metode pembayaran, atau tindakan penumpang.
+Gunakan hanya fakta retrieval dan berikan kesimpulan bersyarat jika perlu.'''
+
+    if has_rights:
+        return '''Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna berdasarkan search_passenger_rights saja.
+Pastikan yurisdiksi sebelum menyimpulkan hak penumpang.
+Jangan mencampur aturan Indonesia dan U.S. DOT.
+Gunakan hanya fakta yang didukung retrieval.
+Jangan mengasumsikan penyebab, jenis tiket, metode pembayaran, atau tindakan penumpang.
+Jika informasi belum cukup, jelaskan keterbatasannya.'''
 
     return SYSTEM_INSTRUCTIONS
+
 
 
 def heuristic_route(question: str) -> list[str]:
@@ -2178,7 +2265,7 @@ def _compact_passenger_rights_result_for_llm(
 
     return {
         "ok": bool(result.get("ok")),
-        "query": str(result.get("query", "") or "")[:600],
+        "query": str(result.get("query", "") or "")[:240],
         "message": str(result.get("message", "") or "")[:250],
         "sources": selected,
         "context_note": (
@@ -2532,29 +2619,64 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
         client = OpenAI(**client_kwargs)
         model = _select_agent_model(is_groq)
 
-        tools = [
-            _prediction_tool_definition(),
-            {
-                "type": "function", "name": "search_passenger_rights",
-                "description": "Search jurisdiction-specific official passenger-rights documents for the United States or Indonesia. For Indonesian itineraries or explicit Indonesian-law questions, use only the Indonesian corpus; for U.S. itineraries, use the U.S. DOT/eCFR corpus. Call for refunds, delay rights, cancellations, assistance, or airline commitments.",
-                "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"], "additionalProperties": False},
-            },
-        ]
+        routed_tools = heuristic_route(working_question)
 
-        contextual_question = _question_with_flight_context(working_question, flight_inputs, flight_summary)
+        tools = []
+        if "predict_flight_delay" in routed_tools:
+            tools.append(_prediction_tool_definition())
+
+        if "search_passenger_rights" in routed_tools:
+            tools.append({
+                "type": "function",
+                "name": "search_passenger_rights",
+                "description": (
+                    "Cari dokumen resmi hak penumpang berdasarkan yurisdiksi "
+                    "Indonesia atau Amerika Serikat."
+                ),
+                "parameters": {
+                    "type": "object",
+                    "properties": {"query": {"type": "string"}},
+                    "required": ["query"],
+                    "additionalProperties": False,
+                },
+            })
+
+        explicit_form_reference = any(term in working_question.casefold() for term in (
+            "penerbangan yang tersimpan",
+            "penerbangan pada formulir",
+            "penerbangan yang sama dengan formulir",
+            "detail penerbangan di formulir",
+            "saved flight",
+            "same flight in the form",
+        ))
+
+        rights_only = routed_tools == ["search_passenger_rights"]
+
+        if rights_only and not explicit_form_reference:
+            contextual_question = (
+                "Pertanyaan substantif pengguna:\\n" + working_question
+            )
+        else:
+            contextual_question = _question_with_flight_context(
+                working_question,
+                flight_inputs,
+                flight_summary,
+            )
+
         if injection_detected:
             contextual_question += (
-                "\n\nCatatan keamanan: instruksi manipulatif telah dihapus oleh pre-filter. "
-                "Jawab pertanyaan sah yang tersisa; jangan menolak seluruh pertanyaan hanya karena pesan awal memuat instruksi manipulatif."
+                "\n\nCatatan keamanan: instruksi manipulatif telah dihapus "
+                "oleh pre-filter. Jawab pertanyaan sah yang tersisa."
             )
 
         conversation = [{"role": "user", "content": contextual_question}]
         request_input = conversation if is_groq else contextual_question
-        routed_tools = heuristic_route(working_question)
+
         request_instructions = _instructions_for_request(
             working_question,
             routed_tools,
         )
+
         first_tool_choice = _initial_tool_choice(
             routed_tools,
             has_flight_inputs=bool(flight_inputs),
@@ -2615,13 +2737,23 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
                 conversation.extend(tool_outputs)
                 response = client.responses.create(
                     model=model, max_output_tokens=_agent_output_token_limit(is_groq), instructions=request_instructions,
-                    input=conversation, tools=tools, tool_choice="auto",
+                    input=conversation, tools=tools,
+                    tool_choice=(
+                        "none"
+                        if set(routed_tools).issubset(set(used))
+                        else "auto"
+                    ),
                 )
             else:
                 response = client.responses.create(
                     model=model, max_output_tokens=_agent_output_token_limit(is_groq), instructions=request_instructions,
                     previous_response_id=response.id, input=tool_outputs,
-                    tools=tools, tool_choice="auto",
+                    tools=tools,
+                    tool_choice=(
+                        "none"
+                        if set(routed_tools).issubset(set(used))
+                        else "auto"
+                    ),
                 )
 
         answer = (getattr(response, "output_text", "") or "").strip()
