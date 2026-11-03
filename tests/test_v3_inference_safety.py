@@ -1,7 +1,24 @@
+from pathlib import Path
+
+import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+V3_BUILDER_PATH = (
+    PROJECT_ROOT
+    / "src"
+    / "build_historical_feature_experiment_jan_aug_v3.py"
+)
+
+if not V3_BUILDER_PATH.is_file():
+    pytest.skip(
+        "V3 experiment dependencies are optional and not included "
+        "in the production clean clone.",
+        allow_module_level=True,
+    )
+
 import joblib
 import numpy as np
 import pandas as pd
-import pytest
 
 from src.v3_inference_features import (
     build_v3_prediction_features,
@@ -13,7 +30,7 @@ from src.v3_inference_features import (
 )
 
 
-MODEL_PATH = "models/flight_delay_model_v3_candidate.joblib"
+MODEL_PATH = str(PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.joblib")
 
 PREDICTION_DATE = pd.Timestamp("2026-03-15")
 
@@ -164,6 +181,10 @@ def test_invalid_flight_inputs_are_rejected(field, invalid_value):
         )
 
 
+@pytest.mark.skipif(
+    not Path(MODEL_PATH).is_file(),
+    reason="Optional V3 candidate model is not included in clean clone.",
+)
 def test_unseen_categories_work_with_v3_model_encoder():
     future = make_history_row(
         "2026-03-16",
