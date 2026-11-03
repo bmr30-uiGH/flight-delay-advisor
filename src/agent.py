@@ -786,16 +786,40 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
     ):
         ota_sections = []
 
-        ota_sections.append(
-            "**Kesimpulan: siapa yang wajib memproses refund bergantung "
-            "pada Merchant of Record (MOR), bukan semata-mata tempat Anda "
-            "membeli tiket.**\n\n"
-            "Membeli tiket melalui OTA tidak otomatis menjadikan OTA "
-            "sebagai merchant of record. Periksa nama entitas yang tercantum "
-            "sebagai pedagang pada laporan transaksi kartu atau rekening "
-            "pembayaran. Bank atau penerbit kartu bukan MOR hanya karena "
-            "menerbitkan kartu yang digunakan."
-        )
+        ota_is_mor = bool(re.search(
+            r"\b(?:ota|online travel agency|ticket agent)\b.{0,120}"
+            r"\b(?:is|are|was|were)\b.{0,100}\bmerchant of record\b",
+            lowered_question,
+        ))
+
+        carrier_is_mor = bool(re.search(
+            r"\b(?:airline|carrier)\b.{0,120}"
+            r"\b(?:is|are|was|were)\b.{0,100}\bmerchant of record\b",
+            lowered_question,
+        ))
+
+        if ota_is_mor:
+            ota_sections.append(
+                "**Kesimpulan: berdasarkan informasi pembayaran yang Anda "
+                "berikan, OTA adalah Merchant of Record (MOR) dan pihak yang "
+                "memproses refund.** Bank atau penerbit kartu bukan MOR hanya "
+                "karena menerbitkan kartu yang digunakan."
+            )
+        elif carrier_is_mor:
+            ota_sections.append(
+                "**Kesimpulan: berdasarkan informasi pembayaran yang Anda "
+                "berikan, maskapai adalah Merchant of Record (MOR) dan pihak "
+                "yang memproses refund.**"
+            )
+        else:
+            ota_sections.append(
+                "**Kesimpulan: pihak yang memproses refund bergantung pada "
+                "Merchant of Record (MOR), bukan semata-mata tempat pembelian.** "
+                "Karena informasi transaksi belum diberikan, **belum dapat dipastikan siapa Merchant of Record (MOR)**. Membeli tiket melalui OTA tidak otomatis menjadikan OTA sebagai "
+                "MOR. Periksa nama pedagang pada laporan transaksi kartu atau "
+                "rekening pembayaran. Bank atau penerbit kartu bukan MOR hanya "
+                "karena menerbitkan kartu yang digunakan."
+            )
 
         # Carrier as merchant of record.
         if (
@@ -888,7 +912,14 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
                 "refund tetap harus dipenuhi."
             )
 
-        if has_fully_refundable_guidance_ota:
+        asks_fully_refundable_ota = any(term in lowered_question for term in (
+            "fully refundable",
+            "tiket fully refundable",
+            "tiket refundable",
+            "tiket yang bisa dikembalikan",
+        ))
+
+        if has_fully_refundable_guidance_ota and asks_fully_refundable_ota:
             ota_sections.append(
                 "Untuk tiket fully refundable, panduan konsumen DOT menyatakan "
                 "bahwa pembeli berhak atas refund ketika tiket yang dibeli "
@@ -910,19 +941,53 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
                 "tempo apabila tiket Anda fully refundable."
             )
 
+        if ota_is_mor:
+            ota_application = (
+                "**Penerapan pada pertanyaan Anda:** Anda menyatakan OTA "
+                "tercantum sebagai MOR pada laporan pembayaran. Karena Anda "
+                "belum mengajukan permintaan refund kepada OTA, segera ajukan "
+                "permintaan tertulis kepada OTA berdasarkan 14 CFR pasal 399.80(l), "
+                "sepanjang seluruh syarat kelayakan pasal 260.6(a) terpenuhi.\n\n"
+                "Untuk kartu kredit, tenggat ticket agent adalah 7 business "
+                "days sejak OTA menerima informasi kelayakan refund dari "
+                "carrier berdasarkan pasal 260.6(d). Untuk metode pembayaran "
+                "lainnya, tenggatnya 20 calendar days sejak refund menjadi "
+                "jatuh tempo. Tenggat kartu kredit OTA bukan otomatis "
+                "dihitung dari tanggal Anda menolak alternatif."
+            )
+        elif carrier_is_mor:
+            ota_application = (
+                "**Penerapan pada pertanyaan Anda:** Anda menyatakan "
+                "maskapai tercantum sebagai MOR. Dengan syarat kelayakan "
+                "refund terpenuhi, penolakan eksplisit memicu refund otomatis "
+                "oleh carrier tanpa permintaan tambahan. Tenggatnya 7 business "
+                "days untuk kartu kredit atau 20 calendar days untuk metode "
+                "lainnya setelah penolakan, menurut panduan U.S. DOT."
+            )
+        else:
+            ota_application = (
+                "**Penerapan pada pertanyaan Anda:** nama MOR belum disebutkan "
+                "secara eksplisit. Periksa nama pedagang pada laporan transaksi. "
+                "Jika OTA adalah MOR, ajukan permintaan refund kepada OTA "
+                "berdasarkan pasal 399.80(l). Jika maskapai adalah MOR, jalur refund "
+                "otomatis carrier berlaku sesuai ketentuan penolakan eksplisit."
+            )
+
         ota_sections.append(
-            "**Penerapan pada pertanyaan Anda:** karena nama pedagang "
-            "pada laporan transaksi belum diberikan, belum dapat "
-            "dipastikan apakah maskapai atau OTA merupakan MOR. "
-            "Periksa nama pedagang pada transaksi, lalu ajukan permintaan "
-            "refund kepada OTA jika OTA tercantum sebagai MOR. "
-            "Pastikan pula Anda tidak menerima voucher, credit, atau "
-            "kompensasi sebagai pengganti refund, serta memenuhi "
-            "persyaratan kelayakan lainnya.\n\n"
-            "Penjelasan ini merupakan parafrasa berdasarkan dokumen "
+            ota_application
+            + "\n\n"
+            + "Penjelasan ini merupakan parafrasa berdasarkan dokumen "
             "U.S. DOT dan eCFR yang berhasil diambil, bukan kutipan "
             "verbatim peraturan."
         )
+
+        if ota_is_mor:
+            ota_sections = [
+                section for section in ota_sections
+                if not section.startswith(
+                    "**Jika maskapai adalah Merchant of Record:**"
+                )
+            ]
 
         return "\n\n".join(ota_sections)
 
