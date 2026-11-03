@@ -15,7 +15,7 @@ st.set_page_config(page_title="Flight Delay Advisor", page_icon="✈️", layout
 # Load Streamlit Community Cloud Secrets into the environment BEFORE importing
 # the agent. The agent reads GROQ_API_KEY and model settings from os.environ.
 # In local Docker, existing environment variables take precedence.
-for _secret_name in ("GROQ_API_KEY", "LLM_BASE_URL", "OPENAI_MODEL", "MODEL_SOURCE"):
+for _secret_name in ("GROQ_API_KEY", "LLM_BASE_URL", "GROQ_MODEL", "OPENAI_MODEL", "MODEL_SOURCE"):
     try:
         _secret_value = st.secrets.get(_secret_name)
     except Exception:

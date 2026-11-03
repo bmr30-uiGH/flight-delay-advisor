@@ -41,7 +41,7 @@ Model yang disimpan dalam artifact saat ini dibuat dengan scikit-learn **1.9.1**
 ```toml
 GROQ_API_KEY = "ISI_API_KEY_GROQ_BARU_DI_SINI"
 LLM_BASE_URL = "https://api.groq.com/openai/v1"
-OPENAI_MODEL = "openai/gpt-oss-120b"
+GROQ_MODEL = "qwen/qwen3.8-27b"
 MODEL_SOURCE = "joblib"
 ```
 
@@ -59,5 +59,5 @@ MODEL_SOURCE = "joblib"
 - Jangan menulis API key di source code, README, screenshot, atau GitHub Issues.
 - Jika API key pernah masuk ke archive atau repository, segera revoke/rotate key tersebut.
 - Prediksi bersifat historis dan bukan status penerbangan real-time.
-- Dataset dan dokumen yang digunakan berfokus pada konteks penerbangan Amerika Serikat.
+- Dataset prediksi berfokus pada penerbangan Amerika Serikat. Hak penumpang mencakup dokumen U.S. DOT/eCFR dan dokumen hukum Indonesia.
 - Probabilitas model bukan jaminan hasil aktual.

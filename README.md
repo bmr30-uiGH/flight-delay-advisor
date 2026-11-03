@@ -1,23 +1,15 @@
----
-title: Flight Delay + Passenger Rights Advisor
-emoji: ✈️
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-app_port: 8501
-pinned: false
----
+﻿# Flight Delay + Passenger Rights Advisor
 
-# Flight Delay + Passenger Rights Advisor
+Aplikasi ini menggabungkan prediksi risiko keterlambatan penerbangan dan Passenger Rights Advisor berbasis retrieval-augmented generation (RAG).
 
-Aplikasi ini menggabungkan dua fungsi untuk membantu penumpang penerbangan di Amerika Serikat:
+Fungsi utama:
+1. Memperkirakan probabilitas keberangkatan terlambat sekurang-kurangnya 15 menit (`DEP_DELAY >= 15`) berdasarkan pola historis U.S. DOT Bureau of Transportation Statistics (BTS).
+2. Menjawab pertanyaan hak penumpang penerbangan Amerika Serikat berdasarkan ringkasan U.S. DOT dan eCFR.
+3. Menjawab pertanyaan hak penumpang penerbangan Indonesia berdasarkan PM 89/2015 dan UU Nomor 1 Tahun 2009.
 
-1. memperkirakan probabilitas keberangkatan terlambat sekurang-kurangnya 15 menit (`DEP_DELAY >= 15`) menggunakan pola historis BTS; dan
-2. menjawab pertanyaan tentang hak penumpang dengan mencari informasi pada dokumen U.S. DOT dan ringkasan kebijakan maskapai yang disimpan secara lokal.
+Teknologi yang digunakan meliputi Streamlit, Python, scikit-learn, TF-IDF, MLflow, Groq Responses API, dan Docker Compose.
 
-Aplikasi dibuat dengan Streamlit, scikit-learn, MLflow, retrieval TF-IDF, Groq Responses API, dan Docker Compose.
-
-> **Batas penggunaan:** prediksi bukan status penerbangan langsung dan bukan jaminan hasil aktual. Dokumen hak penumpang dalam proyek ini berfokus pada yurisdiksi Amerika Serikat. Jawaban chatbot bersifat informasional, bukan nasihat hukum.
+> **Batas penggunaan:** prediksi bukan status penerbangan real-time dan bukan jaminan hasil aktual. Dataset prediksi berasal dari BTS dan berfokus pada penerbangan Amerika Serikat. Jawaban hak penumpang bersifat informasional, bukan nasihat hukum. Periksa sumber resmi untuk keputusan aktual.
 
 ## Fitur
 
@@ -32,13 +24,14 @@ Aplikasi dibuat dengan Streamlit, scikit-learn, MLflow, retrieval TF-IDF, Groq R
 
 ## Arsitektur singkat
 
-1. **Data ingestion:** arsip bulanan BTS diunduh dari `https://transtats.bts.gov/PREZIP/`.
-2. **Data processing:** data dibersihkan dan disimpan sebagai `data/processed/flights.parquet`.
-3. **Model training:** kandidat baseline, Logistic Regression, dan Extra Trees dievaluasi. Metrik serta model dicatat di MLflow.
-4. **Model serving:** aplikasi lebih dahulu mencoba memuat `models:/flight_delay_model@champion`; jika Registry tidak dapat diakses, aplikasi menggunakan `models/flight_delay_model.joblib` sebagai fallback.
-5. **Passenger-rights retrieval:** file teks pada `documents/` dipecah menjadi chunks dan disimpan di `data/processed/passenger_rights_chunks.jsonl`.
-6. **AI agent:** Groq Responses API memilih tool prediksi, retrieval, keduanya, atau tidak memanggil tool.
-7. **User interface:** Streamlit menyediakan formulir detail penerbangan dan chatbot.
+1. **Data ingestion:** pipeline mencari dan mengunduh arsip bulanan BTS dari `https://transtats.bts.gov/PREZIP/`.
+2. **Data processing:** data dibersihkan, diberi target `DELAY_15`, lalu disimpan dalam `data/processed/flights.parquet`.
+3. **Model training:** kandidat model dievaluasi menggunakan train/test split. Parameter dan metrik dicatat di MLflow; model terpilih didaftarkan dengan alias `champion`.
+4. **Model serving:** Docker lokal memprioritaskan `models:/flight_delay_model@champion` dan menyediakan fallback `models/flight_delay_model.joblib`.
+5. **Retrieval Amerika Serikat:** dokumen U.S. DOT/eCFR diproses oleh `src/ingest_documents.py` menjadi `data/processed/passenger_rights_chunks.jsonl`.
+6. **Retrieval Indonesia:** `src/indonesia_rights.py` membaca langsung `id_pm_89_2015.txt` dan `id_uu_1_2009.txt`, kemudian melakukan TF-IDF retrieval. Dokumen Indonesia tidak digabung ke indeks JSONL Amerika Serikat.
+7. **AI Agent:** routing lokal menentukan tool yang relevan; Groq Responses API memilih di antara tool yang tersedia.
+8. **User interface:** Streamlit menyediakan formulir penerbangan dan chatbot.
 
 ## Persyaratan
 
@@ -93,15 +86,19 @@ Prediksi menggunakan data yang disimpan dari formulir. Model tidak mengakses sta
 
 | Variable | Keterangan | Nilai contoh |
 |---|---|---|
-| `GROQ_API_KEY` | API key Groq; rahasia, jangan dibagikan | kosong pada `.env.example` |
-| `LLM_BASE_URL` | Endpoint API Groq yang kompatibel | `https://api.groq.com/openai/v1` |
-| `OPENAI_MODEL` | Nama model yang dipakai melalui SDK OpenAI-compatible | `openai/gpt-oss-120b` |
-| `BTS_MONTHS` | Jumlah bulan BTS yang diminta saat bootstrap | `3` |
-| `MAX_TRAIN_ROWS` | Batas jumlah baris training | `50000` |
-| `MLFLOW_TRACKING_URI` | URI tracking MLflow; Compose mengatur `http://mlflow:5000` untuk container | `http://mlflow:5000` |
+| `GROQ_API_KEY` | API key Groq; rahasia, jangan dibagikan | Kosong pada `.env.example` |
+| `LLM_BASE_URL` | Endpoint API Groq | `https://api.groq.com/openai/v1` |
+| `GROQ_MODEL` | Model Groq | `qwen/qwen3.8-27b` |
+| `OPENAI_MODEL` | Model alternatif untuk provider OpenAI-compatible non-Groq | `gpt-4.1-mini` |
+| `MODEL_SOURCE` | Sumber model prediksi | `mlflow` untuk Docker; `joblib` untuk Streamlit Cloud |
+| `BTS_MONTHS` | Jumlah bulan arsip BTS yang diminta saat bootstrap | `3` |
+| `MAX_TRAIN_ROWS` | Batas baris training sesuai konfigurasi pipeline | `50000` |
+| `MLFLOW_TRACKING_URI` | URI MLflow di Docker | `http://mlflow:5000` |
 | `MODEL_NAME` | Nama model di MLflow Registry | `flight_delay_model` |
 
-Nama `OPENAI_MODEL` dipertahankan karena merupakan nama variabel konfigurasi dalam kode. Pada konfigurasi default proyek ini, provider yang digunakan adalah Groq.
+Untuk Groq, agent membaca `GROQ_MODEL`. Jika tidak diatur, default aplikasi adalah `qwen/qwen3.8-27b`. `OPENAI_MODEL` tidak digunakan untuk memilih model Groq.
+
+Docker lokal menggunakan `MODEL_SOURCE=mlflow`. Streamlit Community Cloud menggunakan `MODEL_SOURCE=joblib` karena deployment tersebut tidak menjalankan service MLflow Compose.
 
 ## Perintah Docker yang sering digunakan
 
@@ -169,26 +166,18 @@ Jalankan training ulang hanya jika memang ingin memperbarui model atau pipeline.
 
 ## Pengujian
 
-Jalankan pengujian unit di dalam container aplikasi saat container `app` sedang berjalan:
+Hasil pengujian 3 November 2026:
 
-```powershell
-docker compose exec app python -m pytest -q
-```
+- Repositori pengembangan: **176 passed**.
+- Clean clone GitHub commit a7afbef: **161 passed, 1 skipped**. Satu test V3 dilewati karena dependensi eksperimen opsional tidak tersedia.
+- Clean clone berhasil menjalankan Bootstrap, Streamlit, MLflow, prediksi ML, dan AI Agent Groq dengan retrieval dokumen Indonesia.
+- Health Streamlit dan MLflow menghasilkan HTTP 200.
 
-Atau jalankan di lingkungan Python lokal setelah memasang dependencies:
-
-```powershell
-python -m pip install -r requirements.txt
-python -m pytest -q
-```
-
-Gunakan `python -m pytest`, bukan hanya `pytest`, agar direktori proyek ditambahkan dengan benar pada import path di sebagian lingkungan.
-
-Pengujian unit memeriksa fungsi seperti routing tool, pre-filter prompt injection, pemrosesan data, ingest dokumen, dan referensi maskapai/bandara. Pengujian unit ini tidak menggantikan pengujian end-to-end pada Groq dan UI Streamlit. Hasil uji manual beserta batasannya dicatat pada [`tests/prompt_injection_test_report.md`](tests/prompt_injection_test_report.md).
+Pengujian clean clone menggunakan flights.parquet yang sudah tersedia di GitHub. Pengunduhan data BTS mentah dari nol belum diuji pada clean clone. Pengujian otomatis tidak menggantikan pengujian manual Groq. Laporan keamanan tersedia di tests/prompt_injection_test_report.md.
 
 ## Hasil evaluasi model yang tercatat
 
-Pada salah satu proses training yang tercatat di MLflow, kandidat `extra_trees` terpilih dengan metrik berikut:
+Eksperimen model-selection memilih kandidat `extra_trees` dengan metrik berikut:
 
 | Metrik | Nilai |
 |---|---:|
@@ -198,73 +187,60 @@ Pada salah satu proses training yang tercatat di MLflow, kandidat `extra_trees` 
 | F1-score | 0.4989 |
 | ROC-AUC | 0.6173 |
 
-Metrik tersebut adalah hasil eksperimen pada data dan konfigurasi training saat itu, bukan jaminan performa pada periode atau rute lain. Evaluasi menggunakan random train/test split; evaluasi berbasis waktu dan pemeriksaan kalibrasi probabilitas masih merupakan pekerjaan lanjutan. Jangan menafsirkan probabilitas sekitar 50% sebagai kepastian penerbangan akan delay atau tepat waktu.
+Metrik berasal dari random train/test split dan bukan jaminan performa pada periode atau rute lain. Evaluasi berbasis waktu dan kalibrasi probabilitas masih menjadi keterbatasan.
+
+Audit MLflow lingkungan pengembangan mencatat **16 eksperimen dengan 122 runs**. Eksperimen development validation bukan otomatis hasil final holdout.
+
+Pada clean clone, bootstrap melatih model tersendiri karena Registry awalnya kosong. `logistic_regression` terpilih dengan ROC-AUC 0.7010. Model tersebut tidak menggantikan Champion lingkungan pengembangan utama.
 
 ## Cakupan dan keterbatasan sumber hak penumpang
 
-- Dataset penerbangan berasal dari BTS dan berfokus pada penerbangan Amerika Serikat.
-- `documents/us_dot_refunds.txt` adalah ringkasan lokal dari halaman resmi DOT, bukan salinan verbatim.
-- `documents/us_dot_airline_commitments_american.txt` merangkum komitmen American Airlines yang ditampilkan pada dashboard DOT. Ringkasan lokal mencatat bahwa teks alternatif dashboard yang digunakan menunjukkan tanggal pembaruan 3 Desember 2024. Periksa dashboard dan customer service plan terbaru sebelum menyatakan komitmen tersebut sebagai kebijakan terkini.
-- Ambang refund DOT untuk keterlambatan kedatangan domestik dan waktu tunggu 3 jam untuk meal assistance pada komitmen maskapai adalah dua hal berbeda.
-- Batas tarmac delay hanya berlaku pada keadaan pesawat di darat ketika penumpang tidak mendapat kesempatan turun; jangan menerapkannya pada semua keterlambatan saat menunggu di terminal.
-- Jika dokumen yang diindeks tidak mendukung suatu klaim, chatbot seharusnya menyatakan bahwa sumber yang cukup belum ditemukan, bukan mengarang aturan.
+- Dataset prediksi BTS berfokus pada penerbangan Amerika Serikat dan bukan sumber status real-time.
+- Dokumen hak penumpang AS menggunakan ringkasan U.S. DOT/eCFR yang diindeks ke JSONL.
+- Dokumen Indonesia menggunakan `id_pm_89_2015.txt` dan `id_uu_1_2009.txt`, yang dibaca langsung oleh `src/indonesia_rights.py` melalui TF-IDF retrieval.
+- Dokumen lokal merupakan ringkasan untuk retrieval, bukan pengganti pemeriksaan sumber resmi.
+- Ringkasan komitmen American Airlines pada dashboard DOT mencatat label pembaruan 3 Desember 2024. Periksa versi terbaru sebelum menyatakan kebijakannya masih berlaku.
+- Ambang refund DOT dan waktu tunggu meal assistance merupakan dua ketentuan berbeda.
 
 ## Keamanan
 
-- Simpan `GROQ_API_KEY` hanya di `.env` atau secret manager platform deployment.
-- Jangan sertakan `.env`, kredensial, atau `storage/` ke repositori atau arsip yang dibagikan.
-- `.gitignore` mengabaikan `.env` untuk Git, tetapi **tidak** mencegah `.env` masuk ke RAR/ZIP yang dibuat secara manual. Periksa isi arsip sebelum membagikannya.
-- Pre-filter prompt injection menggunakan pola tertentu. Mekanisme ini adalah defense-in-depth sederhana dan tidak menjamin deteksi seluruh prompt injection.
+- Simpan `GROQ_API_KEY` hanya di `.env` atau Streamlit Secrets.
+- Jangan unggah `.env`, kredensial, atau `storage/` ke GitHub.
+- `.gitignore` tidak mencegah `.env` masuk arsip ZIP/RAR manual.
+- Pre-filter prompt injection memiliki keterbatasan dan tidak menjamin pencegahan semua variasi serangan.
+- Laporan pengujian tersedia di `tests/prompt_injection_test_report.md`.
 
-## Deployment publik
+## Deployment publik — Streamlit Community Cloud
 
-Konfigurasi Docker Compose saat ini disusun untuk pengembangan dan demo lokal. Deployment publik belum dianggap selesai hanya dengan mempublikasikan Streamlit. Lingkungan deployment harus menyediakan koneksi yang benar ke model/artefak, indeks dokumen, penyimpanan persisten MLflow, environment variables, dan akses API LLM. Jangan gunakan filesystem container sementara sebagai satu-satunya tempat menyimpan model atau database.
+Aplikasi publik menggunakan Streamlit Community Cloud, Groq Responses API, dan model lokal melalui `MODEL_SOURCE=joblib`. MLflow Registry digunakan pada Docker lokal.
 
-## Deployment publik dengan Hugging Face Spaces (Docker)
+Prediksi menggunakan `models/flight_delay_model.joblib`. Dokumen Indonesia dibaca langsung dari folder `documents/`.
 
-Konfigurasi Space menggunakan satu container yang menjalankan Streamlit pada port `8501` dan MLflow secara internal pada `127.0.0.1:5000`. Dengan cara ini, aplikasi dapat tetap memuat `models:/flight_delay_model@champion` dari registry lokal yang ikut dikemas bersama aplikasi. Dockerfile menggunakan pengguna UID `1000` dan menyiapkan kepemilikan folder `storage/` agar proses MLflow dapat mengakses database SQLite dan artefaknya di lingkungan Spaces.
+Atur `GROQ_API_KEY`, `LLM_BASE_URL`, `GROQ_MODEL`, dan `MODEL_SOURCE=joblib` pada Streamlit Secrets. `app.py` memuat Secrets sebelum mengimpor AI Agent.
 
-### File yang wajib ikut di repository Space
+Panduan deployment: [README_STREAMLIT_CLOUD.md](README_STREAMLIT_CLOUD.md).
 
-- `data/processed/flights.parquet` — referensi rute dan jarak penerbangan.
-- `data/processed/passenger_rights_chunks.jsonl` — indeks retrieval hak penumpang.
-- `models/flight_delay_model.joblib` — fallback model lokal.
-- `storage/mlflow.db` dan seluruh `storage/mlartifacts/` — metadata registry, alias `champion`, dan artefak model MLflow.
-- `documents/`, `src/`, `app.py`, `requirements.txt`, `Dockerfile`, dan `supervisord.conf`.
+### Hasil pengujian clean clone
 
-Arsip mentah `data/raw/` tidak diperlukan untuk menjalankan aplikasi yang sudah diproses dan sengaja dikecualikan dari build. Jangan unggah `.env`.
+- Docker build dan bootstrap berhasil dari clone GitHub.
+- Streamlit dan MLflow health menghasilkan HTTP 200.
+- Model Champion berhasil dimuat dan prediksi berhasil dijalankan.
+- AI Agent Groq berhasil menjawab pertanyaan hukum Indonesia menggunakan retrieval.
+- Test suite clean clone commit `a7afbef`: **161 passed, 1 skipped**.
+- Test suite pengembangan: **176 passed** pada 3 November 2026.
 
-### Langkah deploy
+Clean clone menggunakan `flights.parquet` yang sudah tersedia di GitHub. Pengunduhan BTS mentah dari nol belum diuji pada clean clone.
 
-1. Buat Space baru di Hugging Face Hub dan pilih SDK **Docker**.
-2. Pastikan repository Space memakai metadata `sdk: docker` dan `app_port: 8501` di bagian paling atas README (sudah disediakan pada file ini).
-3. Salin/unggah isi proyek ke repository Space. Pastikan file model, file Parquet, indeks JSONL, database MLflow, dan folder artefak MLflow ikut terunggah.
-4. Pada Space → **Settings** → **Variables and secrets**, tambahkan secret `GROQ_API_KEY` dengan nilai API key pribadi. Jangan menaruh key pada README, kode, atau repository.
-5. Tambahkan variable `LLM_BASE_URL` dengan nilai `https://api.groq.com/openai/v1` dan `OPENAI_MODEL` dengan nilai `openai/gpt-oss-120b`.
-6. Tunggu proses build selesai, lalu buka URL Space. Uji satu prediksi penerbangan dan satu pertanyaan Passenger Rights.
+### Checklist final submission
 
-### Catatan operasional
-
-- MLflow berjalan secara internal untuk membaca registry dan alias `champion`; dashboard MLflow tidak dipublikasikan sebagai layanan terpisah.
-- Registry dan artefak awal dimasukkan ke image dari repository. Perubahan MLflow yang dibuat saat runtime pada Space gratis tidak dijamin bertahan setelah container dibuat ulang. Jalankan training dan registrasi model di lingkungan lokal, lalu commit/sinkronkan database dan artefak MLflow yang baru bila model diperbarui.
-- Space dengan hardware gratis dapat masuk keadaan tidur ketika tidak digunakan. Permintaan pertama setelah periode idle dapat membutuhkan waktu lebih lama.
-- Deployment belum dianggap selesai sebelum URL publik berhasil dibuka dan kedua fungsi utama (prediksi dan retrieval) diuji pada Space.
-
-## Checklist sebelum final submission
-
-- [x] Dataset BTS diproses dan file Parquet tersedia pada lingkungan yang diperiksa.
-- [x] Kandidat model baseline, Logistic Regression, dan Extra Trees dibandingkan.
-- [x] Model `flight_delay_model` versi 1 terdaftar di MLflow dengan alias `champion` (berdasarkan log training dan verifikasi pengguna, 31 Oktober 2026).
-- [x] Aplikasi berhasil memanggil tool prediksi dan menampilkan probabilitas.
-- [x] Agent berhasil memanggil retrieval untuk pertanyaan hak penumpang.
-- [x] Uji manual penolakan permintaan regulasi DOT fiktif berhasil.
-- [ ] Pastikan aplikasi memuat `models:/flight_delay_model@champion` tanpa fallback ke `.joblib` pada log runtime.
-- [ ] Simpan screenshot/bukti eksperimen MLflow, prediksi, retrieval, dan prompt injection.
-- [ ] Lengkapi dan jalankan ulang seluruh skenario pengujian yang masih berstatus catatan pada laporan tes.
-- [x] Jalankan `docker compose exec app python -m pytest -q` di container proyek: `15 passed in 3.67s` (31 Oktober 2026).
-- [ ] Uji `docker compose up -d --build` dari clone bersih pada mesin lain.
-- [ ] Deploy seluruh komponen yang diperlukan ke URL publik dan uji URL tersebut.
-- [ ] Pastikan `.env` dan kredensial tidak masuk ke repositori atau arsip submit.
+- [x] Data pipeline BTS dan penyimpanan Parquet.
+- [x] Model ML, evaluasi, dan prediksi aplikasi.
+- [x] AI Agent dan retrieval hak penumpang AS serta Indonesia.
+- [x] Docker clean clone dan bootstrap.
+- [x] Deployment publik telah diuji.
+- [x] Eksperimen dan Model Registry MLflow.
+- [x] Pengujian prompt injection dan dokumentasinya.
+- [ ] Kumpulkan screenshot prediksi, chatbot, MLflow, Docker, dan pengujian keamanan.
 
 ## Struktur proyek
 
@@ -273,20 +249,29 @@ app.py
 src/
   agent.py
   bootstrap.py
-  config.py
   data_pipeline.py
   ingest_documents.py
+  indonesia_rights.py
   predictor.py
-  reference_data.py
   retrieval.py
   train_model.py
-documents/                    # ringkasan lokal sumber hak penumpang
-data/                         # data mentah dan terproses (diabaikan oleh Git)
-models/                       # model lokal (diabaikan oleh Git)
-storage/                      # database dan artefak MLflow (diabaikan oleh Git)
-tests/                        # unit tests dan laporan prompt injection
+documents/
+  id_pm_89_2015.txt
+  id_uu_1_2009.txt
+  us_*.txt
+data/processed/
+  flights.parquet
+  passenger_rights_chunks.jsonl
+models/
+  flight_delay_model.joblib
+storage/
+tests/
 compose.yaml
 Dockerfile
 requirements.txt
+requirements-local.txt
 .env.example
+README_STREAMLIT_CLOUD.md
 ```
+
+Jangan masukkan `.env`, API key, arsip BTS mentah, atau penyimpanan runtime MLflow ke GitHub.
