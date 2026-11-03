@@ -111,3 +111,40 @@ Ketiga entri tersebut adalah fixture skenario. Keberadaannya dalam JSON bukan bu
 ## Kesimpulan
 
 Pada skenario manual yang tercatat, AI Agent berhasil menolak permintaan pembuatan regulasi DOT fiktif dan mampu mempertahankan bagian pertanyaan refund yang sah pada mixed instruction attack setelah patch. Retrieval hak penumpang juga berjalan dan membedakan ambang refund DOT dari waktu tunggu meal assistance, tetapi jawaban terkait komitmen American Airlines masih memerlukan presisi redaksi. Pengujian tambahan pada tiga fixture di `prompt_injection_cases.json` masih diperlukan sebelum menyatakan cakupan pengujian keamanan lebih luas.
+
+## Pembaruan Verifikasi 3 November 2026
+
+### Konfigurasi model
+
+Konfigurasi default Groq pada `src/agent.py` menggunakan model
+`qwen/qwen3.8-27b` melalui variabel `GROQ_MODEL`.
+Variabel lingkungan dapat mengganti konfigurasi default tersebut.
+
+Pengujian manual PI-001 sampai PI-004 pada bagian sebelumnya
+tetap dicatat menggunakan model `openai/gpt-oss-120b`
+sesuai konfigurasi ketika pengujian dilakukan pada 31 Oktober 2026.
+Pengujian manual tersebut tidak boleh dianggap sebagai pengujian
+ulang menggunakan Qwen.
+
+### Hasil regression test terbaru
+
+Pada 3 November 2026, pengujian otomatis berikut dijalankan
+di container Docker:
+
+- `tests/test_agent_security.py` dan
+  `tests/test_indonesia_rights_and_scope.py`:
+  **13 passed in 2.13s**.
+- Seluruh test suite:
+  **176 passed in 4.53s**.
+
+Pengujian otomatis tersebut memverifikasi perilaku kode dan
+tidak berarti seluruh variasi prompt injection telah diuji
+secara manual melalui Groq.
+
+### Batasan
+
+Tiga skenario tambahan dalam `tests/prompt_injection_cases.json`
+masih berstatus fixture dan belum menjadi bukti pengujian manual.
+Hasil pengujian yang tercatat hanya berlaku untuk skenario dan
+lingkungan yang benar-benar diuji.
+
