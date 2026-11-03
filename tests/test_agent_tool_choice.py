@@ -207,3 +207,11 @@ def test_non_groq_keeps_openai_model_setting(monkeypatch):
 
     monkeypatch.setenv("OPENAI_MODEL", "gpt-4.1-mini")
     assert _select_agent_model(False) == "gpt-4.1-mini"
+
+
+
+def test_groq_output_token_limit_is_below_otpm_cap():
+    from src.agent import _agent_output_token_limit
+
+    assert _agent_output_token_limit(True) == 900
+    assert _agent_output_token_limit(False) is None

@@ -1818,6 +1818,7 @@ HAK PENUMPANG AS:
 - Jangan mengklaim makanan, minuman, hotel, atau kompensasi tambahan sebagai hak universal akibat pembatalan.
 - Jangan mengasumsikan merchant of record, jenis pembayaran, atau tindakan penumpang.
 - Jika eligibility belum lengkap, berikan kesimpulan bersyarat.
+- Batasi jawaban sekitar 250-300 kata. Prioritaskan syarat refund, perbedaan carrier dan OTA, dasar hukum, serta tenggat. Jangan mengulang excerpt panjang.
 - Gunakan parafrasa; aplikasi menampilkan sumber secara terpisah.
 """
 
@@ -1837,6 +1838,7 @@ Untuk pembatalan penerbangan domestik AS:
 - Jangan mengklaim makanan, minuman, hotel, atau kompensasi tambahan tanpa sumber terpisah yang mendukungnya.
 - Jangan mengasumsikan merchant of record, jenis tiket, metode pembayaran, atau tindakan penumpang.
 - Bila eligibility belum diketahui, jawab secara bersyarat.
+- Batasi jawaban sekitar 250-300 kata. Prioritaskan syarat refund, perbedaan carrier dan OTA, dasar hukum, serta tenggat. Jangan mengulang excerpt panjang.
 - Gunakan parafrasa; aplikasi menampilkan sumber secara terpisah.
 """
 
@@ -1881,6 +1883,11 @@ def heuristic_route(question: str) -> list[str]:
     if rights:
         selected.append("search_passenger_rights")
     return selected
+
+
+def _agent_output_token_limit(is_groq: bool) -> int | None:
+    # Stay below Groq Qwen's 1,000 output-tokens-per-minute request limit.
+    return 900 if is_groq else None
 
 
 def _select_agent_model(is_groq: bool) -> str:
@@ -2555,6 +2562,7 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
 
         response = client.responses.create(
             model=model,
+            max_output_tokens=_agent_output_token_limit(is_groq),
             instructions=request_instructions,
             input=request_input,
             tools=tools,
@@ -2606,12 +2614,12 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
             if is_groq:
                 conversation.extend(tool_outputs)
                 response = client.responses.create(
-                    model=model, instructions=request_instructions,
+                    model=model, max_output_tokens=_agent_output_token_limit(is_groq), instructions=request_instructions,
                     input=conversation, tools=tools, tool_choice="auto",
                 )
             else:
                 response = client.responses.create(
-                    model=model, instructions=request_instructions,
+                    model=model, max_output_tokens=_agent_output_token_limit(is_groq), instructions=request_instructions,
                     previous_response_id=response.id, input=tool_outputs,
                     tools=tools, tool_choice="auto",
                 )
