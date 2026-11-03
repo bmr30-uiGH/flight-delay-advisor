@@ -1791,9 +1791,83 @@ def looks_like_injection(text: str) -> bool:
     return detected
 
 
+
+COMBINED_REQUEST_INSTRUCTIONS = """Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna, ringkas, dan faktual.
+
+Kedua tool telah diminta. WAJIB gunakan hasil predict_flight_delay untuk prediksi dan search_passenger_rights untuk hak penumpang. Jangan mengarang hasil tool.
+
+PREDIKSI:
+- Gunakan hanya probabilitas, kelas, dan threshold dari hasil predict_flight_delay.
+- Target adalah keberangkatan terlambat minimal 15 menit.
+- Bedakan probabilitas dari kelas. Probabilitas di bawah threshold bukan jaminan tepat waktu.
+- Estimasi berbasis historis, bukan status real-time.
+- Jika detail penerbangan belum tersimpan atau prediksi gagal, jelaskan keterbatasannya.
+
+HAK PENUMPANG AS:
+- Gunakan hanya bukti dari search_passenger_rights.
+- PEMBATALAN adalah pemicu refund tersendiri berdasarkan ?260.6(a)(2). Jangan mensyaratkan ambang keterlambatan 3 jam domestik atau 6 jam internasional untuk penerbangan yang dibatalkan. Ambang tersebut hanya berlaku untuk definisi significantly delayed or changed pada ?260.2.
+- Untuk carrier sebagai merchant of record, refund kepada pemegang tiket non-refundable bersifat otomatis sesuai kondisi ?260.6(a)(2), tanpa permintaan refund terpisah. Prompt refund: 7 business days untuk kartu kredit dan 20 calendar days untuk metode lain, dihitung dari tanggal pemicu yang berlaku menurut ?260.6(a)(2) dan definisi ?260.2.
+- Jika tidak ada penerbangan alternatif maupun voucher/kompensasi yang ditawarkan setelah pembatalan, gunakan kondisi ?260.6(a)(2)(i). Penolakan eksplisit diatur ?260.6(a)(2)(ii). Jangan mencampur keduanya dengan kondisi tidak merespons pada ?260.6(a)(2)(iii).
+- Jika ticket agent/OTA adalah merchant of record, ?399.80(l) mewajibkan refund prompt atas permintaan konsumen. Untuk kartu kredit: 7 business days setelah agent menerima informasi eligibility dari carrier berdasarkan ?260.6(d). Untuk metode lain: 20 calendar days setelah refund menjadi jatuh tempo.
+- ?260.6(a)(1) mengatur tiket non-refundable pada covered scheduled flights to, from, or within the United States. Refund bergantung pada syarat kelayakan dan keputusan konsumen untuk tidak terbang atau menerima kompensasi pengganti refund.
+- Bedakan maskapai sebagai merchant of record dari ticket agent/OTA sebagai merchant of record.
+- Jika maskapai adalah merchant of record, ikuti ketentuan refund carrier dan trigger yang didukung sumber.
+- Jika ticket agent/OTA adalah merchant of record, ?399.80(l) mewajibkan refund prompt atas permintaan konsumen. Untuk kartu kredit, tenggat agent adalah 7 business days setelah agent menerima informasi kelayakan dari carrier berdasarkan ?260.6(d). Untuk metode pembayaran lain, 20 calendar days setelah refund menjadi jatuh tempo.
+- Bedakan penolakan eksplisit dari tidak merespons. Jangan mencampur trigger atau tenggat.
+- ?260.6(b) berkaitan dengan perubahan fitur aksesibilitas bagi penumpang dengan disabilitas, bukan aturan umum makanan, minuman, atau hotel.
+- Jangan mengklaim makanan, minuman, hotel, atau kompensasi tambahan sebagai hak universal akibat pembatalan.
+- Jangan mengasumsikan merchant of record, jenis pembayaran, atau tindakan penumpang.
+- Jika eligibility belum lengkap, berikan kesimpulan bersyarat.
+- Gunakan parafrasa; aplikasi menampilkan sumber secara terpisah.
+"""
+
+US_CANCELLATION_INSTRUCTIONS = """Kamu adalah Flight Delay Advisor. Jawab dalam bahasa pengguna dan berdasarkan hasil search_passenger_rights saja.
+
+Untuk pembatalan penerbangan domestik AS:
+- Pembatalan adalah pemicu refund tersendiri berdasarkan ?260.6(a)(2). Jangan mensyaratkan ambang 3 jam domestik atau 6 jam internasional dari definisi significantly delayed or changed pada ?260.2 untuk penerbangan yang dibatalkan.
+- Untuk carrier sebagai merchant of record, refund kepada pemegang tiket non-refundable bersifat otomatis sesuai kondisi ?260.6(a)(2), tanpa permintaan refund terpisah. Prompt refund: 7 business days untuk kartu kredit dan 20 calendar days untuk metode lain, dihitung dari tanggal pemicu yang berlaku menurut ?260.6(a)(2) dan definisi ?260.2.
+- Bedakan pembatalan tanpa tawaran alternatif/kompensasi (?260.6(a)(2)(i)), penolakan eksplisit (?260.6(a)(2)(ii)), dan tidak merespons (?260.6(a)(2)(iii)).
+- Jika ticket agent/OTA adalah merchant of record, ?399.80(l) mewajibkan refund prompt atas permintaan konsumen. Untuk kartu kredit: 7 business days setelah agent menerima informasi eligibility dari carrier berdasarkan ?260.6(d). Untuk metode lain: 20 calendar days setelah refund menjadi jatuh tempo.
+- ?260.6(a)(1) membahas tiket non-refundable pada covered scheduled flights to, from, or within the United States. Refund bergantung pada syarat eligibility dan pilihan konsumen untuk tidak terbang atau menerima kompensasi pengganti refund.
+- Bedakan maskapai sebagai merchant of record dari ticket agent/OTA sebagai merchant of record.
+- Jika maskapai adalah merchant of record, jelaskan refund carrier sesuai sumber dan trigger yang benar.
+- Jika ticket agent/OTA adalah merchant of record, ?399.80(l) mewajibkan refund prompt atas permintaan konsumen. Untuk kartu kredit: 7 business days setelah agent menerima informasi eligibility dari carrier berdasarkan ?260.6(d). Untuk metode lain: 20 calendar days setelah refund menjadi jatuh tempo.
+- Bedakan penolakan eksplisit, tidak merespons tawaran penerbangan, dan tidak merespons voucher/credit.
+- ?260.6(b) berkaitan dengan perubahan fitur aksesibilitas bagi penumpang dengan disabilitas, bukan bantuan makanan, minuman, atau hotel secara umum.
+- Jangan mengklaim makanan, minuman, hotel, atau kompensasi tambahan tanpa sumber terpisah yang mendukungnya.
+- Jangan mengasumsikan merchant of record, jenis tiket, metode pembayaran, atau tindakan penumpang.
+- Bila eligibility belum diketahui, jawab secara bersyarat.
+- Gunakan parafrasa; aplikasi menampilkan sumber secara terpisah.
+"""
+
+
+def _instructions_for_request(question: str, routed_tools: list[str]) -> str:
+    text = " ".join(str(question or "").casefold().split())
+
+    is_us_question = any(term in text for term in (
+        "united states", "u.s.", "us dot", "u.s. dot",
+        "amerika serikat", "14 cfr", "ecfr",
+    ))
+    is_cancellation_question = any(term in text for term in (
+        "cancelled", "canceled", "cancellation",
+        "dibatalkan", "pembatalan",
+    ))
+
+    has_prediction = "predict_flight_delay" in routed_tools
+    has_rights = "search_passenger_rights" in routed_tools
+
+    if has_prediction and has_rights and is_us_question and is_cancellation_question:
+        return COMBINED_REQUEST_INSTRUCTIONS
+
+    if has_rights and is_us_question and is_cancellation_question:
+        return US_CANCELLATION_INSTRUCTIONS
+
+    return SYSTEM_INSTRUCTIONS
+
+
 def heuristic_route(question: str) -> list[str]:
     """Local fallback routing for explicit prediction and passenger-rights requests."""
-    text = re.sub(r"\s+", " ", (question or "").lower()).strip()
+    text = re.sub(r"\\s+", " ", (question or "").lower()).strip()
 
     rights = any(term in text for term in RIGHTS_WORDS)
 
@@ -1807,6 +1881,28 @@ def heuristic_route(question: str) -> list[str]:
     if rights:
         selected.append("search_passenger_rights")
     return selected
+
+
+def _select_agent_model(is_groq: bool) -> str:
+    if is_groq:
+        return os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
+    return os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+
+
+def _initial_tool_choice(
+    routed_tools: list[str],
+    has_flight_inputs: bool,
+):
+    """Force a tool only for single-purpose requests; allow combined routing."""
+    if has_flight_inputs and routed_tools == ["predict_flight_delay"]:
+        return {"type": "function", "name": "predict_flight_delay"}
+
+    if routed_tools == ["search_passenger_rights"]:
+        return {"type": "function", "name": "search_passenger_rights"}
+
+    # Combined requests must allow the model to call both tools.
+    return "auto"
+
 
 # INDONESIA_RAG_PATCH_V1
 _INDONESIA_LAW_MARKERS = (
@@ -2082,6 +2178,38 @@ def _compact_passenger_rights_result_for_llm(
             "Compact retrieved evidence. Use only the supplied facts. "
             "The application separately retains the complete retrieved sources."
         ),
+    }
+
+
+
+def _prediction_tool_definition() -> dict:
+    """Accept known model-generated fields; execution uses saved form data only."""
+    return {
+        "type": "function",
+        "name": "predict_flight_delay",
+        "description": (
+            "Predict historical departure-delay probability using the flight "
+            "details already saved in the application form. Do not infer or "
+            "override flight details. Any arguments generated by the model "
+            "are ignored; the application executes prediction strictly from "
+            "the saved flight_inputs."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "OP_CARRIER": {"type": "string"},
+                "ORIGIN": {"type": "string"},
+                "DEST": {"type": "string"},
+                "FL_DATE": {"type": "string"},
+                "CRS_DEP_TIME": {"type": "integer"},
+                "DAY_OF_WEEK": {"type": "integer"},
+                "MONTH": {"type": "integer"},
+                "DISTANCE": {"type": "number"},
+                "PREDICTION_MODE": {"type": "string"},
+            },
+            "required": [],
+            "additionalProperties": False,
+        },
     }
 
 
@@ -2395,14 +2523,10 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
         if base_url:
             client_kwargs["base_url"] = base_url
         client = OpenAI(**client_kwargs)
-        model = os.getenv("OPENAI_MODEL", "openai/gpt-oss-120b" if is_groq else "gpt-4.1-mini")
+        model = _select_agent_model(is_groq)
 
         tools = [
-            {
-                "type": "function", "name": "predict_flight_delay",
-                "description": "Predict historical probability of departure delay of at least 15 minutes using saved flight details. Call only when the user asks for a prediction.",
-                "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": False},
-            },
+            _prediction_tool_definition(),
             {
                 "type": "function", "name": "search_passenger_rights",
                 "description": "Search jurisdiction-specific official passenger-rights documents for the United States or Indonesia. For Indonesian itineraries or explicit Indonesian-law questions, use only the Indonesian corpus; for U.S. itineraries, use the U.S. DOT/eCFR corpus. Call for refunds, delay rights, cancellations, assistance, or airline commitments.",
@@ -2419,17 +2543,19 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
 
         conversation = [{"role": "user", "content": contextual_question}]
         request_input = conversation if is_groq else contextual_question
-        first_tool_choice = "auto"
         routed_tools = heuristic_route(working_question)
-        if flight_inputs and routed_tools == ["predict_flight_delay"]:
-            first_tool_choice = {"type": "function", "name": "predict_flight_delay"}
-        elif "search_passenger_rights" in routed_tools:
-            # Force retrieval for rights questions so the answer has auditable sources.
-            first_tool_choice = {"type": "function", "name": "search_passenger_rights"}
+        request_instructions = _instructions_for_request(
+            working_question,
+            routed_tools,
+        )
+        first_tool_choice = _initial_tool_choice(
+            routed_tools,
+            has_flight_inputs=bool(flight_inputs),
+        )
 
         response = client.responses.create(
             model=model,
-            instructions=SYSTEM_INSTRUCTIONS,
+            instructions=request_instructions,
             input=request_input,
             tools=tools,
             tool_choice=first_tool_choice,
@@ -2480,12 +2606,12 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
             if is_groq:
                 conversation.extend(tool_outputs)
                 response = client.responses.create(
-                    model=model, instructions=SYSTEM_INSTRUCTIONS,
+                    model=model, instructions=request_instructions,
                     input=conversation, tools=tools, tool_choice="auto",
                 )
             else:
                 response = client.responses.create(
-                    model=model, instructions=SYSTEM_INSTRUCTIONS,
+                    model=model, instructions=request_instructions,
                     previous_response_id=response.id, input=tool_outputs,
                     tools=tools, tool_choice="auto",
                 )
