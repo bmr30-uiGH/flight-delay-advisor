@@ -2733,28 +2733,32 @@ def answer_user(question: str, flight_inputs: dict | None = None, flight_summary
                         ensure_ascii=False,
                     ),
                 })
-            if is_groq:
-                conversation.extend(tool_outputs)
-                response = client.responses.create(
-                    model=model, max_output_tokens=_agent_output_token_limit(is_groq), instructions=request_instructions,
-                    input=conversation, tools=tools,
-                    tool_choice=(
-                        "none"
-                        if set(routed_tools).issubset(set(used))
-                        else "auto"
-                    ),
+            all_tools_used = set(routed_tools).issubset(set(used))
+
+            followup_kwargs = {
+                "model": model,
+                "max_output_tokens": _agent_output_token_limit(is_groq),
+                "instructions": request_instructions,
+                "tools": [] if all_tools_used else tools,
+            }
+
+            if all_tools_used:
+                followup_kwargs["instructions"] += (
+                    "\n\nSemua tool yang diperlukan sudah dijalankan. "
+                    "Gunakan hasil tool yang tersedia untuk menyusun jawaban akhir. "
+                    "Jangan mencoba memanggil tool lagi."
                 )
             else:
-                response = client.responses.create(
-                    model=model, max_output_tokens=_agent_output_token_limit(is_groq), instructions=request_instructions,
-                    previous_response_id=response.id, input=tool_outputs,
-                    tools=tools,
-                    tool_choice=(
-                        "none"
-                        if set(routed_tools).issubset(set(used))
-                        else "auto"
-                    ),
-                )
+                followup_kwargs["tool_choice"] = "auto"
+
+            if is_groq:
+                conversation.extend(tool_outputs)
+                followup_kwargs["input"] = conversation
+            else:
+                followup_kwargs["previous_response_id"] = response.id
+                followup_kwargs["input"] = tool_outputs
+
+            response = client.responses.create(**followup_kwargs)
 
         answer = (getattr(response, "output_text", "") or "").strip()
         if "search_passenger_rights" in used and not sources:
