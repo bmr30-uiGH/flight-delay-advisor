@@ -406,12 +406,18 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
                     5: "ganti rugi sebesar Rp300.000",
                 }
 
+                category_article_letter = {
+                    1: "a", 2: "b", 3: "c", 4: "d", 5: "e"
+                }[category]
+
                 parts = [
                     f"**Kategori keterlambatan: kategori {category} ({category_range}).**",
                     (
                         f"Durasi yang disebutkan adalah **{duration_minutes} menit**. "
-                        f"Berdasarkan Pasal 3 PM 89/2015, kompensasi kategori ini "
-                        f"berupa **{category_compensation[category]}**."
+                        f"Pasal 3 PM 89/2015 menetapkan durasi tersebut sebagai "
+                        f"kategori {category}. Bentuk kompensasinya diatur dalam "
+                        f"Pasal 9 ayat (1) huruf {category_article_letter}, yaitu "
+                        f"**{category_compensation[category]}**."
                     ),
                 ]
 
@@ -455,15 +461,36 @@ def _deterministic_passenger_rights_override(question: str, sources: list[dict])
                             "kebutuhan penumpang akan tempat penginapan."
                         )
 
-                if "pasal 6" in evidence:
+                aircraft_not_ready = any(term in lowered_question for term in (
+                    "pesawat belum siap",
+                    "pesawat tidak siap",
+                    "ketidaksiapan pesawat",
+                    "belum siapnya pesawat",
+                    "aircraft not ready",
+                ))
+
+                if (
+                    aircraft_not_ready
+                    and "pasal 5" in evidence
+                    and "pasal 6" in evidence
+                ):
                     parts.append(
-                        "Penyebab keterlambatan juga perlu diperiksa. Pasal 6 "
-                        "menyatakan maskapai bertanggung jawab atas keterlambatan "
-                        "akibat faktor manajemen maskapai. Pasal tersebut juga "
-                        "mengatur pembebasan tanggung jawab atas ganti kerugian "
-                        "untuk faktor teknis operasional, cuaca, dan faktor lain "
-                        "sebagaimana dirujuk dalam Pasal 5. Mintalah alasan resmi "
-                        "dan bukti pendukung dari maskapai."
+                        "Ketidaksiapan pesawat udara termasuk faktor manajemen "
+                        "maskapai menurut Pasal 5 ayat (2) huruf e. Pasal 6 "
+                        "ayat (1) menetapkan bahwa maskapai bertanggung jawab "
+                        "atas keterlambatan yang disebabkan faktor tersebut. "
+                        "Dengan demikian, apabila ketidaksiapan pesawat merupakan "
+                        "penyebab resmi keterlambatan, tanggung jawab berada "
+                        "pada maskapai."
+                    )
+                elif "pasal 6" in evidence:
+                    parts.append(
+                        "Pasal 6 ayat (1) menyatakan maskapai bertanggung jawab "
+                        "atas keterlambatan akibat faktor manajemen maskapai. "
+                        "Pasal 6 ayat (2) mengatur pembebasan tanggung jawab "
+                        "atas ganti kerugian untuk faktor teknis operasional, "
+                        "cuaca, dan faktor lain sebagaimana dirujuk dalam Pasal 5. "
+                        "Pastikan penyebab keterlambatan berdasarkan keterangan resmi."
                     )
 
                 if "pasal 4" in evidence:
