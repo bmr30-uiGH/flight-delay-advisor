@@ -154,8 +154,8 @@ def test_ota_explicit_merchant_of_record_is_respected():
     assert "nama mor belum disebutkan" not in answer.lower()
     assert "fully refundable" not in answer.lower()
     assert "jika maskapai adalah merchant of record" not in answer.lower()
-    assert "?399.80" not in answer
-    assert "?260.6" not in answer
+    assert "§399.80" not in answer
+    assert "§260.6" not in answer
 
 
 def test_ota_merchant_of_record_is_not_assumed_without_evidence_from_user():

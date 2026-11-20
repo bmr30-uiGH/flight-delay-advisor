@@ -15,6 +15,7 @@ from src.config import (
     MODEL_PATH,
     MODEL_DIR,
     MLFLOW_TRACKING_URI,
+    MODEL_SOURCE_VALUES,
     FLIGHTS_PATH,
     TARGET,
 )
@@ -122,6 +123,12 @@ def load_model_bundle():
         .lower()
     )
 
+    if model_source not in MODEL_SOURCE_VALUES:
+        raise ValueError(
+            f"MODEL_SOURCE tidak valid: {model_source!r}. "
+            f"Nilai yang diizinkan: {sorted(MODEL_SOURCE_VALUES)}"
+        )
+
     # --------------------------------------------------------
     # Historical candidate model
     # --------------------------------------------------------
@@ -185,7 +192,7 @@ def load_model_bundle():
         }
 
     # --------------------------------------------------------
-    # Existing candidate model
+    # Candidate model
     # --------------------------------------------------------
 
     if model_source in {
@@ -479,10 +486,10 @@ def predict_delay(
             "message": "DAY_OF_WEEK harus berupa angka 1 sampai 7.",
         }
 
-    if row["DISTANCE"] <= 0:
+    if row["DISTANCE"] <= 0 or row["DISTANCE"] > 5000:
         return {
             "ok": False,
-            "message": "DISTANCE harus lebih besar dari 0.",
+            "message": "DISTANCE harus lebih besar dari 0 dan tidak lebih dari 5000 miles.",
         }
 
     # --------------------------------------------------------

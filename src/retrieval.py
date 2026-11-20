@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from functools import lru_cache
+from pathlib import Path
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -275,12 +276,13 @@ def _expand_query(query: str) -> str:
 @lru_cache(maxsize=2)
 def _load_chunks(path_string: str, modified_ns: int) -> tuple[dict, ...]:
     # The mtime argument invalidates the small cache when ingestion rewrites the index.
-    del path_string, modified_ns
-    if not CHUNKS_PATH.exists():
+    del modified_ns
+    path = Path(path_string)
+    if not path.exists():
         return tuple()
 
     records: list[dict] = []
-    with CHUNKS_PATH.open("r", encoding="utf-8") as handle:
+    with path.open("r", encoding="utf-8") as handle:
         for line in handle:
             try:
                 item = json.loads(line)
@@ -291,19 +293,22 @@ def _load_chunks(path_string: str, modified_ns: int) -> tuple[dict, ...]:
     return tuple(records)
 
 
-def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
-    if not CHUNKS_PATH.exists() or not str(query or "").strip():
-        return []
+@lru_cache(maxsize=2)
+def _get_vectorizer_and_matrix(modified_ns: int):
+    """
+    Build and cache the TF-IDF vectorizer and document matrix.
 
-    chunks = _load_chunks(str(CHUNKS_PATH), CHUNKS_PATH.stat().st_mtime_ns)
+    The modified_ns (mtime nanoseconds) acts as a cache key — when the
+    chunks file is rewritten by ingestion, the mtime changes and we rebuild.
+    """
+    chunks = _load_chunks(str(CHUNKS_PATH), modified_ns)
     if not chunks:
-        return []
+        return None, None, tuple()
 
     searchable_texts = [
         " ".join((item.get("title", ""), item.get("section", ""), item.get("text", "")))
         for item in chunks
     ]
-    expanded_query = _expand_query(query)
 
     vectorizer = TfidfVectorizer(
         ngram_range=(1, 2),
@@ -311,8 +316,27 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
         max_features=30000,
     )
     try:
-        matrix = vectorizer.fit_transform(searchable_texts + [expanded_query])
-        scores = cosine_similarity(matrix[-1], matrix[:-1]).ravel()
+        doc_matrix = vectorizer.fit_transform(searchable_texts)
+    except ValueError:
+        return None, None, chunks
+
+    return vectorizer, doc_matrix, chunks
+
+
+def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
+    if not CHUNKS_PATH.exists() or not str(query or "").strip():
+        return []
+
+    modified_ns = CHUNKS_PATH.stat().st_mtime_ns
+    vectorizer, doc_matrix, chunks = _get_vectorizer_and_matrix(modified_ns)
+    if not chunks or vectorizer is None or doc_matrix is None:
+        return []
+
+    expanded_query = _expand_query(query)
+
+    try:
+        query_vec = vectorizer.transform([expanded_query])
+        scores = cosine_similarity(query_vec, doc_matrix).ravel()
     except ValueError:
         return []
 
@@ -334,21 +358,24 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
         any(term in lowered_query for term in ("tidak merespons", "tidak menanggapi", "did not respond", "no response"))
         and any(term in lowered_query for term in ("penerbangan alternatif", "alternative flight", "alternative transportation"))
     )
+
+    # Tarmac delay intent - prioritize tarmac-specific documents
     tarmac_intent = any(term in lowered_query for term in (
         "tarmac", "landasan", "di landasan", "tertahan di landasan",
         "penundaan di landasan", "pesawat tertahan", "deplane", "turun dari pesawat",
     ))
-    explicit_rejection_alt_intent = (
+
+    # Explicit rejection intent - prioritize §260.6(a)(2)(ii) and deadline chunks
+    explicit_rejection_intent = (
         any(term in lowered_query for term in (
-            "menolak", "menolaknya", "saya tolak", "penolakan", "rejected", "reject", "declined",
+            "menolak", "menolaknya", "penolakan", "saya tolak", "reject",
+            "rejected", "decline", "declined", "explicit rejection", "penolakan eksplisit"
         ))
         and any(term in lowered_query for term in (
-            "penerbangan alternatif", "alternatif tersebut", "penerbangan pengganti",
-            "alternative flight", "rebooking",
+            "penerbangan alternatif", "alternative flight", "penerbangan pengganti",
+            "alternative", "rebooking", "alternatif"
         ))
     )
-    tarmac_document_indices: list[int] = []
-    tarmac_cfr_document_indices: list[int] = []
 
     for chunk_index, chunk in enumerate(chunks):
         title = str(chunk.get("title", "")).lower()
@@ -356,54 +383,6 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
         body = str(chunk.get("text", "")).lower()
         url = str(chunk.get("url", "")).lower()
         title_section_body = title + " " + section + " " + body
-
-        is_tarmac_document = (
-            "transportation.gov/individuals/aviation-consumer-protection/tarmac-delays" in url
-            or ("tarmac" in title and "delay" in title)
-        )
-        is_tarmac_cfr_document = "part-259/section-259.4" in url
-        if tarmac_intent and is_tarmac_document:
-            tarmac_document_indices.append(chunk_index)
-            scores[chunk_index] += 2.0
-        if tarmac_intent and is_tarmac_cfr_document:
-            tarmac_cfr_document_indices.append(chunk_index)
-            # The deterministic tarmac answer needs both the DOT guidance and
-            # the underlying §259.4 text. Boost the CFR chunks so at least one
-            # is retained in the six-source retrieval window.
-            scores[chunk_index] += 4.0
-
-        if explicit_rejection_alt_intent:
-            is_explicit_rejection_chunk = (
-                "260.6(a)(2)(ii)" in body
-                or "penolakan eksplisit" in section
-                or "explicit rejection" in section
-            )
-            is_explicit_rejection_deadline_chunk = (
-                "7 business days" in body
-                and "20 calendar days" in body
-                and ("after you reject" in body or "after the consumer rejects" in body)
-            )
-            is_no_response_only_chunk = (
-                "260.6(a)(2)(iii)(a)" in body
-                or ("no response" in section and "explicit rejection" not in section)
-            )
-            if is_explicit_rejection_chunk:
-                scores[chunk_index] += 2.5
-            is_nonrefundable_obligation_chunk = (
-                "260.6(a)(1)" in body
-                and ("nonrefundable" in body or "non-refundable" in body)
-                and "merchant of record" in body
-            )
-            if is_nonrefundable_obligation_chunk:
-                scores[chunk_index] += 3.5
-            if is_explicit_rejection_deadline_chunk or (
-                "tenggat setelah penolakan eksplisit" in section
-                and "7 business days" in body
-                and "20 calendar days" in body
-            ):
-                scores[chunk_index] += 2.5
-            if is_no_response_only_chunk:
-                scores[chunk_index] *= 0.10
 
         # Give the actual §260.2 late-arrival definition a strong rank boost.
         # A general refund/payment chunk is not an adequate substitute.
@@ -443,62 +422,81 @@ def retrieve_passenger_rights(query: str, top_k: int = 6) -> list[dict]:
             if is_automatic_refund_section and has_departure_without_consumer_condition:
                 scores[chunk_index] += 1.25
 
+        # Tarmac delay queries should prioritize tarmac-specific documents
+        # from transportation.gov/tarmac-delays and eCFR part-259/section-259.4
+        if tarmac_intent:
+            is_tarmac_dot_source = (
+                "transportation.gov/individuals/aviation-consumer-protection/tarmac-delays" in url
+            )
+            is_tarmac_cfr_source = (
+                "part-259/section-259.4" in url
+            )
+            if is_tarmac_dot_source or is_tarmac_cfr_source:
+                scores[chunk_index] += 2.00
+
+        # Explicit rejection queries should prioritize §260.6(a)(2)(ii) and
+        # deadline chunks, NOT the no-response (§260.6(a)(2)(iii)(A)) section.
+        if explicit_rejection_intent:
+            is_explicit_rejection_section = (
+                "explicit rejection" in section
+                or "260.6(a)(2)(ii)" in section
+                or "automatic refunds" in section
+            )
+            is_deadline_section = (
+                "7 business days" in body
+                and "20 calendar days" in body
+                and ("after you reject" in body or "after the consumer rejects" in body
+                     or "after rejection" in body or "following rejection" in body
+                     or "after explicit rejection" in body or "after an explicit rejection" in body
+                     or "after the date you reject" in body
+                     or "after the consumer explicitly rejects" in body
+                     or "setelah penolakan" in body or "setelah konsumen menolak" in body)
+            )
+            is_no_response_section = (
+                "no response" in section
+                or "does not respond" in section
+                or "260.6(a)(2)(iii)" in section
+            )
+            if is_explicit_rejection_section:
+                scores[chunk_index] += 1.50
+            if is_deadline_section:
+                scores[chunk_index] += 1.25
+            # Deprioritize no-response section for explicit rejection queries
+            if is_no_response_section:
+                scores[chunk_index] -= 0.50
+
         if downgrade_intent and "downgrade" in title_section_body and (
             "difference between the original fare" in body or "fare difference" in body
         ):
             scores[chunk_index] += 1.00
 
-    # For tarmac-delay questions, prefer the dedicated DOT guidance together
-    # with the controlling §259.4 source. Generic refund chunks should not crowd
-    # either source out of the retrieval window.
-    if tarmac_intent and (tarmac_document_indices or tarmac_cfr_document_indices):
-        tarmac_indices = sorted(
-            set(tarmac_document_indices + tarmac_cfr_document_indices),
-            key=lambda index: float(scores[index]),
-            reverse=True,
-        )
-        # The deterministic answer requires a complete evidence bundle: DOT's
-        # food/water, facilities/temperature, and notification guidance, plus
-        # the controlling CFR deplaning distinction. Select those source
-        # categories first, then fill remaining slots by relevance.
-        ranked = []
-        preferred_dot_sections = (
-            ("FOOD AND POTABLE WATER", "FOOD AND WATER"),
-            ("TOILETS", "LAVATORY", "CABIN TEMPERATURE"),
-            ("STATUS NOTIFICATION", "UPDATES AND NOTIFICATIONS"),
-        )
-        for section_terms in preferred_dot_sections:
-            candidates = [
-                index for index in tarmac_document_indices
-                if any(term in str(chunks[index].get("section", "")).upper() for term in section_terms)
-            ]
-            if candidates:
-                ranked.append(max(candidates, key=lambda index: float(scores[index])))
-
-        preferred_cfr_sections = [
-            index for index in tarmac_cfr_document_indices
-            if "THREE-HOUR LIMIT" in str(chunks[index].get("section", "")).upper()
-            or "DEPARTING AND ARRIVING" in str(chunks[index].get("section", "")).upper()
-        ]
-        if preferred_cfr_sections:
-            ranked.append(max(preferred_cfr_sections, key=lambda index: float(scores[index])))
-        elif tarmac_cfr_document_indices:
-            ranked.append(max(tarmac_cfr_document_indices, key=lambda index: float(scores[index])))
-
-        ranked.extend(index for index in tarmac_indices if index not in ranked)
-    else:
-        ranked = scores.argsort()[::-1]
+    ranked = scores.argsort()[::-1]
     results: list[dict] = []
     limit = max(1, min(int(top_k), 6))
+
+    # For tarmac queries, only return tarmac-specific documents
+    allowed_urls = None
+    if tarmac_intent:
+        allowed_urls = {
+            "https://www.transportation.gov/individuals/aviation-consumer-protection/tarmac-delays",
+            "https://www.ecfr.gov/current/title-14/chapter-II/subchapter-A/part-259/section-259.4",
+        }
+
     for index in ranked:
         score = float(scores[index])
         if score <= 0.005:
             continue
         item = chunks[int(index)]
+        url = item.get("url", "")
+
+        # Filter non-tarmac documents for tarmac queries
+        if allowed_urls is not None and url not in allowed_urls:
+            continue
+
         results.append({
             "title": item.get("title", "U.S. DOT document"),
             "section": item.get("section", ""),
-            "url": item.get("url", ""),
+            "url": url,
             "excerpt": item.get("text", ""),
             "score": round(score, 4),
             "chunk_id": item.get("id", ""),

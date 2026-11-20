@@ -41,6 +41,9 @@ from src.config import (
     FEATURES,
     TARGET,
     MLFLOW_TRACKING_URI,
+    CATEGORICAL,
+    RAW_NUMERIC,
+    CYCLIC_NUMERIC,
 )
 
 
@@ -72,25 +75,6 @@ SUMMARY_PATH = Path(
 )
 
 RANDOM_STATE = 42
-
-CATEGORICAL = [
-    "OP_CARRIER",
-    "ORIGIN",
-    "DEST",
-]
-
-RAW_NUMERIC = [
-    "CRS_DEP_TIME",
-    "MONTH",
-    "DAY_OF_WEEK",
-    "DISTANCE",
-]
-
-CYCLIC_NUMERIC = [
-    "MONTH",
-    "DAY_OF_WEEK",
-    "DISTANCE",
-]
 
 # Default experiment period:
 # Training: June - July 2026

@@ -69,7 +69,7 @@ def test_combined_us_question_uses_compact_instructions_for_both_tools():
     assert routed == ["predict_flight_delay", "search_passenger_rights"]
     assert "predict_flight_delay" in instructions
     assert "search_passenger_rights" in instructions
-    assert "?260.6(b)" in instructions
+    assert "§260.6(b)" in instructions
     assert "fitur aksesibilitas" in instructions.lower()
     assert "bukan aturan umum" in instructions.lower()
     assert len(instructions) < 5000
@@ -86,9 +86,9 @@ def test_us_cancellation_prompt_does_not_invent_meals_or_hotels():
         ["search_passenger_rights"],
     )
 
-    assert "?399.80(l)" in instructions
+    assert "§399.80(l)" in instructions
     assert "atas permintaan konsumen" in instructions.lower()
-    assert "?260.6(b)" in instructions
+    assert "§260.6(b)" in instructions
     assert "bukan bantuan makanan, minuman, atau hotel" in instructions.lower()
     assert len(instructions) < 5000
 
@@ -181,9 +181,9 @@ def test_us_cancellation_prompt_separates_cancellation_from_delay_threshold():
 
     assert "pemicu refund tersendiri" in instructions.lower()
     assert "jangan mensyaratkan ambang" in instructions.lower()
-    assert "?260.6(a)(2)(ii)" in instructions
-    assert "?260.6(a)(2)(iii)" in instructions
-    assert "?399.80(l)" in instructions
+    assert "§260.6(a)(2)(ii)" in instructions
+    assert "§260.6(a)(2)(iii)" in instructions
+    assert "§399.80(l)" in instructions
     assert "20 calendar days" in instructions
 
 

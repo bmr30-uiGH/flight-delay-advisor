@@ -18,10 +18,17 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-from src.config import FLIGHTS_PATH, FEATURES, TARGET, MODEL_DIR, MODEL_PATH, MLFLOW_TRACKING_URI, MODEL_NAME
-
-CATEGORICAL = ["OP_CARRIER", "ORIGIN", "DEST"]
-NUMERIC = ["CRS_DEP_TIME", "MONTH", "DAY_OF_WEEK", "DISTANCE"]
+from src.config import (
+    FLIGHTS_PATH,
+    FEATURES,
+    TARGET,
+    MODEL_DIR,
+    MODEL_PATH,
+    MLFLOW_TRACKING_URI,
+    MODEL_NAME,
+    CATEGORICAL,
+    NUMERIC,
+)
 
 
 def build_pipeline(estimator):

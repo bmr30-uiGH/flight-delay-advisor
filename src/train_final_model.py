@@ -22,6 +22,8 @@ from src.config import (
     TARGET,
     MODEL_DIR,
     MLFLOW_TRACKING_URI,
+    CATEGORICAL,
+    CYCLIC_NUMERIC,
 )
 
 from src.features import hhmm_to_cyclic
@@ -148,27 +150,17 @@ def build_final_pipeline(estimator):
         (
             "categorical",
             categorical_pipeline,
-            [
-                "OP_CARRIER",
-                "ORIGIN",
-                "DEST",
-            ],
+            CATEGORICAL,
         ),
         (
             "departure_time_cyclic",
             departure_time_pipeline,
-            [
-                "CRS_DEP_TIME",
-            ],
+            ["CRS_DEP_TIME"],
         ),
         (
             "numeric",
             numeric_pipeline,
-            [
-                "MONTH",
-                "DAY_OF_WEEK",
-                "DISTANCE",
-            ],
+            CYCLIC_NUMERIC,
         ),
     ])
 
