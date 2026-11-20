@@ -1,5 +1,22 @@
 from __future__ import annotations
 
+from pathlib import Path
+import pytest
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+V3_INFERENCE_FEATURES_PATH = PROJECT_ROOT / "src" / "v3_inference_features.py"
+V3_BUILDER_PATH = PROJECT_ROOT / "src" / "build_historical_feature_experiment_jan_aug_v3.py"
+V3_HISTORICAL_DEMO_PREDICTOR_PATH = PROJECT_ROOT / "src" / "v3_historical_demo_predictor.py"
+V3_MODEL_PATH = PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.joblib"
+V3_HISTORY_PATH = PROJECT_ROOT / "data" / "processed" / "flights_historical_features_experiment_jan_aug_v3.parquet"
+
+if not (V3_INFERENCE_FEATURES_PATH.is_file() and V3_BUILDER_PATH.is_file() and V3_HISTORICAL_DEMO_PREDICTOR_PATH.is_file() and V3_MODEL_PATH.is_file() and V3_HISTORY_PATH.is_file()):
+    pytest.skip(
+        "V3 experiment dependencies are optional and not included "
+        "in the production clean clone.",
+        allow_module_level=True,
+    )
+
 import pandas as pd
 
 from src.v3_historical_demo_predictor import (
