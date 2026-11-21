@@ -334,9 +334,28 @@ def load_model_bundle():
                 f"dimuat ({registry_error}); memakai artifact lokal."
             )
 
-            model = joblib.load(
-                MODEL_PATH
-            )
+            artifact = joblib.load(MODEL_PATH)
+
+            # Check if it's the new production bundle format
+            if _is_new_production_bundle(artifact):
+                model = artifact["model"]
+                threshold = _validate_threshold(artifact.get("threshold", 0.50))
+                model_name = artifact.get("model_name", MODEL_NAME)
+                historical_reference = artifact.get("historical_reference")
+                feature_schema = artifact.get("feature_schema", FEATURES)
+
+                return {
+                    "model": model,
+                    "threshold": threshold,
+                    "model_name": model_name,
+                    "model_source": "local_fallback",
+                    "requires_historical_features": True,
+                    "historical_reference": historical_reference,
+                    "feature_schema": feature_schema,
+                }
+
+            # Legacy format: direct Pipeline object
+            model = artifact
 
             return {
                 "model": model,
