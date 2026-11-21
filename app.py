@@ -570,7 +570,7 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
 }
 
 [data-testid="stChatInput"] {
-  background-color: var(--color-card) !important;
+  background-color: transparent !important;
   border-top: 1px solid var(--color-border) !important;
   padding: var(--space-4) !important;
 }
@@ -645,6 +645,7 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
   font-size: var(--text-base) !important;
   font-weight: 500 !important;
   color: var(--color-card-foreground) !important;
+  background-color: var(--color-card) !important;
   padding: var(--space-4) !important;
   cursor: pointer !important;
   list-style: none !important;
@@ -696,6 +697,16 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
   background-color: color-mix(in srgb, var(--color-info) 12%, transparent) !important;
   color: var(--color-info) !important;
   border-left: 3px solid var(--color-info) !important;
+}
+
+/* Sidebar info/caption alerts - ensure contrast on dark card background */
+[data-testid="stSidebar"] .stAlert[data-baseweb="notification"][kind="info"],
+[data-testid="stSidebar"] .stCaption {
+  background-color: color-mix(in srgb, var(--color-info) 15%, var(--color-card)) !important;
+  color: var(--color-info) !important;
+  border: 1px solid color-mix(in srgb, var(--color-info) 30%, var(--color-border)) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-3) var(--space-4) !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="success"] {
