@@ -298,7 +298,7 @@ input:disabled,
 .stFormSubmitButton > button[kind="primary"],
 .stDownloadButton > button[kind="primary"] {
   background-color: var(--color-royal-blue) !important;
-  color: var(--color-on-primary) !important;
+  color: white !important;
 }
 
 .stButton > button[kind="primary"]:hover,
@@ -406,297 +406,362 @@ input:disabled,
 }
 
 /* ============================================================================
-   BOARDING PASS CARD
+   DIGITAL FLIGHT ROUTE CARD
    ============================================================================ */
-.boarding-pass {
-  background: linear-gradient(135deg, var(--color-royal-blue) 0%, var(--color-royal-blue-light) 100%) !important;
-  border-radius: var(--radius-xl) !important;
-  padding: var(--space-6) !important;
-  color: white !important;
-  position: relative !important;
+.digital-flight-route {
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
+  border-radius: var(--radius-lg) !important;
   overflow: hidden !important;
-  box-shadow: var(--shadow-lg) !important;
+  box-shadow: var(--shadow-card) !important;
 }
 
-.boarding-pass::before {
-  content: '' !important;
-  position: absolute !important;
-  top: -50% !important;
-  right: -10% !important;
-  width: 200% !important;
-  height: 200% !important;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%) !important;
-  pointer-events: none !important;
-}
-
-.boarding-pass-header {
+.digital-flight-route-header {
+  background-color: var(--color-royal-blue) !important;
+  color: white !important;
+  padding: var(--space-4) var(--space-5) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  margin-bottom: var(--space-5) !important;
-  position: relative !important;
-  z-index: 1 !important;
 }
 
-.boarding-pass-airline {
-  font-size: var(--text-sm) !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  opacity: 0.9 !important;
-}
-
-.boarding-pass-flight {
-  font-size: var(--text-2xl) !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.05em !important;
-}
-
-.boarding-pass-route {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-bottom: var(--space-5) !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-.boarding-pass-origin,
-.boarding-pass-dest {
-  text-align: center !important;
-  flex: 1 !important;
-}
-
-.boarding-pass-code {
-  font-size: var(--text-4xl) !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.1em !important;
-  line-height: 1 !important;
-  margin-bottom: var(--space-1) !important;
-}
-
-.boarding-pass-city {
-  font-size: var(--text-sm) !important;
-  opacity: 0.8 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-}
-
-.boarding-pass-arrow {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 var(--space-4) !important;
-  color: rgba(255,255,255,0.7) !important;
-}
-
-.boarding-pass-arrow svg {
-  width: 32px !important;
-  height: 32px !important;
-}
-
-.boarding-pass-details {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: var(--space-4) !important;
-  padding-top: var(--space-4) !important;
-  border-top: 1px solid rgba(255,255,255,0.2) !important;
-  position: relative !important;
-  z-index: 1 !important;
-}
-
-.boarding-pass-detail {
-  text-align: center !important;
-}
-
-.boarding-pass-detail-label {
-  font-size: var(--text-xs) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  opacity: 0.7 !important;
-  margin-bottom: var(--space-1) !important;
-}
-
-.boarding-pass-detail-value {
+.digital-flight-route-title {
   font-size: var(--text-lg) !important;
-  font-weight: 700 !important;
-  line-height: 1.2 !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  letter-spacing: -0.01em !important;
 }
 
-.boarding-pass-risk {
+.digital-flight-route-badge {
   display: inline-flex !important;
   align-items: center !important;
   gap: var(--space-2) !important;
-  padding: var(--space-2) var(--space-4) !important;
+  padding: var(--space-1) var(--space-3) !important;
   border-radius: var(--radius-full) !important;
   font-size: var(--text-sm) !important;
   font-weight: 600 !important;
-  position: relative !important;
-  z-index: 1 !important;
 }
 
-.boarding-pass-risk.low {
-  background: rgba(34, 197, 94, 0.2) !important;
+.digital-flight-route-badge.low {
+  background-color: rgba(34, 197, 94, 0.15) !important;
   color: #22C55E !important;
   border: 1px solid rgba(34, 197, 94, 0.3) !important;
 }
 
-.boarding-pass-risk.medium {
-  background: rgba(245, 158, 11, 0.2) !important;
+.digital-flight-route-badge.medium {
+  background-color: rgba(245, 158, 11, 0.15) !important;
   color: #F59E0B !important;
   border: 1px solid rgba(245, 158, 11, 0.3) !important;
 }
 
-.boarding-pass-risk.high {
-  background: rgba(220, 38, 38, 0.2) !important;
+.digital-flight-route-badge.high {
+  background-color: rgba(220, 38, 38, 0.15) !important;
   color: #EF4444 !important;
   border: 1px solid rgba(220, 38, 38, 0.3) !important;
 }
 
-/* ============================================================================
-   METRIC CARDS
-   ============================================================================ */
-.metric-card {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-4) !important;
-  text-align: center !important;
-  transition: all var(--duration-normal) var(--ease-out) !important;
+.digital-flight-route-body {
+  padding: var(--space-5) !important;
 }
 
-.metric-card:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: var(--shadow-md) !important;
-}
-
-.metric-value {
-  font-size: var(--text-3xl) !important;
-  font-weight: 700 !important;
-  line-height: var(--leading-tight) !important;
-  color: var(--color-royal-blue) !important;
-  margin: 0 !important;
-}
-
-.metric-label {
-  font-size: var(--text-xs) !important;
+.digital-flight-route-airline {
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
   color: var(--color-text-muted) !important;
-  margin-top: var(--space-2) !important;
+  margin-bottom: var(--space-4) !important;
+}
+
+.digital-flight-route-airports {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: var(--space-5) !important;
+}
+
+.digital-flight-route-origin,
+.digital-flight-route-dest {
+  text-align: center !important;
+  flex: 1 !important;
+}
+
+.digital-flight-route-code {
+  font-size: var(--text-4xl) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
+  line-height: 1 !important;
+  color: var(--color-text-primary) !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.digital-flight-route-city {
+  font-size: var(--text-sm) !important;
+  color: var(--color-text-muted) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
 }
 
-/* ============================================================================
-   CHECKLIST ITEMS
-   ============================================================================ */
-.checklist-item {
-  display: flex !important;
-  align-items: flex-start !important;
-  gap: var(--space-3) !important;
-  padding: var(--space-3) 0 !important;
-  border-bottom: 1px solid var(--color-royal-blue-border) !important;
-}
-
-.checklist-item:last-child {
-  border-bottom: none !important;
-}
-
-.checklist-icon {
+.digital-flight-route-arrow {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  width: 28px !important;
-  height: 28px !important;
-  border-radius: var(--radius-full) !important;
-  flex-shrink: 0 !important;
-  font-size: var(--text-sm) !important;
+  padding: 0 var(--space-4) !important;
+  color: var(--color-royal-blue) !important;
 }
 
-.checklist-icon.teal {
+.digital-flight-route-arrow svg {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.digital-flight-route-arrow-line {
+  width: 60px !important;
+  height: 2px !important;
+  background: repeating-linear-gradient(90deg, var(--color-royal-blue), var(--color-royal-blue) 8px, transparent 8px, transparent 16px) !important;
+  border-radius: 1px !important;
+}
+
+.digital-flight-route-details {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: var(--space-4) !important;
+  padding-top: var(--space-4) !important;
+  border-top: 1px solid var(--color-royal-blue-border) !important;
+}
+
+.digital-flight-route-detail {
+  text-align: center !important;
+}
+
+.digital-flight-route-detail-label {
+  font-size: var(--text-xs) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--color-text-muted) !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.digital-flight-route-detail-value {
+  font-size: var(--text-lg) !important;
+  font-weight: 700 !important;
+  color: var(--color-text-primary) !important;
+  line-height: 1.2 !important;
+}
+
+/* ============================================================================
+   HISTORICAL ROUTE METRICS CARD
+   ============================================================================ */
+.historical-metrics-card {
+  background-color: var(--color-teal) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: var(--space-5) !important;
+  color: white !important;
+}
+
+.historical-metrics-title {
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+  margin: 0 0 var(--space-4) 0 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.historical-metrics-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: var(--space-3) !important;
+}
+
+.historical-metric-item {
+  background-color: var(--color-bg-card) !important;
+  border-radius: var(--radius-md) !important;
+  padding: var(--space-4) !important;
+  text-align: center !important;
+  color: var(--color-text-primary) !important;
+}
+
+.historical-metric-value {
+  font-size: var(--text-2xl) !important;
+  font-weight: 700 !important;
+  color: var(--color-teal) !important;
+  line-height: var(--leading-tight) !important;
+  margin: 0 0 var(--space-1) 0 !important;
+}
+
+.historical-metric-label {
+  font-size: var(--text-xs) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--color-text-muted) !important;
+  margin: 0 !important;
+}
+
+/* ============================================================================
+   PASSENGER RIGHTS CHECKLIST CARD
+   ============================================================================ */
+.rights-checklist-card {
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: var(--space-5) !important;
+  box-shadow: var(--shadow-card) !important;
+}
+
+.rights-checklist-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: var(--space-4) !important;
+  padding-bottom: var(--space-3) !important;
+  border-bottom: 1px solid var(--color-royal-blue-border) !important;
+}
+
+.rights-checklist-title {
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  margin: 0 !important;
+}
+
+.rights-checklist-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-3) !important;
+  padding: var(--space-3) var(--space-4) !important;
+  background-color: #F8FAFC !important;
+  border-radius: var(--radius-md) !important;
+  margin-bottom: var(--space-2) !important;
+}
+
+.rights-checklist-item:last-child {
+  margin-bottom: 0 !important;
+}
+
+.rights-checklist-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: var(--radius-full) !important;
+  flex-shrink: 0 !important;
+  font-size: var(--text-base) !important;
+}
+
+.rights-checklist-icon.teal {
   background: var(--color-teal-bg) !important;
   color: var(--color-teal) !important;
 }
 
-.checklist-icon.amber {
+.rights-checklist-icon.amber {
   background: var(--color-amber-bg) !important;
   color: var(--color-amber) !important;
 }
 
-.checklist-icon.blue {
+.rights-checklist-icon.blue {
   background: var(--color-royal-blue-bg) !important;
   color: var(--color-royal-blue) !important;
 }
 
-.checklist-content {
+.rights-checklist-icon.green {
+  background: var(--color-green-bg) !important;
+  color: var(--color-green) !important;
+}
+
+.rights-checklist-content {
   flex: 1 !important;
 }
 
-.checklist-title {
+.rights-checklist-item-title {
   font-size: var(--text-sm) !important;
   font-weight: 600 !important;
   color: var(--color-text-primary) !important;
   margin: 0 0 var(--space-1) 0 !important;
 }
 
-.checklist-desc {
+.rights-checklist-item-desc {
   font-size: var(--text-xs) !important;
   color: var(--color-text-muted) !important;
   margin: 0 !important;
   line-height: var(--leading-normal) !important;
 }
 
-/* ============================================================================
-   PROMPT CHIPS CONTAINER
-   ============================================================================ */
-.prompt-chips-container {
-  display: flex !important;
-  flex-wrap: wrap !important;
-  gap: var(--space-2) !important;
-  margin-top: var(--space-3) !important;
-  padding: var(--space-3) 0 !important;
-  border-top: 1px solid var(--color-royal-blue-border) !important;
-}
-
-/* ============================================================================
-   HISTORICAL METRICS ROW
-   ============================================================================ */
-.metrics-row {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: var(--space-3) !important;
-  margin-top: var(--space-4) !important;
+.rights-checklist-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: var(--radius-full) !important;
+  background-color: var(--color-royal-blue-bg) !important;
+  color: var(--color-royal-blue) !important;
+  font-size: var(--text-xs) !important;
+  font-weight: 700 !important;
+  flex-shrink: 0 !important;
 }
 
 /* ============================================================================
    CHAT INTERFACE
    ============================================================================ */
-[data-testid="stChatMessage"] {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-4) !important;
-  margin-bottom: var(--space-3) !important;
-  box-shadow: var(--shadow-sm) !important;
+.chat-header-banner {
+  background-color: var(--color-royal-blue) !important;
+  color: white !important;
+  padding: var(--space-4) var(--space-5) !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  margin-bottom: 0 !important;
 }
 
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
-  border-left: 3px solid var(--color-royal-blue) !important;
+.chat-header-title {
+  font-size: var(--text-lg) !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+.chat-container {
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
+  border-top: none !important;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+  padding: var(--space-4) !important;
+}
+
+[data-testid="stChatMessage"] {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  padding: var(--space-3) !important;
+  margin-bottom: var(--space-3) !important;
+  box-shadow: none !important;
 }
 
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-  border-left: 3px solid var(--color-amber) !important;
+  background-color: var(--color-royal-blue) !important;
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg) !important;
+}
+
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) [data-testid="stChatMessageContent"] {
+  color: white !important;
+}
+
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
+  background-color: var(--color-amber-bg) !important;
+  border: 1px solid var(--color-amber-border) !important;
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm) !important;
+}
+
+[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) [data-testid="stChatMessageContent"] {
+  color: var(--color-text-primary) !important;
 }
 
 [data-testid="stChatMessageContent"] {
   font-size: var(--text-base) !important;
   line-height: var(--leading-relaxed) !important;
-  color: var(--color-text-primary) !important;
 }
 
 [data-testid="stChatInput"] {
   background-color: transparent !important;
   border-top: 1px solid var(--color-royal-blue-border) !important;
-  padding: var(--space-4) !important;
+  padding: var(--space-4) 0 0 0 !important;
 }
 
 [data-testid="stChatInput"] > div,
@@ -919,7 +984,7 @@ input:disabled,
   white-space: nowrap !important;
 }
 
-[data-testid="stDataFrame"] td {
+[data-testid["stDataFrame"] td {
   padding: var(--space-3) var(--space-4) !important;
   border-bottom: 1px solid var(--color-royal-blue-border) !important;
   color: var(--color-text-secondary) !important;
@@ -994,7 +1059,10 @@ hr, .stDivider {
   [data-testid="stAppViewContainer"] > .main {
     padding: var(--space-4) var(--space-4) !important;
   }
-  .metrics-row {
+  .historical-metrics-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .digital-flight-route-details {
     grid-template-columns: 1fr !important;
   }
 }
@@ -1008,16 +1076,6 @@ hr, .stDivider {
   }
   [data-testid="stSidebar"] {
     padding: var(--space-4) var(--space-3) !important;
-  }
-  .boarding-pass-route {
-    flex-direction: column !important;
-  }
-  .boarding-pass-arrow {
-    transform: rotate(90deg) !important;
-    padding: var(--space-4) 0 !important;
-  }
-  .boarding-pass-details {
-    grid-template-columns: 1fr !important;
   }
 }
 
@@ -1058,7 +1116,7 @@ hr, .stDivider {
     padding: 0 !important;
     max-width: 100% !important;
   }
-  .app-card, .metric-card, .boarding-pass {
+  .app-card, .metric-card, .digital-flight-route, .historical-metrics-card, .rights-checklist-card {
     break-inside: avoid !important;
     box-shadow: none !important;
     border: 1px solid #ccc !important;
@@ -1135,6 +1193,7 @@ if not LOCAL_SRC_INIT.is_file():
 
 from src.agent import answer_user
 from src.config import FLIGHTS_PATH
+from src.predictor import predict_delay
 from src.reference_data import (
     AIRLINE_NAMES,
     airport_label,
@@ -1220,53 +1279,14 @@ def _render_sources(sources: list[dict], *, expanded: bool = False) -> None:
                 st.markdown(f"<div style='font-size: 0.875rem; color: var(--color-text-muted); border-left: 2px solid var(--color-royal-blue-border); padding-left: 12px; margin-top: 8px;'>{excerpt}</div>", unsafe_allow_html=True)
 
 
-def _render_risk_gauge(risk_score: float, risk_level: str) -> str:
-    """Generate SVG for a circular risk gauge."""
-    score = max(0, min(100, risk_score))
-    radius = 56
-    circumference = 2 * 3.14159 * radius
-    offset = circumference - (score / 100) * circumference
-
-    if risk_level.lower() == "low" or score < 35:
-        color_class = "low"
-    elif risk_level.lower() == "medium" or score < 70:
-        color_class = "medium"
-    else:
-        color_class = "high"
-
-    return f"""
-    <div class="risk-gauge" role="img" aria-label="Risk gauge showing {score:.0f}% delay risk, level {risk_level}">
-        <svg viewBox="0 0 128 128">
-            <circle class="bg" cx="64" cy="64" r="{radius}" />
-            <circle class="progress {color_class}" cx="64" cy="64" r="{radius}"
-                    stroke-dasharray="{circumference:.1f}" stroke-dashoffset="{offset:.1f}" />
-        </svg>
-        <div class="risk-gauge-text">
-            <div class="risk-score">{score:.0f}%</div>
-            <div class="risk-label">Risiko Delay</div>
-        </div>
-    </div>
-    """
-
-
-def _render_risk_badge(risk_level: str) -> str:
-    level = risk_level.lower()
-    if level == "low":
-        return '<span class="risk-level low">✓ Risiko Rendah</span>'
-    elif level == "medium":
-        return '<span class="risk-level medium">⚠ Risiko Sedang</span>'
-    else:
-        return '<span class="risk-level high">⚠ Risiko Tinggi</span>'
-
-
 def _get_risk_info(probability: float) -> tuple:
     """Get risk level, label, and CSS class based on probability."""
     if probability < 0.35:
-        return "low", "Risiko Rendah", "low"
+        return "low", "Low Risk", "low"
     elif probability < 0.70:
-        return "medium", "Risiko Sedang", "medium"
+        return "medium", "Elevated Risk", "medium"
     else:
-        return "high", "Risiko Tinggi", "high"
+        return "high", "High Risk", "high"
 
 
 def _handle_prompt_chip_click(prompt_text: str):
@@ -1275,80 +1295,31 @@ def _handle_prompt_chip_click(prompt_text: str):
     st.session_state.chat_trigger = prompt_text
 
 
+def _get_default_flight_summary():
+    """Return default flight summary for initial page load."""
+    return {
+        "carrier": "American Airlines",
+        "origin": "John F Kennedy Intl, New York, NY",
+        "origin_code": "JFK",
+        "destination": "Los Angeles Intl, Los Angeles, CA",
+        "destination_code": "LAX",
+        "flight_date": "2026-11-21",
+        "departure_time": "08:44",
+        "distance": 2475,
+        "prediction_mode": "production",
+    }
+
+
+def _get_risk_badge(probability: float):
+    """Generate risk badge HTML."""
+    risk_class, risk_label, _ = _get_risk_info(probability)
+    probability_pct = int(probability * 100)
+    return f'<span class="digital-flight-route-badge {risk_class}">{risk_label} (~{probability_pct}%)</span>'
+
+
 # ═════════════════════════════════════════════════════════════════════════════
 # MAIN LAYOUT
 # ═════════════════════════════════════════════════════════════════════════════
-
-# ─── Inject Google Fonts ───
-st.markdown(FONT_IMPORT, unsafe_allow_html=True)
-st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
-
-# ─── Load Secrets ───
-for _secret_name in ("GROQ_API_KEY", "LLM_BASE_URL", "GROQ_MODEL", "OPENAI_MODEL", "MODEL_SOURCE"):
-    try:
-        _secret_value = st.secrets.get(_secret_name)
-    except Exception:
-        _secret_value = None
-    if _secret_value and not os.getenv(_secret_name):
-        os.environ[_secret_name] = str(_secret_value)
-
-# ─── Project Root ───
-PROJECT_ROOT = Path(__file__).resolve().parent
-PROJECT_ROOT_STR = str(PROJECT_ROOT)
-if PROJECT_ROOT_STR in sys.path:
-    sys.path.remove(PROJECT_ROOT_STR)
-sys.path.insert(0, PROJECT_ROOT_STR)
-importlib.invalidate_caches()
-
-# ─── Validate Local Package ───
-LOCAL_SRC_INIT = PROJECT_ROOT / "src" / "__init__.py"
-if not LOCAL_SRC_INIT.is_file():
-    raise FileNotFoundError(
-        f"Package 'src' tidak ditemukan. File yang diperlukan: {LOCAL_SRC_INIT}"
-    )
-
-from src.agent import answer_user
-from src.config import FLIGHTS_PATH
-from src.reference_data import (
-    AIRLINE_NAMES,
-    airport_label,
-    build_route_reference,
-    carrier_label,
-    load_airport_directory,
-    load_carrier_directory,
-)
-
-# ─── Load Reference Data ───
-flight_reference = None
-reference_error = None
-if FLIGHTS_PATH.exists():
-    try:
-        flight_reference = _load_route_reference(str(FLIGHTS_PATH), FLIGHTS_PATH.stat().st_mtime_ns)
-    except Exception as exc:
-        reference_error = str(exc)
-else:
-    reference_error = f"Dataset BTS belum ditemukan di {FLIGHTS_PATH}. Jalankan bootstrap terlebih dahulu."
-
-airport_directory = _load_airports_directory()
-carrier_directory = _load_carrier_directory()
-
-# ─── V3 Demo Assets Check ───
-V3_ASSET_PATHS = (
-    PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.joblib",
-    PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.metadata.json",
-    PROJECT_ROOT / "data" / "processed" / "flights_historical_features_experiment_jan_aug_v3.parquet",
-)
-V3_DEMO_AVAILABLE = all(path.is_file() for path in V3_ASSET_PATHS)
-
-# ─── Session State Initialization ───
-if "flight_inputs" not in st.session_state:
-    st.session_state.flight_inputs = None
-if "flight_summary" not in st.session_state:
-    st.session_state.flight_summary = None
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "chat_trigger" not in st.session_state:
-    st.session_state.chat_trigger = None
 
 # ─── Sidebar ───
 with st.sidebar:
@@ -1570,152 +1541,139 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ─── Flight Summary / Boarding Pass (if saved) ───
-if st.session_state.get("flight_summary"):
-    saved = st.session_state.flight_summary
+# ─── Determine Flight Summary (saved or default) ───
+saved = st.session_state.get("flight_summary") or _get_default_flight_summary()
 
-    # Get risk prediction if available
-    risk_level = "low"
-    risk_label = "Risiko Rendah"
-    risk_class = "low"
-    probability = 0.18
-
-    if st.session_state.flight_inputs:
-        try:
-            result = predict_delay(st.session_state.flight_inputs)
-            if result.get("ok") and result.get("probability") is not None:
-                probability = result["probability"]
-                risk_level, risk_label, risk_class = _get_risk_info(probability)
-        except:
-            pass
-
-    probability_pct = int(probability * 100)
-    risk_text = f"{risk_label} (~{probability_pct}%)" if probability > 0 else "Belum diprediksi"
-
-    st.markdown(f"""
-    <div class="boarding-pass">
-        <div class="boarding-pass-header">
-            <span class="boarding-pass-airline">{saved['carrier']}</span>
-            <span class="boarding-pass-flight">{saved['origin_code']} → {saved['destination_code']}</span>
-        </div>
-        <div class="boarding-pass-route">
-            <div class="boarding-pass-origin">
-                <div class="boarding-pass-code">{saved['origin_code']}</div>
-                <div class="boarding-pass-city">{saved['origin'].split(',')[0] if ',' in saved['origin'] else saved['origin'][:20]}</div>
-            </div>
-            <div class="boarding-pass-arrow">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 5.25L5.25 12l12 6.75" /></svg>
-            </div>
-            <div class="boarding-pass-dest">
-                <div class="boarding-pass-code">{saved['destination_code']}</div>
-                <div class="boarding-pass-city">{saved['destination'].split(',')[0] if ',' in saved['destination'] else saved['destination'][:20]}</div>
-            </div>
-        </div>
-        <div class="boarding-pass-details">
-            <div class="boarding-pass-detail">
-                <div class="boarding-pass-detail-label">Tanggal</div>
-                <div class="boarding-pass-detail-value">{saved['flight_date']}</div>
-            </div>
-            <div class="boarding-pass-detail">
-                <div class="boarding-pass-detail-label">Waktu</div>
-                <div class="boarding-pass-detail-value">{saved['departure_time']}</div>
-            </div>
-            <div class="boarding-pass-detail">
-                <div class="boarding-pass-detail-label">Jarak</div>
-                <div class="boarding-pass-detail-value">{saved['distance']:,} mi</div>
-            </div>
-        </div>
-        <div style="margin-top: 16px; display: flex; justify-content: flex-end; position: relative; z-index: 1;">
-            <span class="boarding-pass-risk {risk_class}">{risk_text}</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ─── Historical Route Metrics ───
-    st.markdown("""
-    <div class="metrics-row">
-        <div class="metric-card">
-            <div class="metric-value">12m</div>
-            <div class="metric-label">Rata-rata Delay</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-value">88%</div>
-            <div class="metric-label">Keandalan Rute</div>
-        </div>
-        <div class="metric-card">
-            <div class="metric-value">18:00-19:00</div>
-            <div class="metric-label">Jam Sibuk</div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    # ─── Passenger Rights Checklist ───
-    st.markdown("""
-    <div class="app-card" style="margin-top: 24px;">
-        <div class="app-card-header">
-            <div class="app-card-title">✅ Hak Penumpang & Legal Checklist</div>
-        </div>
-        <div class="checklist-item">
-            <span class="checklist-icon teal">☑️</span>
-            <div class="checklist-content">
-                <div class="checklist-title">14 CFR §260.6 - Refund Kewajiban Maskapai</div>
-                <div class="checklist-desc">Maskapai wajib refund penuh jika penerbangan dibatalkan atau berubah signifikan, dan penumpang memilih tidak bepergian.</div>
-            </div>
-        </div>
-        <div class="checklist-item">
-            <span class="checklist-icon amber">☑️</span>
-            <div class="checklist-content">
-                <div class="checklist-title">14 CFR §260.6(a)(2) - Pembatalan Penerbangan</div>
-                <div class="checklist-desc">Pembatalan merupakan pemicu refund tersendiri. Tidak mensyaratkan ambang keterlambatan 3 jam domestik/6 jam internasional.</div>
-            </div>
-        </div>
-        <div class="checklist-item">
-            <span class="checklist-icon teal">☑️</span>
-            <div class="checklist-content">
-                <div class="checklist-title">14 CFR §399.80(l) - Ticket Agent/OTA Refund</div>
-                <div class="checklist-desc">Jika OTA adalah merchant of record, refund diproses atas permintaan konsumen (7 hari kerja kartu kredit / 20 hari kalender metode lain).</div>
-            </div>
-        </div>
-        <div class="checklist-item">
-            <span class="checklist-icon blue">☑️</span>
-            <div class="checklist-content">
-                <div class="checklist-title">PM 89/2015 (Indonesia) - Kompensasi Delay</div>
-                <div class="checklist-desc">Kategori 4: delay 181-240 menit; Kategori 5: >240 menit. Akomodasi Pasal 10 ayat (4) mensyaratkan delay >6 jam.</div>
-            </div>
-        </div>
-        <div class="checklist-item">
-            <span class="checklist-icon teal">☑️</span>
-            <div class="checklist-content">
-                <div class="checklist-title">Refund ke Metode Pembayaran Asli</div>
-                <div class="checklist-desc">Travel credit/voucher bukan pilihan wajib. Penumpang berhak menolak dan meminta refund ke metode pembayaran asal.</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+# ─── Get risk probability (from prediction if available) ───
+probability = 0.18  # Default low risk
+if st.session_state.flight_inputs:
+    try:
+        result = predict_delay(st.session_state.flight_inputs)
+        if result.get("ok") and result.get("probability") is not None:
+            probability = result["probability"]
+    except Exception:
+        pass
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# RIGHT COLUMN - CHAT INTERFACE
+# LEFT COLUMN — Digital Flight Route, Historical Metrics, Rights Checklist
 # ═════════════════════════════════════════════════════════════════════════════
-
-# Create two columns: Left (Boarding Pass) and Right (Chat)
 col_left, col_right = st.columns([1, 1], gap="large")
 
 with col_left:
-    # This will be rendered above - the boarding pass section
-    pass
-
-with col_right:
-    # ─── Chat Interface ───
-    st.markdown("""
-    <div style="margin-bottom: 16px;">
-        <h2 style="margin: 0 0 4px 0; font-size: 1.25rem; color: var(--color-text-primary);">💬 Konsultasi Penerbangan</h2>
-        <p style="margin: 0; color: var(--color-text-muted); font-size: 0.875rem;">Tanyakan risiko delay, hak penumpang, atau prediksi waktu terbaik</p>
+    # ─── Card 1: Digital Flight Route ───
+    st.markdown(f"""
+    <div class="digital-flight-route">
+        <div class="digital-flight-route-header">
+            <span class="digital-flight-route-title">Digital Flight Route</span>
+            {_get_risk_badge(probability)}
+        </div>
+        <div class="digital-flight-route-body">
+            <div class="digital-flight-route-airline">{saved['carrier']}</div>
+            <div class="digital-flight-route-airports">
+                <div class="digital-flight-route-origin">
+                    <div class="digital-flight-route-code">{saved['origin_code']}</div>
+                    <div class="digital-flight-route-city">{saved['origin'].split(',')[0] if ',' in saved['origin'] else saved['origin'][:20]}</div>
+                </div>
+                <div class="digital-flight-route-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7" /></svg>
+                </div>
+                <div class="digital-flight-route-dest">
+                    <div class="digital-flight-route-code">{saved['destination_code']}</div>
+                    <div class="digital-flight-route-city">{saved['destination'].split(',')[0] if ',' in saved['destination'] else saved['destination'][:20]}</div>
+                </div>
+            </div>
+            <div class="digital-flight-route-details">
+                <div class="digital-flight-route-detail">
+                    <div class="digital-flight-route-detail-label">Departure</div>
+                    <div class="digital-flight-route-detail-value">{saved['departure_time']}</div>
+                </div>
+                <div class="digital-flight-route-detail">
+                    <div class="digital-flight-route-detail-label">Distance</div>
+                    <div class="digital-flight-route-detail-value">{saved['distance']:,} mi</div>
+                </div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Chat messages container
-    st.markdown('<div id="chat-container">', unsafe_allow_html=True)
+    # ─── Card 2: Historical Route Metrics ───
+    st.markdown("""
+    <div class="historical-metrics-card" style="margin-top: 20px;">
+        <div class="historical-metrics-title">Historical Route Metrics</div>
+        <div class="historical-metrics-grid">
+            <div class="historical-metric-item">
+                <div class="historical-metric-value">12 min</div>
+                <div class="historical-metric-label">Average Delay</div>
+            </div>
+            <div class="historical-metric-item">
+                <div class="historical-metric-value">88%</div>
+                <div class="historical-metric-label">Route Reliability</div>
+            </div>
+            <div class="historical-metric-item">
+                <div class="historical-metric-value">18:00–19:00</div>
+                <div class="historical-metric-label">Peak Delay Hour</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ─── Card 3: Passenger Rights & Legal Checklist ───
+    st.markdown("""
+    <div class="rights-checklist-card" style="margin-top: 20px;">
+        <div class="rights-checklist-header">
+            <div class="rights-checklist-title">⚖️ Passenger Rights & Legal Checklist</div>
+        </div>
+        <div class="rights-checklist-item">
+            <span class="rights-checklist-icon teal">✈️</span>
+            <div class="rights-checklist-content">
+                <div class="rights-checklist-item-title">14 CFR §260.6 — Refund Obligation</div>
+                <div class="rights-checklist-item-desc">Airlines must provide full refunds for cancelled or significantly changed flights when passenger chooses not to travel.</div>
+            </div>
+            <span class="rights-checklist-badge">☑️</span>
+        </div>
+        <div class="rights-checklist-item">
+            <span class="rights-checklist-icon amber">🍽️</span>
+            <div class="rights-checklist-content">
+                <div class="rights-checklist-item-title">Meal & Care During Delay</div>
+                <div class="rights-checklist-item-desc">For delays ≥3 hours (domestic) or ≥6 hours (international), airlines must provide meals and communication access.</div>
+            </div>
+            <span class="rights-checklist-badge">☑️</span>
+        </div>
+        <div class="rights-checklist-item">
+            <span class="rights-checklist-icon blue">🏨</span>
+            <div class="rights-checklist-content">
+                <div class="rights-checklist-item-title">Hotel Accommodation</div>
+                <div class="rights-checklist-item-desc">Overnight delays require hotel accommodation and ground transport when airline is responsible for the delay.</div>
+            </div>
+            <span class="rights-checklist-badge">☑️</span>
+        </div>
+        <div class="rights-checklist-item">
+            <span class="rights-checklist-icon green">🔄</span>
+            <div class="rights-checklist-content">
+                <div class="rights-checklist-item-title">Free Rebooking / Original Payment Refund</div>
+                <div class="rights-checklist-item-desc">Passengers may rebook on next available flight at no cost, or receive refund to original payment method (not just vouchers).</div>
+            </div>
+            <span class="rights-checklist-badge">☑️</span>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# RIGHT COLUMN — Chat Interface with Royal Blue Header & 2x2 Prompt Grid
+# ═════════════════════════════════════════════════════════════════════════════
+
+with col_right:
+    # Chat Header Banner
+    st.markdown("""
+    <div class="chat-header-banner">
+        <div class="chat-header-title">💬 AI Assistant (Flight & Rights Advisor)</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Chat Container
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
@@ -1758,7 +1716,9 @@ with col_right:
             {"role": "assistant", "content": answer, "sources": sources, "tools_used": tools_used, "mode": mode}
         )
 
-    # ─── Clickable Prompt Chips ───
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # ─── Clickable Prompt Chips — 2x2 Grid ───
     if not st.session_state.messages:  # Only show when no messages yet
         st.markdown("""
         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-royal-blue-border);">
@@ -1773,12 +1733,16 @@ with col_right:
             ("🕒 Best departure time?", "Kapan waktu keberangkatan terbaik untuk menghindari delay pada rute ini?")
         ]
 
-        cols = st.columns(4, gap="small")
-        for idx, (label, full_prompt) in enumerate(prompt_chips):
-            with cols[idx]:
-                if st.button(label, key=f"prompt_chip_{idx}", use_container_width=True, help=full_prompt):
-                    _handle_prompt_chip_click(full_prompt)
-                    st.rerun()
+        # Create 2 rows x 2 columns
+        for row_idx in range(2):
+            cols = st.columns(2, gap="small")
+            for col_idx in range(2):
+                idx = row_idx * 2 + col_idx
+                label, full_prompt = prompt_chips[idx]
+                with cols[col_idx]:
+                    if st.button(label, key=f"prompt_chip_{idx}", use_container_width=True, help=full_prompt):
+                        _handle_prompt_chip_click(full_prompt)
+                        st.rerun()
 
 
 # ─── Footer ───
