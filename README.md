@@ -177,17 +177,50 @@ Pengujian clean clone menggunakan flights.parquet yang sudah tersedia di GitHub.
 
 ## Hasil evaluasi model yang tercatat
 
-Eksperimen model-selection memilih kandidat `extra_trees` dengan metrik berikut:
+### Model Produksi Terbaru
 
-| Metrik | Nilai |
-|---|---:|
-| Accuracy | 0.5920 |
-| Precision | 0.4503 |
-| Recall | 0.5592 |
-| F1-score | 0.4989 |
-| ROC-AUC | 0.6173 |
+Model produksi saat ini menggunakan **HistGradientBoostingClassifier** dengan encoding waktu siklikal (`sin`/`cos` untuk `CRS_DEP_TIME`, `DAY_OF_WEEK`, `MONTH`) dan **20 fitur agregasi historis operasional BTS (past-only, tanpa data leakage)**:
 
-Metrik berasal dari random train/test split dan bukan jaminan performa pada periode atau rute lain. Evaluasi berbasis waktu dan kalibrasi probabilitas masih menjadi keterbatasan.
+| Fitur Historis Operasional | Deskripsi |
+|---|---|
+| `*_HIST_DELAY_RATE` | Delay rate historis per grup (dengan smoothing) |
+| `*_HIST_TAXI_OUT_MEAN` | Rata-rata TAXI_OUT historis (proxy congestion bandara) |
+| `*_HIST_WEATHER_DELAY_MEAN` | Rata-rata WEATHER_DELAY historis |
+| `*_HIST_NAS_DELAY_MEAN` | Rata-rata NAS_DELAY historis (proxy sistem NAS) |
+| `*_HIST_LATE_AIRCRAFT_DELAY_MEAN` | Rata-rata LATE_AIRCRAFT_DELAY historis (proxy turnaround) |
+
+Grup agregasi (hierarki fallback bertingkat):
+1. `CARRIER_ORIGIN_DEST_HOUR` — maskapai + asal + tujuan + jam keberangkatan
+2. `ORIGIN_HOUR` — bandara asal + jam keberangkatan  
+3. `CARRIER_ORIGIN` — maskapai + bandara asal
+4. `ORIGIN` — bandara asal (global)
+
+Semua fitur dihitung **past-only** (expanding window `FL_DATE < target_date`) untuk mencegah data leakage.
+
+### Metrik Evaluasi Validasi Kronologis (Jul–Agu 2026)
+
+| Metrik | Nilai | Catatan |
+|---|---:|---|
+| **Recall** | **0.8607** | Target ≥0.85 tercapai (threshold kalibrasi 0.390) |
+| **F1-Score** | **0.4450** | Keseimbangan precision/recall pada threshold optimal |
+| **Brier Score** | **0.2241** | Lebih baik dari baseline (0.2327) → kalibrasi probabilitas lebih baik |
+| **ROC-AUC** | **0.6643** | Ranking risiko delay vs on-time |
+| **Precision** | **0.3001** | Trade-off: sensitivitas tinggi → precision menurun |
+| **Accuracy** | **0.4708** | Tidak dioptimalkan; threshold rendah untuk recall tinggi |
+
+**Threshold kalibrasi: 0.390** (dipilih pada data kalibrasi Juni 2026 untuk recall ≥0.85).
+
+**Trade-off teknis:** Threshold rendah (0.390 vs default 0.50) memprioritaskan **recall tinggi** untuk pra-keberangkatan — menghindari *missed delay* (false negative) lebih penting daripada *false alarm* (false positive) pada konteks perencanaan perjalanan. Brier Score yang lebih rendah (0.2241 vs 0.2327) menunjukkan kalibrasi probabilitas yang lebih baik untuk keputusan berbasis risiko.
+
+### Baseline Comparison (Produksi Sebelumnya vs Model Baru)
+
+| Metrik | Production Lama (ExtraTrees) | Model Baru (HistGB) | Delta |
+|---|---:|---:|---:|
+| Recall | 0.3207 | **0.8607** | **+0.5400** |
+| F1-Score | 0.3637 | **0.4450** | **+0.0813** |
+| Brier Score | 0.2327 | **0.2241** | **-0.0086** |
+| ROC-AUC | 0.6701 | 0.6643 | -0.0058 |
+| Precision | 0.4199 | 0.3001 | -0.1198 |
 
 Audit MLflow lingkungan pengembangan mencatat **16 eksperimen dengan 122 runs**. Eksperimen development validation bukan otomatis hasil final holdout.
 
