@@ -21,41 +21,31 @@ st.set_page_config(
 CUSTOM_CSS = """
 <style>
 /* ============================================================================
-   DESIGN TOKENS — Flight Delay Advisor (New Color Palette)
-   Royal Blue, Teal, Amber on Light Modern Background
+   DESIGN TOKENS — Flight Delay Advisor (Vibrant & Alive Palette)
+   No Pure White (#FFFFFF)
    ============================================================================ */
 :root {
-  /* New Color Palette */
-  --color-bg: #F4F6F9;
-  --color-bg-card: #FFFFFF;
-  --color-text-primary: #1A202C;
-  --color-text-secondary: #4A5568;
-  --color-text-muted: #718096;
+  /* Core Palette */
+  --color-parchment: #F2EDEB;
+  --color-thistle: #D8C0D4;
+  --color-dusty-lavender: #925E78;
+  --color-lilac: #BD93BD;
+  --color-dark-purple: #2D1B24;
 
-  --color-royal-blue: #1E3A8A;
-  --color-royal-blue-light: #3B82F6;
-  --color-royal-blue-bg: #EBF4FF;
-  --color-royal-blue-border: #BFDBFE;
+  /* Vibrant Accents */
+  --color-pink: #F05365;
+  --color-tangerine: #F58848;
+  --color-amber-flame: #FABC2A;
+  --color-parchment-light: #FAF7F5;
+  --color-thistle-soft: #EDE4EA;
+  --color-amber-soft: #FDF3D7;
 
-  --color-teal: #0D9488;
-  --color-teal-light: #14B8A6;
-  --color-teal-bg: #CCFBF1;
-  --color-teal-border: #99F6E4;
-
-  --color-amber: #F59E0B;
-  --color-amber-light: #FBBF24;
-  --color-amber-bg: #FEF3C7;
-  --color-amber-border: #FDE68A;
-
-  --color-red: #DC2626;
-  --color-red-light: #EF4444;
-  --color-red-bg: #FEF2F2;
-  --color-red-border: #FECACA;
-
-  --color-green: #16A34A;
-  --color-green-light: #22C55E;
-  --color-green-bg: #DCFCE7;
-  --color-green-border: #BBF7D0;
+  /* Mappings */
+  --color-bg-gradient: linear-gradient(135deg, var(--color-parchment) 0%, var(--color-thistle) 100%);
+  --color-text-primary: var(--color-dark-purple);
+  --color-text-secondary: #4A3A42;
+  --color-text-muted: #7A6670;
+  --color-text-on-dark: var(--color-parchment);
 
   /* Spacing Scale */
   --space-1: 4px;
@@ -64,56 +54,17 @@ CUSTOM_CSS = """
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
-
-  /* Typography */
-  --font-sans: 'Inter', 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --text-xs: 0.75rem;    /* 12px */
-  --text-sm: 0.875rem;   /* 14px */
-  --text-base: 1rem;     /* 16px */
-  --text-lg: 1.125rem;   /* 18px */
-  --text-xl: 1.25rem;    /* 20px */
-  --text-2xl: 1.5rem;    /* 24px */
-  --text-3xl: 1.875rem;  /* 30px */
-  --text-4xl: 2.25rem;   /* 36px */
-
-  /* Line Heights */
-  --leading-tight: 1.25;
-  --leading-snug: 1.375;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.625;
 
   /* Border Radius */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
   --radius-full: 9999px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-
-  /* Transitions */
-  --duration-fast: 150ms;
-  --duration-normal: 200ms;
-  --duration-slow: 300ms;
-  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Z-Index */
-  --z-dropdown: 100;
-  --z-sticky: 200;
-  --z-fixed: 300;
-  --z-modal-backdrop: 400;
-  --z-modal: 500;
-  --z-popover: 600;
-  --z-tooltip: 700;
+  --shadow-sm: 0 2px 4px rgba(45, 27, 36, 0.05);
+  --shadow-md: 0 4px 12px rgba(45, 27, 36, 0.08);
+  --shadow-lg: 0 12px 24px rgba(45, 27, 36, 0.12);
 }
 
 /* ============================================================================
@@ -124,732 +75,244 @@ CUSTOM_CSS = """
 }
 
 html, body, [data-testid="stAppViewContainer"] {
-  font-family: var(--font-sans) !important;
-  background-color: var(--color-bg) !important;
+  font-family: 'Inter', sans-serif !important;
+  background: var(--color-bg-gradient) fixed !important;
   color: var(--color-text-primary) !important;
-  line-height: var(--leading-normal);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography Scale */
-h1, .stTitle { font-size: var(--text-3xl) !important; font-weight: 700 !important; line-height: var(--leading-tight) !important; letter-spacing: -0.02em !important; color: var(--color-text-primary) !important; }
-h2, .stHeader { font-size: var(--text-2xl) !important; font-weight: 600 !important; line-height: var(--leading-snug) !important; letter-spacing: -0.01em !important; color: var(--color-text-primary) !important; }
-h3 { font-size: var(--text-xl) !important; font-weight: 600 !important; line-height: var(--leading-snug) !important; color: var(--color-text-primary) !important; }
-h4 { font-size: var(--text-lg) !important; font-weight: 600 !important; line-height: var(--leading-normal) !important; color: var(--color-text-primary) !important; }
+[data-testid="stHeader"] {
+  background: transparent !important;
+}
 
-p, .stMarkdown, .stCaption, .stText { font-size: var(--text-base) !important; line-height: var(--leading-normal) !important; color: var(--color-text-secondary) !important; }
-small, .stCaption { font-size: var(--text-sm) !important; line-height: var(--leading-normal) !important; color: var(--color-text-muted) !important; }
-
-/* Links */
-a { color: var(--color-royal-blue) !important; text-decoration: none !important; transition: color var(--duration-fast) var(--ease-out) !important; }
-a:hover { color: var(--color-royal-blue-light) !important; text-decoration: underline !important; }
-a:focus-visible { outline: 2px solid var(--color-royal-blue) !important; outline-offset: 2px !important; border-radius: var(--radius-sm) !important; }
-
-/* Code */
-code, .stCode { font-family: var(--font-mono) !important; font-size: var(--text-sm) !important; background-color: var(--color-royal-blue-bg) !important; padding: 2px 6px !important; border-radius: var(--radius-sm) !important; color: var(--color-royal-blue) !important; }
-pre { font-family: var(--font-mono) !important; font-size: var(--text-sm) !important; background-color: #1E293B !important; color: #E2E8F0 !important; padding: var(--space-4) !important; border-radius: var(--radius-md) !important; overflow-x: auto !important; }
+/* Typography */
+h1, .stTitle { font-size: 2.5rem !important; font-weight: 800 !important; color: var(--color-dusty-lavender) !important; letter-spacing: -0.03em !important; }
+h2 { font-size: 1.75rem !important; font-weight: 700 !important; color: var(--color-dusty-lavender) !important; }
+h3 { font-size: 1.25rem !important; font-weight: 600 !important; color: var(--color-dusty-lavender) !important; }
 
 /* ============================================================================
    SIDEBAR STYLING
    ============================================================================ */
 [data-testid="stSidebar"] {
-  background-color: var(--color-bg-card) !important;
-  border-right: 1px solid var(--color-royal-blue-border) !important;
-  padding: var(--space-5) var(--space-4) !important;
+  background-color: var(--color-dusty-lavender) !important;
+  color: var(--color-parchment) !important;
+  border-right: 1px solid var(--color-lilac) !important;
 }
 
-[data-testid="stSidebar"] > div:first-child {
-  padding-top: var(--space-4) !important;
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] .stCaption {
+  color: var(--color-parchment) !important;
 }
 
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-  color: var(--color-text-primary) !important;
+[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div,
+[data-testid="stSidebar"] .stTextInput input,
+[data-testid="stSidebar"] .stDateInput input,
+[data-testid="stSidebar"] .stTimeInput input,
+[data-testid="stSidebar"] .stNumberInput input {
+  background-color: var(--color-thistle) !important;
+  color: var(--color-dark-purple) !important;
+  border: 1px solid var(--color-lilac) !important;
+  border-radius: var(--radius-md) !important;
 }
 
-[data-testid="stSidebar"] .stCaption,
-[data-testid="stSidebar"] .stMarkdown small {
-  color: var(--color-text-muted) !important;
-}
-
-/* Sidebar Section Dividers */
 [data-testid="stSidebar"] hr {
-  border-color: var(--color-royal-blue-border) !important;
-  margin: var(--space-5) 0 !important;
+  border-color: rgba(242, 237, 235, 0.2) !important;
 }
 
 /* ============================================================================
-   FORM ELEMENTS — INPUTS, SELECTS, BUTTONS
+   BUTTONS
    ============================================================================ */
-/* Labels */
-label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput label, .stNumberInput label {
-  font-size: var(--text-sm) !important;
-  font-weight: 600 !important;
-  color: var(--color-text-primary) !important;
-  margin-bottom: var(--space-2) !important;
-  display: block !important;
-}
-
-/* Input Base */
-.stTextInput input,
-.stSelectbox [data-baseweb="select"] > div,
-.stDateInput input,
-.stTimeInput input,
-.stNumberInput input {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
+.stButton > button {
   border-radius: var(--radius-md) !important;
-  color: var(--color-text-primary) !important;
-  font-size: var(--text-base) !important;
-  font-family: var(--font-sans) !important;
-  padding: var(--space-3) var(--space-4) !important;
-  transition: all var(--duration-fast) var(--ease-out) !important;
-  width: 100% !important;
-  min-height: 44px !important;
-}
-
-.stTextInput input:focus,
-.stSelectbox [data-baseweb="select"] > div:focus-within,
-.stDateInput input:focus,
-.stTimeInput input:focus,
-.stNumberInput input:focus {
-  border-color: var(--color-royal-blue) !important;
-  box-shadow: 0 0 0 3px var(--color-royal-blue-bg) !important;
-  outline: none !important;
-}
-
-.stTextInput input:hover,
-.stSelectbox [data-baseweb="select"] > div:hover,
-.stDateInput input:hover,
-.stTimeInput input:hover,
-.stNumberInput input:hover {
-  border-color: var(--color-royal-blue-light) !important;
-}
-
-/* Disabled State */
-.stTextInput input:disabled,
-.stSelectbox [data-baseweb="select"] > div:has([aria-disabled="true"]),
-.stDateInput input:disabled,
-.stTimeInput input:disabled,
-.stNumberInput input:disabled,
-input:disabled,
-[disabled] {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-  background-color: var(--color-bg) !important;
-  color: var(--color-text-muted) !important;
-  -webkit-text-fill-color: var(--color-text-muted) !important;
-}
-
-/* Select Dropdown */
-[data-baseweb="popover"] [data-baseweb="menu"] {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-lg) !important;
-  padding: var(--space-2) !important;
-}
-
-[data-baseweb="menu"] [role="option"] {
-  padding: var(--space-3) var(--space-4) !important;
-  border-radius: var(--radius-sm) !important;
-  font-size: var(--text-base) !important;
-  color: var(--color-text-primary) !important;
-  transition: background-color var(--duration-fast) var(--ease-out) !important;
-}
-
-[data-baseweb="menu"] [role="option"]:hover,
-[data-baseweb="menu"] [role="option"][aria-selected="true"] {
-  background-color: var(--color-royal-blue-bg) !important;
-  color: var(--color-royal-blue) !important;
-}
-
-/* Date/Time Input Calendar */
-[data-baseweb="calendar"] {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-lg) !important;
-}
-
-/* Buttons */
-.stButton > button,
-.stDownloadButton > button,
-.stFormSubmitButton > button {
-  font-family: var(--font-sans) !important;
-  font-size: var(--text-base) !important;
-  font-weight: 600 !important;
-  border-radius: var(--radius-md) !important;
-  padding: var(--space-3) var(--space-5) !important;
-  min-height: 44px !important;
-  transition: all var(--duration-fast) var(--ease-out) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   border: none !important;
-  cursor: pointer !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: var(--space-2) !important;
-}
-
-/* Primary Button - Royal Blue */
-.stButton > button[kind="primary"],
-.stFormSubmitButton > button[kind="primary"],
-.stDownloadButton > button[kind="primary"] {
-  background-color: var(--color-royal-blue) !important;
-  color: white !important;
-}
-
-.stButton > button[kind="primary"]:hover,
-.stFormSubmitButton > button[kind="primary"]:hover,
-.stDownloadButton > button[kind="primary"]:hover {
-  background-color: var(--color-royal-blue-light) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: var(--shadow-md) !important;
-}
-
-.stButton > button[kind="primary"]:active,
-.stFormSubmitButton > button[kind="primary"]:active {
-  transform: translateY(0) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-
-.stButton > button[kind="primary"]:focus-visible,
-.stFormSubmitButton > button[kind="primary"]:focus-visible,
-.stDownloadButton > button[kind="primary"]:focus-visible {
-  outline: 2px solid var(--color-royal-blue) !important;
-  outline-offset: 2px !important;
-}
-
-/* Secondary Button */
-.stButton > button[kind="secondary"] {
-  background-color: var(--color-bg) !important;
-  color: var(--color-text-secondary) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-}
-
-.stButton > button[kind="secondary"]:hover {
-  background-color: var(--color-royal-blue-bg) !important;
-  color: var(--color-royal-blue) !important;
-  border-color: var(--color-royal-blue) !important;
-}
-
-/* Prompt Chip Buttons */
-.stButton > button[data-prompt-chip="true"] {
-  background-color: var(--color-bg-card) !important;
-  color: var(--color-text-secondary) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  padding: var(--space-2) var(--space-4) !important;
-  font-size: var(--text-sm) !important;
-  font-weight: 500 !important;
-  border-radius: var(--radius-full) !important;
-  min-height: 36px !important;
-  transition: all var(--duration-fast) var(--ease-out) !important;
-  white-space: nowrap !important;
-}
-
-.stButton > button[data-prompt-chip="true"]:hover {
-  background-color: var(--color-royal-blue-bg) !important;
-  color: var(--color-royal-blue) !important;
-  border-color: var(--color-royal-blue) !important;
-  transform: translateY(-1px) !important;
-  box-shadow: var(--shadow-sm) !important;
-}
-
-/* Disabled Button */
-.stButton > button:disabled,
-.stFormSubmitButton > button:disabled,
-.stDownloadButton > button:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-  transform: none !important;
-}
-
-/* ============================================================================
-   CARD & CONTAINER COMPONENTS
-   ============================================================================ */
-.app-card {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-5) !important;
-  box-shadow: var(--shadow-card) !important;
-  transition: box-shadow var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out) !important;
-}
-
-.app-card:hover {
-  box-shadow: var(--shadow-lg) !important;
-  transform: translateY(-2px) !important;
-}
-
-.app-card-header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-bottom: var(--space-4) !important;
-  padding-bottom: var(--space-3) !important;
-  border-bottom: 1px solid var(--color-royal-blue-border) !important;
-}
-
-.app-card-title {
-  font-size: var(--text-lg) !important;
-  font-weight: 600 !important;
-  color: var(--color-text-primary) !important;
-  margin: 0 !important;
-}
-
-.app-card-subtitle {
-  font-size: var(--text-sm) !important;
-  color: var(--color-text-muted) !important;
-  margin: var(--space-1) 0 0 0 !important;
-}
-
-/* ============================================================================
-   DIGITAL FLIGHT ROUTE CARD
-   ============================================================================ */
-.digital-flight-route {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-lg) !important;
-  overflow: hidden !important;
-  box-shadow: var(--shadow-card) !important;
-}
-
-.digital-flight-route-header {
-  background-color: var(--color-royal-blue) !important;
-  color: white !important;
-  padding: var(--space-4) var(--space-5) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-}
-
-.digital-flight-route-title {
-  font-size: var(--text-lg) !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-  letter-spacing: -0.01em !important;
-}
-
-.digital-flight-route-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: var(--space-2) !important;
-  padding: var(--space-1) var(--space-3) !important;
-  border-radius: var(--radius-full) !important;
-  font-size: var(--text-sm) !important;
-  font-weight: 600 !important;
-}
-
-.digital-flight-route-badge.low {
-  background-color: rgba(34, 197, 94, 0.15) !important;
-  color: #22C55E !important;
-  border: 1px solid rgba(34, 197, 94, 0.3) !important;
-}
-
-.digital-flight-route-badge.medium {
-  background-color: rgba(245, 158, 11, 0.15) !important;
-  color: #F59E0B !important;
-  border: 1px solid rgba(245, 158, 11, 0.3) !important;
-}
-
-.digital-flight-route-badge.high {
-  background-color: rgba(220, 38, 38, 0.15) !important;
-  color: #EF4444 !important;
-  border: 1px solid rgba(220, 38, 38, 0.3) !important;
-}
-
-.digital-flight-route-body {
-  padding: var(--space-5) !important;
-}
-
-.digital-flight-route-airline {
-  font-size: var(--text-sm) !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  color: var(--color-text-muted) !important;
-  margin-bottom: var(--space-4) !important;
-}
-
-.digital-flight-route-airports {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-bottom: var(--space-5) !important;
-}
-
-.digital-flight-route-origin,
-.digital-flight-route-dest {
-  text-align: center !important;
-  flex: 1 !important;
-}
-
-.digital-flight-route-code {
-  font-size: var(--text-4xl) !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.1em !important;
-  line-height: 1 !important;
-  color: var(--color-text-primary) !important;
-  margin-bottom: var(--space-1) !important;
-}
-
-.digital-flight-route-city {
-  font-size: var(--text-sm) !important;
-  color: var(--color-text-muted) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-}
-
-.digital-flight-route-arrow {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 0 var(--space-4) !important;
-  color: var(--color-royal-blue) !important;
-}
-
-.digital-flight-route-arrow svg {
-  width: 32px !important;
-  height: 32px !important;
-}
-
-.digital-flight-route-arrow-line {
-  width: 60px !important;
-  height: 2px !important;
-  background: repeating-linear-gradient(90deg, var(--color-royal-blue), var(--color-royal-blue) 8px, transparent 8px, transparent 16px) !important;
-  border-radius: 1px !important;
-}
-
-.digital-flight-route-details {
-  display: grid !important;
-  grid-template-columns: repeat(2, 1fr) !important;
-  gap: var(--space-4) !important;
-  padding-top: var(--space-4) !important;
-  border-top: 1px solid var(--color-royal-blue-border) !important;
-}
-
-.digital-flight-route-detail {
-  text-align: center !important;
-}
-
-.digital-flight-route-detail-label {
-  font-size: var(--text-xs) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  color: var(--color-text-muted) !important;
-  margin-bottom: var(--space-1) !important;
-}
-
-.digital-flight-route-detail-value {
-  font-size: var(--text-lg) !important;
   font-weight: 700 !important;
-  color: var(--color-text-primary) !important;
-  line-height: 1.2 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  box-shadow: var(--shadow-sm) !important;
 }
+
+/* Primary Button */
+.stButton > button[kind="primary"] {
+  background: linear-gradient(135deg, var(--color-dusty-lavender) 0%, var(--color-lilac) 100%) !important;
+  color: var(--color-parchment) !important;
+}
+
+.stButton > button[kind="primary"]:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-md) !important;
+  filter: brightness(1.1) !important;
+}
+
+/* Quick Action Buttons (2x2 Grid) */
+[data-testid="column"]:has(button[key^="prompt_chip_"]) .stButton > button {
+    border-radius: var(--radius-lg) !important;
+    padding: var(--space-4) !important;
+    min-height: 80px !important;
+    font-size: 0.9rem !important;
+}
+
+button[key="prompt_chip_0"] { background-color: var(--color-lilac) !important; color: var(--color-dark-purple) !important; }
+button[key="prompt_chip_1"] { background-color: var(--color-tangerine) !important; color: white !important; }
+button[key="prompt_chip_2"] { background-color: var(--color-amber-flame) !important; color: var(--color-dark-purple) !important; }
+button[key="prompt_chip_3"] { background-color: var(--color-dusty-lavender) !important; color: white !important; }
 
 /* ============================================================================
-   HISTORICAL ROUTE METRICS CARD
+   CARDS
    ============================================================================ */
-.historical-metrics-card {
-  background-color: var(--color-teal) !important;
+.digital-flight-route, .rights-checklist-card, .app-card {
+  background-color: var(--color-parchment-light) !important;
+  border: 2px solid var(--color-lilac) !important;
   border-radius: var(--radius-lg) !important;
-  padding: var(--space-5) !important;
-  color: white !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden !important;
 }
 
-.historical-metrics-title {
-  font-size: var(--text-lg) !important;
-  font-weight: 600 !important;
-  margin: 0 0 var(--space-4) 0 !important;
-  letter-spacing: -0.01em !important;
+.digital-flight-route-header, .chat-header-banner {
+  background: linear-gradient(90deg, var(--color-dusty-lavender) 0%, var(--color-lilac) 100%) !important;
+  color: var(--color-parchment) !important;
+  padding: var(--space-4) var(--space-5) !important;
 }
 
+/* Historical Metrics 3-Color Cards */
 .historical-metrics-grid {
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: var(--space-3) !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--space-3) !important;
 }
 
 .historical-metric-item {
-  background-color: var(--color-bg-card) !important;
-  border-radius: var(--radius-md) !important;
-  padding: var(--space-4) !important;
-  text-align: center !important;
-  color: var(--color-text-primary) !important;
+    border-radius: var(--radius-md) !important;
+    padding: var(--space-4) !important;
+    text-align: center !important;
+    box-shadow: var(--shadow-sm) !important;
+    color: white !important;
 }
 
+.historical-metric-item:nth-child(1) { background-color: var(--color-pink) !important; }
+.historical-metric-item:nth-child(2) { background-color: var(--color-tangerine) !important; }
+.historical-metric-item:nth-child(3) { background-color: var(--color-amber-flame) !important; color: var(--color-dark-purple) !important; }
+
 .historical-metric-value {
-  font-size: var(--text-2xl) !important;
-  font-weight: 700 !important;
-  color: var(--color-teal) !important;
-  line-height: var(--leading-tight) !important;
-  margin: 0 0 var(--space-1) 0 !important;
+    font-size: 1.5rem !important;
+    font-weight: 800 !important;
+    margin-bottom: 4px !important;
 }
 
 .historical-metric-label {
-  font-size: var(--text-xs) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-  color: var(--color-text-muted) !important;
-  margin: 0 !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    font-weight: 700 !important;
+    opacity: 0.9 !important;
 }
 
-/* ============================================================================
-   PASSENGER RIGHTS CHECKLIST CARD
-   ============================================================================ */
-.rights-checklist-card {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-5) !important;
-  box-shadow: var(--shadow-card) !important;
+/* Risk Badges */
+.digital-flight-route-badge {
+    padding: 6px 12px !important;
+    border-radius: var(--radius-full) !important;
+    font-weight: 800 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
-.rights-checklist-header {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  margin-bottom: var(--space-4) !important;
-  padding-bottom: var(--space-3) !important;
-  border-bottom: 1px solid var(--color-royal-blue-border) !important;
-}
-
-.rights-checklist-title {
-  font-size: var(--text-lg) !important;
-  font-weight: 600 !important;
-  color: var(--color-text-primary) !important;
-  margin: 0 !important;
-}
-
-.rights-checklist-item {
-  display: flex !important;
-  align-items: center !important;
-  gap: var(--space-3) !important;
-  padding: var(--space-3) var(--space-4) !important;
-  background-color: #F8FAFC !important;
-  border-radius: var(--radius-md) !important;
-  margin-bottom: var(--space-2) !important;
-}
-
-.rights-checklist-item:last-child {
-  margin-bottom: 0 !important;
-}
-
-.rights-checklist-icon {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 32px !important;
-  height: 32px !important;
-  border-radius: var(--radius-full) !important;
-  flex-shrink: 0 !important;
-  font-size: var(--text-base) !important;
-}
-
-.rights-checklist-icon.teal {
-  background: var(--color-teal-bg) !important;
-  color: var(--color-teal) !important;
-}
-
-.rights-checklist-icon.amber {
-  background: var(--color-amber-bg) !important;
-  color: var(--color-amber) !important;
-}
-
-.rights-checklist-icon.blue {
-  background: var(--color-royal-blue-bg) !important;
-  color: var(--color-royal-blue) !important;
-}
-
-.rights-checklist-icon.green {
-  background: var(--color-green-bg) !important;
-  color: var(--color-green) !important;
-}
-
-.rights-checklist-content {
-  flex: 1 !important;
-}
-
-.rights-checklist-item-title {
-  font-size: var(--text-sm) !important;
-  font-weight: 600 !important;
-  color: var(--color-text-primary) !important;
-  margin: 0 0 var(--space-1) 0 !important;
-}
-
-.rights-checklist-item-desc {
-  font-size: var(--text-xs) !important;
-  color: var(--color-text-muted) !important;
-  margin: 0 !important;
-  line-height: var(--leading-normal) !important;
-}
-
-.rights-checklist-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 24px !important;
-  height: 24px !important;
-  border-radius: var(--radius-full) !important;
-  background-color: var(--color-royal-blue-bg) !important;
-  color: var(--color-royal-blue) !important;
-  font-size: var(--text-xs) !important;
-  font-weight: 700 !important;
-  flex-shrink: 0 !important;
-}
+.digital-flight-route-badge.low { background-color: #4CAF50 !important; color: white !important; }
+.digital-flight-route-badge.medium { background-color: var(--color-tangerine) !important; color: white !important; }
+.digital-flight-route-badge.high { background-color: var(--color-pink) !important; color: white !important; }
 
 /* ============================================================================
    CHAT INTERFACE
    ============================================================================ */
-.chat-header-banner {
-  background-color: var(--color-royal-blue) !important;
-  color: white !important;
-  padding: var(--space-4) var(--space-5) !important;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
-  margin-bottom: 0 !important;
-}
-
-.chat-header-title {
-  font-size: var(--text-lg) !important;
-  font-weight: 600 !important;
-  margin: 0 !important;
-}
-
 .chat-container {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-top: none !important;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
-  padding: var(--space-4) !important;
-}
-
-[data-testid="stChatMessage"] {
-  background-color: transparent !important;
-  border: none !important;
-  border-radius: var(--radius-lg) !important;
-  padding: var(--space-3) !important;
-  margin-bottom: var(--space-3) !important;
-  box-shadow: none !important;
+    background-color: var(--color-thistle-soft) !important;
+    border: 2px solid var(--color-lilac) !important;
+    border-top: none !important;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+    padding: var(--space-4) !important;
 }
 
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-  background-color: var(--color-royal-blue) !important;
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg) !important;
-}
-
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) [data-testid="stChatMessageContent"] {
-  color: white !important;
+    background-color: var(--color-dusty-lavender) !important;
+    color: var(--color-parchment) !important;
+    border-radius: 20px 20px 4px 20px !important;
 }
 
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
-  background-color: var(--color-amber-bg) !important;
-  border: 1px solid var(--color-amber-border) !important;
-  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm) !important;
-}
-
-[data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) [data-testid="stChatMessageContent"] {
-  color: var(--color-text-primary) !important;
-}
-
-[data-testid="stChatMessageContent"] {
-  font-size: var(--text-base) !important;
-  line-height: var(--leading-relaxed) !important;
-}
-
-[data-testid="stChatInput"] {
-  background-color: transparent !important;
-  border-top: 1px solid var(--color-royal-blue-border) !important;
-  padding: var(--space-4) 0 0 0 !important;
-}
-
-[data-testid="stChatInput"] > div,
-[data-testid="stBottom"] div,
-[data-testid="stBottomBlockContainer"] div {
-  background-color: transparent !important;
+    background-color: var(--color-amber-soft) !important;
+    border: 2px solid var(--color-tangerine) !important;
+    color: var(--color-dark-purple) !important;
+    border-radius: 20px 20px 20px 4px !important;
 }
 
 [data-testid="stChatInput"] textarea {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-md) !important;
-  color: var(--color-text-primary) !important;
-  font-family: var(--font-sans) !important;
-  font-size: var(--text-base) !important;
-  padding: var(--space-3) var(--space-4) !important;
-  min-height: 44px !important;
-  resize: none !important;
-  transition: all var(--duration-fast) var(--ease-out) !important;
-}
-
-[data-testid="stChatInput"] textarea::placeholder {
-  color: var(--color-text-muted) !important;
-}
-
-[data-testid="stChatInput"] textarea:focus {
-  border-color: var(--color-royal-blue) !important;
-  box-shadow: 0 0 0 3px var(--color-royal-blue-bg) !important;
-  outline: none !important;
+    background-color: var(--color-parchment-light) !important;
+    border: 2px solid var(--color-lilac) !important;
+    border-radius: var(--radius-md) !important;
+    color: var(--color-dark-purple) !important;
 }
 
 [data-testid="stChatInput"] button {
-  background-color: var(--color-royal-blue) !important;
-  color: white !important;
-  border-radius: var(--radius-md) !important;
-  min-width: 44px !important;
-  min-height: 44px !important;
-  transition: all var(--duration-fast) var(--ease-out) !important;
+    background-color: var(--color-dusty-lavender) !important;
+    color: white !important;
 }
 
-[data-testid="stChatInput"] button:hover {
-  background-color: var(--color-royal-blue-light) !important;
+/* Passenger Rights Checklist */
+.rights-checklist-icon.teal { background: #4DB6AC !important; color: white !important; }
+.rights-checklist-icon.amber { background: var(--color-amber-flame) !important; color: var(--color-dark-purple) !important; }
+.rights-checklist-icon.blue { background: var(--color-lilac) !important; color: white !important; }
+.rights-checklist-icon.green { background: var(--color-pink) !important; color: white !important; }
+
+.rights-checklist-item {
+    background-color: var(--color-thistle-soft) !important;
+    border-radius: var(--radius-md) !important;
+    margin-bottom: 8px !important;
 }
 
-[data-testid="stChatInput"] button:focus-visible {
-  outline: 2px solid var(--color-royal-blue) !important;
-  outline-offset: 2px !important;
+.rights-checklist-badge {
+    background-color: var(--color-lilac) !important;
+    color: white !important;
 }
+</style>
 
 /* ============================================================================
-   EXPANDERS
+   EXPANDERS (Updated for new palette)
    ============================================================================ */
 [data-testid="stExpander"] {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-md) !important;
+  background-color: var(--color-parchment-light) !important;
+  border: 2px solid var(--color-lilac) !important;
+  border-radius: var(--radius-lg) !important;
   overflow: hidden !important;
 }
 
 [data-testid="stExpander"] summary {
-  font-size: var(--text-base) !important;
+  font-size: 1rem !important;
   font-weight: 600 !important;
-  color: var(--color-text-primary) !important;
-  background-color: var(--color-bg-card) !important;
+  color: var(--color-dark-purple) !important;
+  background-color: var(--color-thistle-soft) !important;
   padding: var(--space-4) !important;
   cursor: pointer !important;
   list-style: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  transition: background-color var(--duration-fast) var(--ease-out) !important;
+  transition: background-color 0.2s ease !important;
 }
 
 [data-testid="stExpander"] summary:hover {
-  background-color: var(--color-bg) !important;
+  background-color: var(--color-thistle) !important;
 }
 
 [data-testid="stExpander"] summary:focus-visible {
-  outline: 2px solid var(--color-royal-blue) !important;
+  outline: 2px solid var(--color-dusty-lavender) !important;
   outline-offset: -2px !important;
 }
 
 [data-testid="stExpander"] summary::-webkit-details-marker { display: none !important; }
 [data-testid="stExpander"] summary::before {
   content: '▶' !important;
-  font-size: var(--text-xs) !important;
+  font-size: 0.75rem !important;
   color: var(--color-text-muted) !important;
-  transition: transform var(--duration-fast) var(--ease-out) !important;
+  transition: transform 0.2s ease !important;
   margin-right: var(--space-2) !important;
 }
 
@@ -859,68 +322,68 @@ input:disabled,
 
 [data-testid="stExpander"] > div:last-child {
   padding: 0 var(--space-4) var(--space-4) !important;
-  border-top: 1px solid var(--color-royal-blue-border) !important;
+  border-top: 1px solid var(--color-lilac) !important;
 }
 
 /* ============================================================================
-   ALERTS / NOTIFICATIONS
+   ALERTS / NOTIFICATIONS (Updated for new palette)
    ============================================================================ */
 .stAlert {
   border-radius: var(--radius-md) !important;
   border: none !important;
   padding: var(--space-4) var(--space-5) !important;
   font-size: var(--text-base) !important;
-  line-height: var(--leading-normal) !important;
+  line-height: 1.5 !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="info"] {
-  background-color: var(--color-royal-blue-bg) !important;
-  color: var(--color-royal-blue) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-left: 3px solid var(--color-royal-blue) !important;
+  background-color: var(--color-thistle-soft) !important;
+  color: var(--color-dusty-lavender) !important;
+  border: 2px solid var(--color-lilac) !important;
+  border-left: 4px solid var(--color-dusty-lavender) !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="success"] {
-  background-color: var(--color-green-bg) !important;
-  color: var(--color-green) !important;
-  border: 1px solid var(--color-green-border) !important;
-  border-left: 3px solid var(--color-green) !important;
+  background-color: #E8F5E9 !important;
+  color: #2E7D32 !important;
+  border: 2px solid #C8E6C9 !important;
+  border-left: 4px solid #4CAF50 !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="warning"] {
-  background-color: var(--color-amber-bg) !important;
-  color: var(--color-amber) !important;
-  border: 1px solid var(--color-amber-border) !important;
-  border-left: 3px solid var(--color-amber) !important;
+  background-color: var(--color-amber-soft) !important;
+  color: var(--color-dark-purple) !important;
+  border: 2px solid var(--color-amber-flame) !important;
+  border-left: 4px solid var(--color-tangerine) !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="error"] {
-  background-color: var(--color-red-bg) !important;
-  color: var(--color-red) !important;
-  border: 1px solid var(--color-red-border) !important;
-  border-left: 3px solid var(--color-red) !important;
+  background-color: #FFEBEE !important;
+  color: #C62828 !important;
+  border: 2px solid #FFCDD2 !important;
+  border-left: 4px solid var(--color-pink) !important;
 }
 
 /* ============================================================================
-   SPINNER / LOADING
+   SPINNER / LOADING (Updated for new palette)
    ============================================================================ */
 .stSpinner > div {
-  border-color: var(--color-royal-blue) transparent var(--color-royal-blue) transparent !important;
+  border-color: var(--color-dusty-lavender) transparent var(--color-dusty-lavender) transparent !important;
 }
 
 .stSpinner [data-testid="stStatusWidget"] {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-md) !important;
+  background-color: var(--color-parchment-light) !important;
+  border: 2px solid var(--color-lilac) !important;
+  border-radius: var(--radius-lg) !important;
   padding: var(--space-4) !important;
   box-shadow: var(--shadow-lg) !important;
 }
 
 /* ============================================================================
-   TABS
+   TABS (Updated for new palette)
    ============================================================================ */
 [data-testid="stTabs"] {
-  border-bottom: 1px solid var(--color-royal-blue-border) !important;
+  border-bottom: 2px solid var(--color-lilac) !important;
   margin-bottom: var(--space-4) !important;
 }
 
@@ -931,28 +394,28 @@ input:disabled,
 [data-testid="stTabs"] [role="tab"] {
   background-color: transparent !important;
   border: none !important;
-  border-bottom: 2px solid transparent !important;
+  border-bottom: 3px solid transparent !important;
   color: var(--color-text-muted) !important;
-  font-size: var(--text-base) !important;
-  font-weight: 500 !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
   padding: var(--space-3) var(--space-4) !important;
-  transition: all var(--duration-fast) var(--ease-out) !important;
+  transition: all 0.2s ease !important;
   min-height: 44px !important;
 }
 
 [data-testid="stTabs"] [role="tab"]:hover {
-  color: var(--color-text-primary) !important;
-  background-color: var(--color-bg) !important;
+  color: var(--color-dusty-lavender) !important;
+  background-color: var(--color-thistle-soft) !important;
 }
 
 [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
-  color: var(--color-royal-blue) !important;
-  border-bottom-color: var(--color-royal-blue) !important;
+  color: var(--color-dusty-lavender) !important;
+  border-bottom-color: var(--color-dusty-lavender) !important;
   background-color: transparent !important;
 }
 
 [data-testid="stTabs"] [role="tab"]:focus-visible {
-  outline: 2px solid var(--color-royal-blue) !important;
+  outline: 2px solid var(--color-dusty-lavender) !important;
   outline-offset: -2px !important;
   border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
 }
@@ -962,31 +425,31 @@ input:disabled,
 }
 
 /* ============================================================================
-   DATA TABLE / DATAFRAME
+   DATA TABLE / DATAFRAME (Updated for new palette)
    ============================================================================ */
 [data-testid="stDataFrame"] {
-  border: 1px solid var(--color-royal-blue-border) !important;
-  border-radius: var(--radius-md) !important;
+  border: 2px solid var(--color-lilac) !important;
+  border-radius: var(--radius-lg) !important;
   overflow: hidden !important;
-  background-color: var(--color-bg-card) !important;
+  background-color: var(--color-parchment-light) !important;
 }
 
 [data-testid="stDataFrame"] table {
-  font-size: var(--text-sm) !important;
+  font-size: 0.875rem !important;
 }
 
 [data-testid="stDataFrame"] th {
-  background-color: var(--color-bg) !important;
-  color: var(--color-text-primary) !important;
-  font-weight: 600 !important;
+  background-color: var(--color-thistle-soft) !important;
+  color: var(--color-dark-purple) !important;
+  font-weight: 700 !important;
   padding: var(--space-3) var(--space-4) !important;
-  border-bottom: 1px solid var(--color-royal-blue-border) !important;
+  border-bottom: 2px solid var(--color-lilac) !important;
   white-space: nowrap !important;
 }
 
-[data-testid["stDataFrame"] td {
+[data-testid="stDataFrame"] td {
   padding: var(--space-3) var(--space-4) !important;
-  border-bottom: 1px solid var(--color-royal-blue-border) !important;
+  border-bottom: 1px solid var(--color-lilac) !important;
   color: var(--color-text-secondary) !important;
 }
 
@@ -995,42 +458,42 @@ input:disabled,
 }
 
 [data-testid="stDataFrame"] tr:hover td {
-  background-color: var(--color-bg) !important;
+  background-color: var(--color-thistle-soft) !important;
 }
 
 /* ============================================================================
-   PROGRESS BAR
+   PROGRESS BAR (Updated for new palette)
    ============================================================================ */
 .stProgress > div > div {
-  background-color: var(--color-royal-blue) !important;
+  background: linear-gradient(90deg, var(--color-dusty-lavender) 0%, var(--color-lilac) 100%) !important;
   border-radius: var(--radius-full) !important;
 }
 
 .stProgress > div {
-  background-color: var(--color-royal-blue-border) !important;
+  background-color: var(--color-thistle) !important;
   border-radius: var(--radius-full) !important;
   height: 8px !important;
 }
 
 /* ============================================================================
-   HORIZONTAL RULE / DIVIDER
+   HORIZONTAL RULE / DIVIDER (Updated for new palette)
    ============================================================================ */
 hr, .stDivider {
-  border-color: var(--color-royal-blue-border) !important;
+  border-color: var(--color-lilac) !important;
   margin: var(--space-5) 0 !important;
 }
 
 /* ============================================================================
-   TOOLTIPS
+   TOOLTIPS (Updated for new palette)
    ============================================================================ */
 [data-testid="stTooltip"] {
-  background-color: var(--color-bg-card) !important;
-  border: 1px solid var(--color-royal-blue-border) !important;
+  background-color: var(--color-parchment-light) !important;
+  border: 2px solid var(--color-lilac) !important;
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-lg) !important;
   padding: var(--space-3) var(--space-4) !important;
-  font-size: var(--text-sm) !important;
-  color: var(--color-text-primary) !important;
+  font-size: 0.875rem !important;
+  color: var(--color-dark-purple) !important;
 }
 
 /* ============================================================================
@@ -1052,10 +515,6 @@ hr, .stDivider {
    RESPONSIVE BREAKPOINTS
    ============================================================================ */
 @media (max-width: 1024px) {
-  :root {
-    --space-5: 20px;
-    --space-6: 28px;
-  }
   [data-testid="stAppViewContainer"] > .main {
     padding: var(--space-4) var(--space-4) !important;
   }
@@ -1068,25 +527,16 @@ hr, .stDivider {
 }
 
 @media (max-width: 768px) {
-  :root {
-    --text-3xl: 1.375rem;
-    --text-2xl: 1.25rem;
-    --space-4: 12px;
-    --space-5: 16px;
-  }
   [data-testid="stSidebar"] {
     padding: var(--space-4) var(--space-3) !important;
   }
 }
 
 @media (max-width: 480px) {
-  :root {
-    --text-base: 0.9375rem;
-  }
   .stButton > button,
   .stFormSubmitButton > button {
     padding: var(--space-3) var(--space-4) !important;
-    font-size: var(--text-sm) !important;
+    font-size: 0.875rem !important;
   }
 }
 
@@ -1325,8 +775,8 @@ def _get_risk_badge(probability: float):
 with st.sidebar:
     st.markdown("""
     <div style="margin-bottom: 24px;">
-        <h2 style="margin: 0 0 8px 0; font-size: 1.125rem; color: var(--color-text-primary);">Detail Penerbangan</h2>
-        <p style="margin: 0; font-size: 0.8125rem; color: var(--color-text-muted);">
+        <h2 style="margin: 0 0 8px 0; font-size: 1.125rem; color: var(--color-parchment);">Detail Penerbangan</h2>
+        <p style="margin: 0; font-size: 0.8125rem; color: rgba(242, 237, 235, 0.8);">
             Ketik nama maskapai, kota, nama bandara, atau kode IATA. Data rute dari BTS historis.
         </p>
     </div>
@@ -1599,8 +1049,10 @@ with col_left:
 
     # ─── Card 2: Historical Route Metrics ───
     st.markdown("""
-    <div class="historical-metrics-card" style="margin-top: 20px;">
-        <div class="historical-metrics-title">Historical Route Metrics</div>
+    <div class="app-card" style="margin-top: 20px;">
+        <div class="app-card-header">
+            <div class="app-card-title">Historical Route Metrics</div>
+        </div>
         <div class="historical-metrics-grid">
             <div class="historical-metric-item">
                 <div class="historical-metric-value">12 min</div>
@@ -1721,7 +1173,7 @@ with col_right:
     # ─── Clickable Prompt Chips — 2x2 Grid ───
     if not st.session_state.messages:  # Only show when no messages yet
         st.markdown("""
-        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-royal-blue-border);">
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-lilac);">
             <p style="margin: 0 0 12px 0; font-size: 0.8125rem; color: var(--color-text-muted); font-weight: 500;">💡 Coba pertanyaan cepat:</p>
         </div>
         """, unsafe_allow_html=True)
@@ -1747,7 +1199,7 @@ with col_right:
 
 # ─── Footer ───
 st.markdown("""
-<hr style="margin-top: 48px; margin-bottom: 16px;">
+<hr style="margin-top: 48px; margin-bottom: 16px; border-color: var(--color-lilac);">
 <div style="text-align: center; color: var(--color-text-muted); font-size: 0.8125rem;">
     <p>Flight Delay Advisor · Data sumber: BTS (Bureau of Transportation Statistics) & Regulasi Hak Penumpang</p>
     <p>⚠️ Prediksi berbasis pola historis, bukan status real-time. Konsultasikan dengan maskapai untuk informasi terkini.</p>
