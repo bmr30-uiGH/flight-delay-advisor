@@ -271,10 +271,14 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
 .stSelectbox [data-baseweb="select"] > div:has([aria-disabled="true"]),
 .stDateInput input:disabled,
 .stTimeInput input:disabled,
-.stNumberInput input:disabled {
+.stNumberInput input:disabled,
+input:disabled,
+[disabled] {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
   background-color: var(--color-muted) !important;
+  color: #e2e8f0 !important;
+  -webkit-text-fill-color: #e2e8f0 !important;
 }
 
 /* Select Dropdown */
@@ -573,6 +577,13 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
   background-color: transparent !important;
   border-top: 1px solid var(--color-border) !important;
   padding: var(--space-4) !important;
+}
+
+/* Force transparent background on inner wrapper divs to remove white frame around chat input */
+[data-testid="stChatInput"] > div,
+[data-testid="stBottom"] div,
+[data-testid="stBottomBlockContainer"] div {
+  background-color: transparent !important;
 }
 
 [data-testid="stChatInput"] textarea {
