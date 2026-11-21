@@ -7,6 +7,7 @@ from pathlib import Path
 from functools import lru_cache
 
 import joblib
+import numpy as np
 import pandas as pd
 
 from src.config import (
@@ -22,10 +23,17 @@ from src.config import (
 
 from src.historical_features import (
     MODEL_FEATURES,
+    add_cyclical_features,
     prepare_historical_reference,
     prepare_prediction_features,
 )
 
+# New production model bundle with historical operational features
+PRODUCTION_MODEL_BUNDLE_KEYS = {
+    "model", "threshold", "model_name", "feature_schema",
+    "categorical_features", "numeric_features", "historical_features",
+    "metadata", "historical_reference"
+}
 
 CANDIDATE_MODEL_PATH = (
     MODEL_DIR / "flight_delay_model_cyclic_candidate.joblib"
@@ -34,6 +42,13 @@ CANDIDATE_MODEL_PATH = (
 HISTORICAL_CANDIDATE_MODEL_PATH = (
     MODEL_DIR / "flight_delay_model_historical_candidate.joblib"
 )
+
+
+def _is_new_production_bundle(artifact: dict) -> bool:
+    """Check if artifact is the new production model bundle with historical operational features."""
+    if not isinstance(artifact, dict):
+        return False
+    return PRODUCTION_MODEL_BUNDLE_KEYS.issubset(set(artifact.keys()))
 
 
 @lru_cache(maxsize=1)
@@ -243,7 +258,7 @@ def load_model_bundle():
         }
 
     # --------------------------------------------------------
-    # Existing local production model
+    # Existing local production model (supports both legacy Pipeline and new bundle)
     # --------------------------------------------------------
 
     if model_source in {
@@ -257,9 +272,28 @@ def load_model_bundle():
                 f"Model lokal tidak ditemukan: {MODEL_PATH}"
             )
 
-        model = joblib.load(
-            MODEL_PATH
-        )
+        artifact = joblib.load(MODEL_PATH)
+
+        # Check if it's the new production bundle format
+        if _is_new_production_bundle(artifact):
+            model = artifact["model"]
+            threshold = _validate_threshold(artifact.get("threshold", 0.50))
+            model_name = artifact.get("model_name", MODEL_NAME)
+            historical_reference = artifact.get("historical_reference")
+            feature_schema = artifact.get("feature_schema", FEATURES)
+
+            return {
+                "model": model,
+                "threshold": threshold,
+                "model_name": model_name,
+                "model_source": "local_production",
+                "requires_historical_features": True,
+                "historical_reference": historical_reference,
+                "feature_schema": feature_schema,
+            }
+
+        # Legacy format: direct Pipeline object
+        model = artifact
 
         return {
             "model": model,
@@ -371,6 +405,114 @@ def _interpret_probability(
         f"{threshold_label}; ini bukan jaminan bahwa penerbangan "
         "akan tepat waktu."
     )
+
+
+def build_new_model_features(
+    flight_inputs: dict,
+    prediction_date: pd.Timestamp,
+    historical_reference: pd.DataFrame,
+    feature_schema: list[str],
+) -> pd.DataFrame:
+    """
+    Build features for the new production model with historical operational features.
+
+    This mirrors the feature engineering done during training:
+    1. Cyclical encoding for CRS_DEP_TIME, DAY_OF_WEEK, MONTH
+    2. Historical operational features lookup from historical_reference (past-only)
+
+    Training used these HISTORY_GROUPS (from upgrade_model_quick2.py):
+    - CARRIER_ORIGIN_DEST_HOUR (OP_CARRIER, ORIGIN, DEST, dep_hour)
+    - ORIGIN_HOUR (ORIGIN, dep_hour)
+    - CARRIER_ORIGIN (OP_CARRIER, ORIGIN)
+    - ORIGIN (ORIGIN)
+    """
+    # Training HISTORY_GROUPS from upgrade_model_quick2.py
+    TRAINING_HISTORY_GROUPS = [
+        (["OP_CARRIER", "ORIGIN", "DEST", "dep_hour"], "CARRIER_ORIGIN_DEST_HOUR", 50),
+        (["ORIGIN", "dep_hour"], "ORIGIN_HOUR", 100),
+        (["OP_CARRIER", "ORIGIN"], "CARRIER_ORIGIN", 50),
+        (["ORIGIN"], "ORIGIN", 200),
+    ]
+
+    # Create a DataFrame with raw features
+    raw_features = {
+        "OP_CARRIER": flight_inputs["OP_CARRIER"],
+        "ORIGIN": flight_inputs["ORIGIN"],
+        "DEST": flight_inputs["DEST"],
+        "CRS_DEP_TIME": flight_inputs["CRS_DEP_TIME"],
+        "MONTH": flight_inputs["MONTH"],
+        "DAY_OF_WEEK": flight_inputs["DAY_OF_WEEK"],
+        "DISTANCE": flight_inputs["DISTANCE"],
+    }
+
+    row = pd.DataFrame([raw_features])
+
+    # Add cyclical features
+    row = add_cyclical_features(row)
+
+    # Lookup historical operational features from historical_reference (past-only)
+    prediction_day = prediction_date.normalize()
+    prior_mask = historical_reference["_DAY"] < prediction_day
+
+    # Global prior rate
+    if prior_mask.any():
+        global_rate = float(historical_reference.loc[prior_mask, "DELAY_15"].mean())
+    else:
+        global_rate = 0.50
+
+    # Normalize categorical inputs
+    normalized_input = {}
+    for column in ["OP_CARRIER", "ORIGIN", "DEST"]:
+        normalized_input[column] = str(flight_inputs[column]).strip().upper()
+
+    dep_hour = int(np.floor(flight_inputs["CRS_DEP_TIME"] / 100))
+
+    # Ensure historical_reference has dep_hour column (compute on the fly if missing)
+    if "dep_hour" not in historical_reference.columns:
+        historical_reference["dep_hour"] = np.floor(historical_reference["CRS_DEP_TIME"] / 100).astype(int)
+
+    # Compute historical features for each group (matching training HISTORY_GROUPS)
+    for keys, prefix, alpha in TRAINING_HISTORY_GROUPS:
+        matched_mask = prior_mask.copy()
+
+        for key in keys:
+            if key == "dep_hour":
+                matched_mask &= historical_reference[key].eq(dep_hour)
+            else:
+                matched_mask &= historical_reference[key].eq(normalized_input[key])
+
+        past_count = int(matched_mask.sum())
+
+        # Delay rate
+        if past_count > 0:
+            past_delay_sum = float(historical_reference.loc[matched_mask, "DELAY_15"].sum())
+            rate = (past_delay_sum + alpha * global_rate) / (past_count + alpha)
+        else:
+            rate = global_rate
+
+        feature_name = f"{prefix}_HIST_DELAY_RATE"
+        row[feature_name] = rate
+
+        # Operational features (TAXI_OUT, WEATHER_DELAY, NAS_DELAY, LATE_AIRCRAFT_DELAY)
+        for op_col in ["TAXI_OUT", "WEATHER_DELAY", "NAS_DELAY", "LATE_AIRCRAFT_DELAY"]:
+            if op_col in historical_reference.columns:
+                if past_count > 0:
+                    op_mean = float(historical_reference.loc[matched_mask, op_col].mean())
+                else:
+                    op_mean = float(historical_reference.loc[prior_mask, op_col].mean()) if prior_mask.any() else 0.0
+            else:
+                op_mean = 0.0
+
+            feature_name = f"{prefix}_HIST_{op_col}_MEAN"
+            row[feature_name] = op_mean
+
+    # Ensure all required features are present in correct order
+    result = row[feature_schema].copy()
+
+    if result.isna().any().any():
+        raise ValueError("Fitur prediksi mengandung nilai kosong.")
+
+    return result
 
 
 def predict_delay(
@@ -524,8 +666,54 @@ def predict_delay(
         model = bundle["model"]
         threshold = bundle["threshold"]
 
-        if bundle.get("requires_historical_features", False):
+        # Check if this is the new production model bundle with embedded historical reference
+        if bundle.get("requires_historical_features", False) and "historical_reference" in bundle:
+            # New production model with historical operational features
+            historical_reference = bundle["historical_reference"]
+            feature_schema = bundle.get("feature_schema", FEATURES)
 
+            raw_prediction_date = flight_inputs.get("FL_DATE")
+
+            if raw_prediction_date in (None, ""):
+                raise ValueError(
+                    "Model historical membutuhkan tanggal keberangkatan "
+                    "(FL_DATE). Silakan simpan ulang detail penerbangan."
+                )
+
+            prediction_date = pd.to_datetime(
+                raw_prediction_date,
+                errors="coerce",
+            )
+
+            if pd.isna(prediction_date):
+                raise ValueError(
+                    "Tanggal keberangkatan (FL_DATE) tidak valid."
+                )
+
+            if getattr(prediction_date, "tzinfo", None) is not None:
+                prediction_date = prediction_date.tz_localize(None)
+
+            # Prevent inconsistent calendar inputs.
+            if int(row["MONTH"]) != prediction_date.month:
+                raise ValueError(
+                    "MONTH tidak sesuai dengan FL_DATE."
+                )
+
+            expected_weekday = (
+                (prediction_date.weekday() + 1) % 7
+            ) + 1
+
+            if int(row["DAY_OF_WEEK"]) != expected_weekday:
+                raise ValueError(
+                    "DAY_OF_WEEK tidak sesuai dengan FL_DATE. "
+                    "Gunakan urutan BTS: Minggu=1 sampai Sabtu=7."
+                )
+
+            # Build features for new model: cyclical encoding + historical operational features
+            frame = build_new_model_features(flight_inputs, prediction_date, historical_reference, feature_schema)
+
+        elif bundle.get("requires_historical_features", False):
+            # Legacy historical candidate models (e.g., historical_candidate, cyclic_candidate)
             raw_prediction_date = flight_inputs.get("FL_DATE")
 
             if raw_prediction_date in (None, ""):
