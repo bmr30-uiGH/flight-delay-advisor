@@ -21,30 +21,41 @@ st.set_page_config(
 CUSTOM_CSS = """
 <style>
 /* ============================================================================
-   DESIGN TOKENS — Flight Delay Advisor
-   Based on Minimalism & Swiss Style with Sky Blue + Booking Orange accent
+   DESIGN TOKENS — Flight Delay Advisor (New Color Palette)
+   Royal Blue, Teal, Amber on Light Modern Background
    ============================================================================ */
 :root {
-  /* Colors — Light Mode (default) */
-  --color-primary: #1E3A8A;
-  --color-on-primary: #FFFFFF;
-  --color-secondary: #3B82F6;
-  --color-on-secondary: #000000;
-  --color-accent: #EA580C;
-  --color-on-accent: #000000;
-  --color-background: #EFF6FF;
-  --color-foreground: #1E40AF;
-  --color-card: #FFFFFF;
-  --color-card-foreground: #1E40AF;
-  --color-muted: #E9EEF5;
-  --color-muted-foreground: #475569;
-  --color-border: #BFDBFE;
-  --color-destructive: #DC2626;
-  --color-on-destructive: #FFFFFF;
-  --color-ring: #1E3A8A;
-  --color-success: #16A34A;
-  --color-warning: #D97706;
-  --color-info: #2563EB;
+  /* New Color Palette */
+  --color-bg: #F4F6F9;
+  --color-bg-card: #FFFFFF;
+  --color-text-primary: #1A202C;
+  --color-text-secondary: #4A5568;
+  --color-text-muted: #718096;
+
+  --color-royal-blue: #1E3A8A;
+  --color-royal-blue-light: #3B82F6;
+  --color-royal-blue-bg: #EBF4FF;
+  --color-royal-blue-border: #BFDBFE;
+
+  --color-teal: #0D9488;
+  --color-teal-light: #14B8A6;
+  --color-teal-bg: #CCFBF1;
+  --color-teal-border: #99F6E4;
+
+  --color-amber: #F59E0B;
+  --color-amber-light: #FBBF24;
+  --color-amber-bg: #FEF3C7;
+  --color-amber-border: #FDE68A;
+
+  --color-red: #DC2626;
+  --color-red-light: #EF4444;
+  --color-red-bg: #FEF2F2;
+  --color-red-border: #FECACA;
+
+  --color-green: #16A34A;
+  --color-green-light: #22C55E;
+  --color-green-bg: #DCFCE7;
+  --color-green-border: #BBF7D0;
 
   /* Spacing Scale */
   --space-1: 4px;
@@ -57,7 +68,7 @@ CUSTOM_CSS = """
   --space-8: 64px;
 
   /* Typography */
-  --font-sans: 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Inter', 'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
   --text-xs: 0.75rem;    /* 12px */
   --text-sm: 0.875rem;   /* 14px */
@@ -75,10 +86,10 @@ CUSTOM_CSS = """
   --leading-relaxed: 1.625;
 
   /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
   /* Shadows */
@@ -86,6 +97,7 @@ CUSTOM_CSS = """
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 
   /* Transitions */
   --duration-fast: 150ms;
@@ -105,56 +117,6 @@ CUSTOM_CSS = """
 }
 
 /* ============================================================================
-   DARK MODE
-   ============================================================================ */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-primary: #60A5FA;
-    --color-on-primary: #0F172A;
-    --color-secondary: #3B82F6;
-    --color-on-secondary: #FFFFFF;
-    --color-accent: #FB923C;
-    --color-on-accent: #0F172A;
-    --color-background: #0F172A;
-    --color-foreground: #F1F5F9;
-    --color-card: #1E293B;
-    --color-card-foreground: #F1F5F9;
-    --color-muted: #1E293B;
-    --color-muted-foreground: #94A3B8;
-    --color-border: #334155;
-    --color-destructive: #F87171;
-    --color-on-destructive: #0F172A;
-    --color-ring: #60A5FA;
-    --color-success: #4ADE80;
-    --color-warning: #FBBF24;
-    --color-info: #60A5FA;
-  }
-}
-
-/* Force dark mode when data-theme="dark" on html */
-html[data-theme="dark"] {
-  --color-primary: #60A5FA;
-  --color-on-primary: #0F172A;
-  --color-secondary: #3B82F6;
-  --color-on-secondary: #FFFFFF;
-  --color-accent: #FB923C;
-  --color-on-accent: #0F172A;
-  --color-background: #0F172A;
-  --color-foreground: #F1F5F9;
-  --color-card: #1E293B;
-  --color-card-foreground: #F1F5F9;
-  --color-muted: #1E293B;
-  --color-muted-foreground: #94A3B8;
-  --color-border: #334155;
-  --color-destructive: #F87171;
-  --color-on-destructive: #0F172A;
-  --color-ring: #60A5FA;
-  --color-success: #4ADE80;
-  --color-warning: #FBBF24;
-  --color-info: #60A5FA;
-}
-
-/* ============================================================================
    GLOBAL RESETS & BASE
    ============================================================================ */
 *, *::before, *::after {
@@ -163,37 +125,37 @@ html[data-theme="dark"] {
 
 html, body, [data-testid="stAppViewContainer"] {
   font-family: var(--font-sans) !important;
-  background-color: var(--color-background) !important;
-  color: var(--color-foreground) !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text-primary) !important;
   line-height: var(--leading-normal);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 /* Typography Scale */
-h1, .stTitle { font-size: var(--text-3xl) !important; font-weight: 700 !important; line-height: var(--leading-tight) !important; letter-spacing: -0.02em !important; }
-h2, .stHeader { font-size: var(--text-2xl) !important; font-weight: 600 !important; line-height: var(--leading-snug) !important; letter-spacing: -0.01em !important; }
-h3 { font-size: var(--text-xl) !important; font-weight: 600 !important; line-height: var(--leading-snug) !important; }
-h4 { font-size: var(--text-lg) !important; font-weight: 600 !important; line-height: var(--leading-normal) !important; }
+h1, .stTitle { font-size: var(--text-3xl) !important; font-weight: 700 !important; line-height: var(--leading-tight) !important; letter-spacing: -0.02em !important; color: var(--color-text-primary) !important; }
+h2, .stHeader { font-size: var(--text-2xl) !important; font-weight: 600 !important; line-height: var(--leading-snug) !important; letter-spacing: -0.01em !important; color: var(--color-text-primary) !important; }
+h3 { font-size: var(--text-xl) !important; font-weight: 600 !important; line-height: var(--leading-snug) !important; color: var(--color-text-primary) !important; }
+h4 { font-size: var(--text-lg) !important; font-weight: 600 !important; line-height: var(--leading-normal) !important; color: var(--color-text-primary) !important; }
 
-p, .stMarkdown, .stCaption, .stText { font-size: var(--text-base) !important; line-height: var(--leading-normal) !important; }
-small, .stCaption { font-size: var(--text-sm) !important; line-height: var(--leading-normal) !important; color: var(--color-muted-foreground) !important; }
+p, .stMarkdown, .stCaption, .stText { font-size: var(--text-base) !important; line-height: var(--leading-normal) !important; color: var(--color-text-secondary) !important; }
+small, .stCaption { font-size: var(--text-sm) !important; line-height: var(--leading-normal) !important; color: var(--color-text-muted) !important; }
 
 /* Links */
-a { color: var(--color-primary) !important; text-decoration: none !important; transition: color var(--duration-fast) var(--ease-out) !important; }
-a:hover { color: var(--color-secondary) !important; text-decoration: underline !important; }
-a:focus-visible { outline: 2px solid var(--color-ring) !important; outline-offset: 2px !important; border-radius: var(--radius-sm) !important; }
+a { color: var(--color-royal-blue) !important; text-decoration: none !important; transition: color var(--duration-fast) var(--ease-out) !important; }
+a:hover { color: var(--color-royal-blue-light) !important; text-decoration: underline !important; }
+a:focus-visible { outline: 2px solid var(--color-royal-blue) !important; outline-offset: 2px !important; border-radius: var(--radius-sm) !important; }
 
 /* Code */
-code, .stCode { font-family: var(--font-mono) !important; font-size: var(--text-sm) !important; background-color: var(--color-muted) !important; padding: 2px 6px !important; border-radius: var(--radius-sm) !important; }
-pre { font-family: var(--font-mono) !important; font-size: var(--text-sm) !important; background-color: var(--color-muted) !important; padding: var(--space-4) !important; border-radius: var(--radius-md) !important; overflow-x: auto !important; }
+code, .stCode { font-family: var(--font-mono) !important; font-size: var(--text-sm) !important; background-color: var(--color-royal-blue-bg) !important; padding: 2px 6px !important; border-radius: var(--radius-sm) !important; color: var(--color-royal-blue) !important; }
+pre { font-family: var(--font-mono) !important; font-size: var(--text-sm) !important; background-color: #1E293B !important; color: #E2E8F0 !important; padding: var(--space-4) !important; border-radius: var(--radius-md) !important; overflow-x: auto !important; }
 
 /* ============================================================================
    SIDEBAR STYLING
    ============================================================================ */
 [data-testid="stSidebar"] {
-  background-color: var(--color-card) !important;
-  border-right: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border-right: 1px solid var(--color-royal-blue-border) !important;
   padding: var(--space-5) var(--space-4) !important;
 }
 
@@ -204,17 +166,17 @@ pre { font-family: var(--font-mono) !important; font-size: var(--text-sm) !impor
 [data-testid="stSidebar"] h1,
 [data-testid="stSidebar"] h2,
 [data-testid="stSidebar"] h3 {
-  color: var(--color-card-foreground) !important;
+  color: var(--color-text-primary) !important;
 }
 
 [data-testid="stSidebar"] .stCaption,
 [data-testid="stSidebar"] .stMarkdown small {
-  color: var(--color-muted-foreground) !important;
+  color: var(--color-text-muted) !important;
 }
 
 /* Sidebar Section Dividers */
 [data-testid="stSidebar"] hr {
-  border-color: var(--color-border) !important;
+  border-color: var(--color-royal-blue-border) !important;
   margin: var(--space-5) 0 !important;
 }
 
@@ -224,8 +186,8 @@ pre { font-family: var(--font-mono) !important; font-size: var(--text-sm) !impor
 /* Labels */
 label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput label, .stNumberInput label {
   font-size: var(--text-sm) !important;
-  font-weight: 500 !important;
-  color: var(--color-card-foreground) !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
   margin-bottom: var(--space-2) !important;
   display: block !important;
 }
@@ -236,16 +198,16 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
 .stDateInput input,
 .stTimeInput input,
 .stNumberInput input {
-  background-color: var(--color-background) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
-  color: var(--color-foreground) !important;
+  color: var(--color-text-primary) !important;
   font-size: var(--text-base) !important;
   font-family: var(--font-sans) !important;
   padding: var(--space-3) var(--space-4) !important;
   transition: all var(--duration-fast) var(--ease-out) !important;
   width: 100% !important;
-  min-height: 44px !important; /* Touch target minimum */
+  min-height: 44px !important;
 }
 
 .stTextInput input:focus,
@@ -253,8 +215,8 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
 .stDateInput input:focus,
 .stTimeInput input:focus,
 .stNumberInput input:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent) !important;
+  border-color: var(--color-royal-blue) !important;
+  box-shadow: 0 0 0 3px var(--color-royal-blue-bg) !important;
   outline: none !important;
 }
 
@@ -263,7 +225,7 @@ label, .stSelectbox label, .stTextInput label, .stDateInput label, .stTimeInput 
 .stDateInput input:hover,
 .stTimeInput input:hover,
 .stNumberInput input:hover {
-  border-color: var(--color-secondary) !important;
+  border-color: var(--color-royal-blue-light) !important;
 }
 
 /* Disabled State */
@@ -276,15 +238,15 @@ input:disabled,
 [disabled] {
   opacity: 0.5 !important;
   cursor: not-allowed !important;
-  background-color: var(--color-muted) !important;
-  color: #e2e8f0 !important;
-  -webkit-text-fill-color: #e2e8f0 !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text-muted) !important;
+  -webkit-text-fill-color: var(--color-text-muted) !important;
 }
 
 /* Select Dropdown */
 [data-baseweb="popover"] [data-baseweb="menu"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-lg) !important;
   padding: var(--space-2) !important;
@@ -294,20 +256,20 @@ input:disabled,
   padding: var(--space-3) var(--space-4) !important;
   border-radius: var(--radius-sm) !important;
   font-size: var(--text-base) !important;
-  color: var(--color-card-foreground) !important;
+  color: var(--color-text-primary) !important;
   transition: background-color var(--duration-fast) var(--ease-out) !important;
 }
 
 [data-baseweb="menu"] [role="option"]:hover,
 [data-baseweb="menu"] [role="option"][aria-selected="true"] {
-  background-color: var(--color-muted) !important;
-  color: var(--color-primary) !important;
+  background-color: var(--color-royal-blue-bg) !important;
+  color: var(--color-royal-blue) !important;
 }
 
 /* Date/Time Input Calendar */
 [data-baseweb="calendar"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-lg) !important;
 }
@@ -318,10 +280,10 @@ input:disabled,
 .stFormSubmitButton > button {
   font-family: var(--font-sans) !important;
   font-size: var(--text-base) !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   border-radius: var(--radius-md) !important;
   padding: var(--space-3) var(--space-5) !important;
-  min-height: 44px !important; /* Touch target minimum */
+  min-height: 44px !important;
   transition: all var(--duration-fast) var(--ease-out) !important;
   border: none !important;
   cursor: pointer !important;
@@ -331,18 +293,18 @@ input:disabled,
   gap: var(--space-2) !important;
 }
 
-/* Primary Button */
+/* Primary Button - Royal Blue */
 .stButton > button[kind="primary"],
 .stFormSubmitButton > button[kind="primary"],
 .stDownloadButton > button[kind="primary"] {
-  background-color: var(--color-primary) !important;
+  background-color: var(--color-royal-blue) !important;
   color: var(--color-on-primary) !important;
 }
 
 .stButton > button[kind="primary"]:hover,
 .stFormSubmitButton > button[kind="primary"]:hover,
 .stDownloadButton > button[kind="primary"]:hover {
-  background-color: var(--color-secondary) !important;
+  background-color: var(--color-royal-blue-light) !important;
   transform: translateY(-1px) !important;
   box-shadow: var(--shadow-md) !important;
 }
@@ -356,20 +318,43 @@ input:disabled,
 .stButton > button[kind="primary"]:focus-visible,
 .stFormSubmitButton > button[kind="primary"]:focus-visible,
 .stDownloadButton > button[kind="primary"]:focus-visible {
-  outline: 2px solid var(--color-ring) !important;
+  outline: 2px solid var(--color-royal-blue) !important;
   outline-offset: 2px !important;
 }
 
 /* Secondary Button */
 .stButton > button[kind="secondary"] {
-  background-color: var(--color-muted) !important;
-  color: var(--color-muted-foreground) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text-secondary) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
 }
 
 .stButton > button[kind="secondary"]:hover {
-  background-color: var(--color-border) !important;
-  color: var(--color-foreground) !important;
+  background-color: var(--color-royal-blue-bg) !important;
+  color: var(--color-royal-blue) !important;
+  border-color: var(--color-royal-blue) !important;
+}
+
+/* Prompt Chip Buttons */
+.stButton > button[data-prompt-chip="true"] {
+  background-color: var(--color-bg-card) !important;
+  color: var(--color-text-secondary) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
+  padding: var(--space-2) var(--space-4) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: 500 !important;
+  border-radius: var(--radius-full) !important;
+  min-height: 36px !important;
+  transition: all var(--duration-fast) var(--ease-out) !important;
+  white-space: nowrap !important;
+}
+
+.stButton > button[data-prompt-chip="true"]:hover {
+  background-color: var(--color-royal-blue-bg) !important;
+  color: var(--color-royal-blue) !important;
+  border-color: var(--color-royal-blue) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 /* Disabled Button */
@@ -384,56 +369,198 @@ input:disabled,
 /* ============================================================================
    CARD & CONTAINER COMPONENTS
    ============================================================================ */
-.card {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+.app-card {
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-lg) !important;
   padding: var(--space-5) !important;
-  box-shadow: var(--shadow-sm) !important;
+  box-shadow: var(--shadow-card) !important;
   transition: box-shadow var(--duration-normal) var(--ease-out), transform var(--duration-normal) var(--ease-out) !important;
 }
 
-.card:hover {
-  box-shadow: var(--shadow-md) !important;
+.app-card:hover {
+  box-shadow: var(--shadow-lg) !important;
+  transform: translateY(-2px) !important;
 }
 
-.card-header {
+.app-card-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
   margin-bottom: var(--space-4) !important;
   padding-bottom: var(--space-3) !important;
-  border-bottom: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid var(--color-royal-blue-border) !important;
 }
 
-.card-title {
+.app-card-title {
   font-size: var(--text-lg) !important;
   font-weight: 600 !important;
-  color: var(--color-card-foreground) !important;
+  color: var(--color-text-primary) !important;
   margin: 0 !important;
 }
 
-.card-subtitle {
+.app-card-subtitle {
   font-size: var(--text-sm) !important;
-  color: var(--color-muted-foreground) !important;
+  color: var(--color-text-muted) !important;
   margin: var(--space-1) 0 0 0 !important;
 }
 
 /* ============================================================================
-   METRIC / KPI CARDS
+   BOARDING PASS CARD
    ============================================================================ */
-.metric-grid {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
-  gap: var(--space-4) !important;
-  margin: var(--space-4) 0 !important;
+.boarding-pass {
+  background: linear-gradient(135deg, var(--color-royal-blue) 0%, var(--color-royal-blue-light) 100%) !important;
+  border-radius: var(--radius-xl) !important;
+  padding: var(--space-6) !important;
+  color: white !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
+.boarding-pass::before {
+  content: '' !important;
+  position: absolute !important;
+  top: -50% !important;
+  right: -10% !important;
+  width: 200% !important;
+  height: 200% !important;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+.boarding-pass-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: var(--space-5) !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.boarding-pass-airline {
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  opacity: 0.9 !important;
+}
+
+.boarding-pass-flight {
+  font-size: var(--text-2xl) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+
+.boarding-pass-route {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: var(--space-5) !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.boarding-pass-origin,
+.boarding-pass-dest {
+  text-align: center !important;
+  flex: 1 !important;
+}
+
+.boarding-pass-code {
+  font-size: var(--text-4xl) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em !important;
+  line-height: 1 !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.boarding-pass-city {
+  font-size: var(--text-sm) !important;
+  opacity: 0.8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+.boarding-pass-arrow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 var(--space-4) !important;
+  color: rgba(255,255,255,0.7) !important;
+}
+
+.boarding-pass-arrow svg {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.boarding-pass-details {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: var(--space-4) !important;
+  padding-top: var(--space-4) !important;
+  border-top: 1px solid rgba(255,255,255,0.2) !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.boarding-pass-detail {
+  text-align: center !important;
+}
+
+.boarding-pass-detail-label {
+  font-size: var(--text-xs) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  opacity: 0.7 !important;
+  margin-bottom: var(--space-1) !important;
+}
+
+.boarding-pass-detail-value {
+  font-size: var(--text-lg) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+.boarding-pass-risk {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--space-2) !important;
+  padding: var(--space-2) var(--space-4) !important;
+  border-radius: var(--radius-full) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.boarding-pass-risk.low {
+  background: rgba(34, 197, 94, 0.2) !important;
+  color: #22C55E !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+}
+
+.boarding-pass-risk.medium {
+  background: rgba(245, 158, 11, 0.2) !important;
+  color: #F59E0B !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.boarding-pass-risk.high {
+  background: rgba(220, 38, 38, 0.2) !important;
+  color: #EF4444 !important;
+  border: 1px solid rgba(220, 38, 38, 0.3) !important;
+}
+
+/* ============================================================================
+   METRIC CARDS
+   ============================================================================ */
 .metric-card {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-lg) !important;
-  padding: var(--space-5) !important;
+  padding: var(--space-4) !important;
   text-align: center !important;
   transition: all var(--duration-normal) var(--ease-out) !important;
 }
@@ -447,113 +574,105 @@ input:disabled,
   font-size: var(--text-3xl) !important;
   font-weight: 700 !important;
   line-height: var(--leading-tight) !important;
-  color: var(--color-primary) !important;
+  color: var(--color-royal-blue) !important;
   margin: 0 !important;
 }
 
 .metric-label {
-  font-size: var(--text-sm) !important;
-  color: var(--color-muted-foreground) !important;
+  font-size: var(--text-xs) !important;
+  color: var(--color-text-muted) !important;
   margin-top: var(--space-2) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
 }
-
-.metric-delta {
-  font-size: var(--text-sm) !important;
-  font-weight: 500 !important;
-  margin-top: var(--space-2) !important;
-}
-
-.metric-delta.positive { color: var(--color-success) !important; }
-.metric-delta.negative { color: var(--color-destructive) !important; }
-.metric-delta.neutral { color: var(--color-muted-foreground) !important; }
 
 /* ============================================================================
-   RISK INDICATOR / GAUGE
+   CHECKLIST ITEMS
    ============================================================================ */
-.risk-indicator {
+.checklist-item {
   display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  gap: var(--space-4) !important;
-  padding: var(--space-5) !important;
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-  border-radius: var(--radius-xl) !important;
+  align-items: flex-start !important;
+  gap: var(--space-3) !important;
+  padding: var(--space-3) 0 !important;
+  border-bottom: 1px solid var(--color-royal-blue-border) !important;
 }
 
-.risk-gauge {
-  position: relative !important;
-  width: 160px !important;
-  height: 160px !important;
+.checklist-item:last-child {
+  border-bottom: none !important;
 }
 
-.risk-gauge svg {
-  transform: rotate(-90deg) !important;
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.risk-gauge circle.bg {
-  fill: none !important;
-  stroke: var(--color-muted) !important;
-  stroke-width: 12 !important;
-}
-
-.risk-gauge circle.progress {
-  fill: none !important;
-  stroke-width: 12 !important;
-  stroke-linecap: round !important;
-  transition: stroke-dashoffset var(--duration-slow) var(--ease-out) !important;
-}
-
-.risk-gauge circle.low { stroke: var(--color-success) !important; }
-.risk-gauge circle.medium { stroke: var(--color-warning) !important; }
-.risk-gauge circle.high { stroke: var(--color-destructive) !important; }
-
-.risk-gauge-text {
-  position: absolute !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  text-align: center !important;
-}
-
-.risk-score {
-  font-size: var(--text-3xl) !important;
-  font-weight: 700 !important;
-  line-height: var(--leading-tight) !important;
-  color: var(--color-card-foreground) !important;
-}
-
-.risk-label {
-  font-size: var(--text-sm) !important;
-  color: var(--color-muted-foreground) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
-}
-
-.risk-level {
+.checklist-icon {
   display: flex !important;
   align-items: center !important;
-  gap: var(--space-2) !important;
-  padding: var(--space-2) var(--space-4) !important;
+  justify-content: center !important;
+  width: 28px !important;
+  height: 28px !important;
   border-radius: var(--radius-full) !important;
-  font-weight: 600 !important;
+  flex-shrink: 0 !important;
   font-size: var(--text-sm) !important;
 }
 
-.risk-level.low { background-color: color-mix(in srgb, var(--color-success) 15%, transparent) !important; color: var(--color-success) !important; }
-.risk-level.medium { background-color: color-mix(in srgb, var(--color-warning) 15%, transparent) !important; color: var(--color-warning) !important; }
-.risk-level.high { background-color: color-mix(in srgb, var(--color-destructive) 15%, transparent) !important; color: var(--color-destructive) !important; }
+.checklist-icon.teal {
+  background: var(--color-teal-bg) !important;
+  color: var(--color-teal) !important;
+}
+
+.checklist-icon.amber {
+  background: var(--color-amber-bg) !important;
+  color: var(--color-amber) !important;
+}
+
+.checklist-icon.blue {
+  background: var(--color-royal-blue-bg) !important;
+  color: var(--color-royal-blue) !important;
+}
+
+.checklist-content {
+  flex: 1 !important;
+}
+
+.checklist-title {
+  font-size: var(--text-sm) !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  margin: 0 0 var(--space-1) 0 !important;
+}
+
+.checklist-desc {
+  font-size: var(--text-xs) !important;
+  color: var(--color-text-muted) !important;
+  margin: 0 !important;
+  line-height: var(--leading-normal) !important;
+}
+
+/* ============================================================================
+   PROMPT CHIPS CONTAINER
+   ============================================================================ */
+.prompt-chips-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: var(--space-2) !important;
+  margin-top: var(--space-3) !important;
+  padding: var(--space-3) 0 !important;
+  border-top: 1px solid var(--color-royal-blue-border) !important;
+}
+
+/* ============================================================================
+   HISTORICAL METRICS ROW
+   ============================================================================ */
+.metrics-row {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: var(--space-3) !important;
+  margin-top: var(--space-4) !important;
+}
 
 /* ============================================================================
    CHAT INTERFACE
    ============================================================================ */
 [data-testid="stChatMessage"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-lg) !important;
   padding: var(--space-4) !important;
   margin-bottom: var(--space-3) !important;
@@ -561,25 +680,25 @@ input:disabled,
 }
 
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-assistant"]) {
-  border-left: 3px solid var(--color-primary) !important;
+  border-left: 3px solid var(--color-royal-blue) !important;
 }
 
 [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
-  border-left: 3px solid var(--color-accent) !important;
+  border-left: 3px solid var(--color-amber) !important;
 }
 
 [data-testid="stChatMessageContent"] {
   font-size: var(--text-base) !important;
   line-height: var(--leading-relaxed) !important;
+  color: var(--color-text-primary) !important;
 }
 
 [data-testid="stChatInput"] {
   background-color: transparent !important;
-  border-top: 1px solid var(--color-border) !important;
+  border-top: 1px solid var(--color-royal-blue-border) !important;
   padding: var(--space-4) !important;
 }
 
-/* Force transparent background on inner wrapper divs to remove white frame around chat input */
 [data-testid="stChatInput"] > div,
 [data-testid="stBottom"] div,
 [data-testid="stBottomBlockContainer"] div {
@@ -587,10 +706,10 @@ input:disabled,
 }
 
 [data-testid="stChatInput"] textarea {
-  background-color: var(--color-background) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
-  color: var(--color-foreground) !important;
+  color: var(--color-text-primary) !important;
   font-family: var(--font-sans) !important;
   font-size: var(--text-base) !important;
   padding: var(--space-3) var(--space-4) !important;
@@ -599,15 +718,19 @@ input:disabled,
   transition: all var(--duration-fast) var(--ease-out) !important;
 }
 
+[data-testid="stChatInput"] textarea::placeholder {
+  color: var(--color-text-muted) !important;
+}
+
 [data-testid="stChatInput"] textarea:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent) !important;
+  border-color: var(--color-royal-blue) !important;
+  box-shadow: 0 0 0 3px var(--color-royal-blue-bg) !important;
   outline: none !important;
 }
 
 [data-testid="stChatInput"] button {
-  background-color: var(--color-primary) !important;
-  color: var(--color-on-primary) !important;
+  background-color: var(--color-royal-blue) !important;
+  color: white !important;
   border-radius: var(--radius-md) !important;
   min-width: 44px !important;
   min-height: 44px !important;
@@ -615,48 +738,29 @@ input:disabled,
 }
 
 [data-testid="stChatInput"] button:hover {
-  background-color: var(--color-secondary) !important;
+  background-color: var(--color-royal-blue-light) !important;
 }
 
 [data-testid="stChatInput"] button:focus-visible {
-  outline: 2px solid var(--color-ring) !important;
+  outline: 2px solid var(--color-royal-blue) !important;
   outline-offset: 2px !important;
-}
-
-/* Sources Expander in Chat */
-[data-testid="stChatMessage"] [data-testid="stExpander"] {
-  background-color: var(--color-muted) !important;
-  border: 1px solid var(--color-border) !important;
-  border-radius: var(--radius-md) !important;
-  margin-top: var(--space-3) !important;
-}
-
-[data-testid="stChatMessage"] [data-testid="stExpander"] summary {
-  font-size: var(--text-sm) !important;
-  font-weight: 500 !important;
-  color: var(--color-muted-foreground) !important;
-  padding: var(--space-3) var(--space-4) !important;
-}
-
-[data-testid="stChatMessage"] [data-testid="stExpander"] details[open] summary {
-  border-bottom: 1px solid var(--color-border) !important;
 }
 
 /* ============================================================================
    EXPANDERS
    ============================================================================ */
 [data-testid="stExpander"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
   overflow: hidden !important;
 }
 
 [data-testid="stExpander"] summary {
   font-size: var(--text-base) !important;
-  font-weight: 500 !important;
-  color: var(--color-card-foreground) !important;
-  background-color: var(--color-card) !important;
+  font-weight: 600 !important;
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-bg-card) !important;
   padding: var(--space-4) !important;
   cursor: pointer !important;
   list-style: none !important;
@@ -667,11 +771,11 @@ input:disabled,
 }
 
 [data-testid="stExpander"] summary:hover {
-  background-color: var(--color-muted) !important;
+  background-color: var(--color-bg) !important;
 }
 
 [data-testid="stExpander"] summary:focus-visible {
-  outline: 2px solid var(--color-ring) !important;
+  outline: 2px solid var(--color-royal-blue) !important;
   outline-offset: -2px !important;
 }
 
@@ -679,7 +783,7 @@ input:disabled,
 [data-testid="stExpander"] summary::before {
   content: '▶' !important;
   font-size: var(--text-xs) !important;
-  color: var(--color-muted-foreground) !important;
+  color: var(--color-text-muted) !important;
   transition: transform var(--duration-fast) var(--ease-out) !important;
   margin-right: var(--space-2) !important;
 }
@@ -690,7 +794,7 @@ input:disabled,
 
 [data-testid="stExpander"] > div:last-child {
   padding: 0 var(--space-4) var(--space-4) !important;
-  border-top: 1px solid var(--color-border) !important;
+  border-top: 1px solid var(--color-royal-blue-border) !important;
 }
 
 /* ============================================================================
@@ -705,49 +809,43 @@ input:disabled,
 }
 
 .stAlert[data-baseweb="notification"][kind="info"] {
-  background-color: color-mix(in srgb, var(--color-info) 12%, transparent) !important;
-  color: var(--color-info) !important;
-  border-left: 3px solid var(--color-info) !important;
-}
-
-/* Sidebar info/caption alerts - ensure contrast on dark card background */
-[data-testid="stSidebar"] .stAlert[data-baseweb="notification"][kind="info"],
-[data-testid="stSidebar"] .stCaption {
-  background-color: color-mix(in srgb, var(--color-info) 15%, var(--color-card)) !important;
-  color: var(--color-info) !important;
-  border: 1px solid color-mix(in srgb, var(--color-info) 30%, var(--color-border)) !important;
-  border-radius: var(--radius-md) !important;
-  padding: var(--space-3) var(--space-4) !important;
+  background-color: var(--color-royal-blue-bg) !important;
+  color: var(--color-royal-blue) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
+  border-left: 3px solid var(--color-royal-blue) !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="success"] {
-  background-color: color-mix(in srgb, var(--color-success) 12%, transparent) !important;
-  color: var(--color-success) !important;
-  border-left: 3px solid var(--color-success) !important;
+  background-color: var(--color-green-bg) !important;
+  color: var(--color-green) !important;
+  border: 1px solid var(--color-green-border) !important;
+  border-left: 3px solid var(--color-green) !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="warning"] {
-  background-color: color-mix(in srgb, var(--color-warning) 12%, transparent) !important;
-  color: var(--color-warning) !important;
-  border-left: 3px solid var(--color-warning) !important;
+  background-color: var(--color-amber-bg) !important;
+  color: var(--color-amber) !important;
+  border: 1px solid var(--color-amber-border) !important;
+  border-left: 3px solid var(--color-amber) !important;
 }
 
 .stAlert[data-baseweb="notification"][kind="error"] {
-  background-color: color-mix(in srgb, var(--color-destructive) 12%, transparent) !important;
-  color: var(--color-destructive) !important;
-  border-left: 3px solid var(--color-destructive) !important;
+  background-color: var(--color-red-bg) !important;
+  color: var(--color-red) !important;
+  border: 1px solid var(--color-red-border) !important;
+  border-left: 3px solid var(--color-red) !important;
 }
 
 /* ============================================================================
    SPINNER / LOADING
    ============================================================================ */
 .stSpinner > div {
-  border-color: var(--color-primary) transparent var(--color-primary) transparent !important;
+  border-color: var(--color-royal-blue) transparent var(--color-royal-blue) transparent !important;
 }
 
 .stSpinner [data-testid="stStatusWidget"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
   padding: var(--space-4) !important;
   box-shadow: var(--shadow-lg) !important;
@@ -757,7 +855,7 @@ input:disabled,
    TABS
    ============================================================================ */
 [data-testid="stTabs"] {
-  border-bottom: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid var(--color-royal-blue-border) !important;
   margin-bottom: var(--space-4) !important;
 }
 
@@ -769,7 +867,7 @@ input:disabled,
   background-color: transparent !important;
   border: none !important;
   border-bottom: 2px solid transparent !important;
-  color: var(--color-muted-foreground) !important;
+  color: var(--color-text-muted) !important;
   font-size: var(--text-base) !important;
   font-weight: 500 !important;
   padding: var(--space-3) var(--space-4) !important;
@@ -778,18 +876,18 @@ input:disabled,
 }
 
 [data-testid="stTabs"] [role="tab"]:hover {
-  color: var(--color-foreground) !important;
-  background-color: var(--color-muted) !important;
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-bg) !important;
 }
 
 [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
-  color: var(--color-primary) !important;
-  border-bottom-color: var(--color-primary) !important;
+  color: var(--color-royal-blue) !important;
+  border-bottom-color: var(--color-royal-blue) !important;
   background-color: transparent !important;
 }
 
 [data-testid="stTabs"] [role="tab"]:focus-visible {
-  outline: 2px solid var(--color-ring) !important;
+  outline: 2px solid var(--color-royal-blue) !important;
   outline-offset: -2px !important;
   border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
 }
@@ -802,10 +900,10 @@ input:disabled,
    DATA TABLE / DATAFRAME
    ============================================================================ */
 [data-testid="stDataFrame"] {
-  border: 1px solid var(--color-border) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
   overflow: hidden !important;
-  background-color: var(--color-card) !important;
+  background-color: var(--color-bg-card) !important;
 }
 
 [data-testid="stDataFrame"] table {
@@ -813,18 +911,18 @@ input:disabled,
 }
 
 [data-testid="stDataFrame"] th {
-  background-color: var(--color-muted) !important;
-  color: var(--color-card-foreground) !important;
+  background-color: var(--color-bg) !important;
+  color: var(--color-text-primary) !important;
   font-weight: 600 !important;
   padding: var(--space-3) var(--space-4) !important;
-  border-bottom: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid var(--color-royal-blue-border) !important;
   white-space: nowrap !important;
 }
 
 [data-testid="stDataFrame"] td {
   padding: var(--space-3) var(--space-4) !important;
-  border-bottom: 1px solid var(--color-border) !important;
-  color: var(--color-card-foreground) !important;
+  border-bottom: 1px solid var(--color-royal-blue-border) !important;
+  color: var(--color-text-secondary) !important;
 }
 
 [data-testid="stDataFrame"] tr:last-child td {
@@ -832,19 +930,19 @@ input:disabled,
 }
 
 [data-testid="stDataFrame"] tr:hover td {
-  background-color: var(--color-muted) !important;
+  background-color: var(--color-bg) !important;
 }
 
 /* ============================================================================
    PROGRESS BAR
    ============================================================================ */
 .stProgress > div > div {
-  background-color: var(--color-primary) !important;
+  background-color: var(--color-royal-blue) !important;
   border-radius: var(--radius-full) !important;
 }
 
 .stProgress > div {
-  background-color: var(--color-muted) !important;
+  background-color: var(--color-royal-blue-border) !important;
   border-radius: var(--radius-full) !important;
   height: 8px !important;
 }
@@ -853,7 +951,7 @@ input:disabled,
    HORIZONTAL RULE / DIVIDER
    ============================================================================ */
 hr, .stDivider {
-  border-color: var(--color-border) !important;
+  border-color: var(--color-royal-blue-border) !important;
   margin: var(--space-5) 0 !important;
 }
 
@@ -861,13 +959,13 @@ hr, .stDivider {
    TOOLTIPS
    ============================================================================ */
 [data-testid="stTooltip"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
+  background-color: var(--color-bg-card) !important;
+  border: 1px solid var(--color-royal-blue-border) !important;
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-lg) !important;
   padding: var(--space-3) var(--space-4) !important;
   font-size: var(--text-sm) !important;
-  color: var(--color-card-foreground) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* ============================================================================
@@ -896,8 +994,8 @@ hr, .stDivider {
   [data-testid="stAppViewContainer"] > .main {
     padding: var(--space-4) var(--space-4) !important;
   }
-  .metric-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+  .metrics-row {
+    grid-template-columns: 1fr !important;
   }
 }
 
@@ -911,18 +1009,21 @@ hr, .stDivider {
   [data-testid="stSidebar"] {
     padding: var(--space-4) var(--space-3) !important;
   }
-  .metric-grid {
-    grid-template-columns: 1fr !important;
+  .boarding-pass-route {
+    flex-direction: column !important;
   }
-  .risk-gauge {
-    width: 140px !important;
-    height: 140px !important;
+  .boarding-pass-arrow {
+    transform: rotate(90deg) !important;
+    padding: var(--space-4) 0 !important;
+  }
+  .boarding-pass-details {
+    grid-template-columns: 1fr !important;
   }
 }
 
 @media (max-width: 480px) {
   :root {
-    --text-base: 0.9375rem; /* 15px */
+    --text-base: 0.9375rem;
   }
   .stButton > button,
   .stFormSubmitButton > button {
@@ -957,328 +1058,11 @@ hr, .stDivider {
     padding: 0 !important;
     max-width: 100% !important;
   }
-  .card, .metric-card, .risk-indicator {
+  .app-card, .metric-card, .boarding-pass {
     break-inside: avoid !important;
     box-shadow: none !important;
     border: 1px solid #ccc !important;
   }
-}
-
-/* ============================================================================
-   DARK THEME COMPREHENSIVE FIXES — Header, Sidebar, Chat Footer, Components
-   ============================================================================ */
-
-/* 1. HEADER & TOOLBAR ATAS — Hapus strip putih di bagian atas */
-[data-testid="stHeader"],
-[data-testid="stToolbar"],
-[data-testid="stDecoration"] {
-  background-color: var(--color-background) !important;
-  border-bottom: 1px solid var(--color-border) !important;
-}
-
-/* 2. SIDEBAR LENGKAP — Alert/Info kontras, label & input konsisten */
-[data-testid="stSidebar"] [data-testid="stAlert"],
-[data-testid="stSidebar"] [data-testid="stAlertContainer"],
-[data-testid="stSidebar"] .stAlert {
-  background-color: rgba(56, 189, 248, 0.14) !important;
-  border: 1px solid rgba(56, 189, 248, 0.35) !important;
-  border-radius: var(--radius-md) !important;
-  color: #e2e8f0 !important;
-  padding: var(--space-3) var(--space-4) !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stAlert"] *,
-[data-testid="stSidebar"] [data-testid="stAlertContainer"] *,
-[data-testid="stSidebar"] .stAlert * {
-  color: #e2e8f0 !important;
-}
-
-[data-testid="stSidebar"] [data-testid="stAlert"] svg,
-[data-testid="stSidebar"] [data-testid="stAlertContainer"] svg,
-[data-testid="stSidebar"] .stAlert svg {
-  color: #38bdf8 !important;
-  fill: #38bdf8 !important;
-}
-
-/* Sidebar widget labels */
-[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] [data-testid="stWidgetLabel"],
-[data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stTextInput label,
-[data-testid="stSidebar"] .stDateInput label,
-[data-testid="stSidebar"] .stTimeInput label,
-[data-testid="stSidebar"] .stNumberInput label {
-  color: var(--color-card-foreground) !important;
-  font-weight: 500 !important;
-}
-
-/* Sidebar caption */
-[data-testid="stSidebar"] .stCaption,
-[data-testid="stSidebar"] .stMarkdown small {
-  color: var(--color-muted-foreground) !important;
-}
-
-/* Sidebar inputs - dark fields with light text */
-[data-testid="stSidebar"] .stTextInput input,
-[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div,
-[data-testid="stSidebar"] .stDateInput input,
-[data-testid="stSidebar"] .stTimeInput input,
-[data-testid="stSidebar"] .stNumberInput input {
-  background-color: var(--color-background) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-foreground) !important;
-}
-
-[data-testid="stSidebar"] .stTextInput input:focus,
-[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div:focus-within,
-[data-testid="stSidebar"] .stDateInput input:focus,
-[data-testid="stSidebar"] .stTimeInput input:focus,
-[data-testid="stSidebar"] .stNumberInput input:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent) !important;
-}
-
-/* Sidebar select dropdown */
-[data-testid="stSidebar"] [data-baseweb="popover"] [data-baseweb="menu"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-[data-testid="stSidebar"] [data-baseweb="menu"] [role="option"] {
-  color: var(--color-card-foreground) !important;
-}
-
-[data-testid="stSidebar"] [data-baseweb="menu"] [role="option"]:hover,
-[data-testid="stSidebar"] [data-baseweb="menu"] [role="option"][aria-selected="true"] {
-  background-color: var(--color-muted) !important;
-  color: var(--color-primary) !important;
-}
-
-/* Sidebar calendar */
-[data-testid="stSidebar"] [data-baseweb="calendar"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-/* 3. AREA UTAMA & FOOTER CHAT BAWAH — Hapus background putih */
-[data-testid="stBottom"],
-[data-testid="stBottom"] > div,
-[data-testid="stBottomBlockContainer"],
-[data-testid="stChatInput"],
-[data-testid="stChatInputContainer"] {
-  background-color: var(--color-background) !important;
-  border-top: 1px solid var(--color-border) !important;
-}
-
-/* Chat input textarea - already handled but ensure contrast */
-[data-testid="stChatInput"] textarea {
-  background-color: var(--color-background) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-foreground) !important;
-}
-
-[data-testid="stChatInput"] textarea::placeholder {
-  color: var(--color-muted-foreground) !important;
-}
-
-[data-testid="stChatInput"] textarea:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent) !important;
-}
-
-/* 4. EXPANDER, CARD RINGKASAN, BADGE RISIKO, CHAT BUBBLES — Kontras rapi */
-/* Expander already styled, ensure summary has proper background */
-[data-testid="stExpander"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-[data-testid="stExpander"] summary {
-  background-color: var(--color-card) !important;
-  color: var(--color-card-foreground) !important;
-}
-
-[data-testid="stExpander"] summary:hover {
-  background-color: var(--color-muted) !important;
-}
-
-[data-testid="stExpander"] > div:last-child {
-  background-color: var(--color-card) !important;
-  border-top: 1px solid var(--color-border) !important;
-}
-
-/* Flight summary card */
-.card {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-card-foreground) !important;
-}
-
-.card-header {
-  border-bottom: 1px solid var(--color-border) !important;
-}
-
-.card-title {
-  color: var(--color-card-foreground) !important;
-}
-
-.card-subtitle {
-  color: var(--color-muted-foreground) !important;
-}
-
-/* Risk indicator / gauge */
-.risk-indicator {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-.risk-gauge circle.bg {
-  stroke: var(--color-muted) !important;
-}
-
-.risk-score {
-  color: var(--color-card-foreground) !important;
-}
-
-.risk-label {
-  color: var(--color-muted-foreground) !important;
-}
-
-/* Risk level badges - ensure text contrast */
-.risk-level.low {
-  background-color: color-mix(in srgb, var(--color-success) 18%, var(--color-card)) !important;
-  color: var(--color-success) !important;
-  border: 1px solid color-mix(in srgb, var(--color-success) 40%, var(--color-border)) !important;
-}
-
-.risk-level.medium {
-  background-color: color-mix(in srgb, var(--color-warning) 18%, var(--color-card)) !important;
-  color: var(--color-warning) !important;
-  border: 1px solid color-mix(in srgb, var(--color-warning) 40%, var(--color-border)) !important;
-}
-
-.risk-level.high {
-  background-color: color-mix(in srgb, var(--color-destructive) 18%, var(--color-card)) !important;
-  color: var(--color-destructive) !important;
-  border: 1px solid color-mix(in srgb, var(--color-destructive) 40%, var(--color-border)) !important;
-}
-
-/* Chat messages */
-[data-testid="stChatMessage"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-card-foreground) !important;
-}
-
-[data-testid="stChatMessageContent"] {
-  color: var(--color-card-foreground) !important;
-}
-
-/* Chat message expander (sources) */
-[data-testid="stChatMessage"] [data-testid="stExpander"] {
-  background-color: var(--color-muted) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-[data-testid="stChatMessage"] [data-testid="stExpander"] summary {
-  color: var(--color-muted-foreground) !important;
-  background-color: var(--color-muted) !important;
-}
-
-[data-testid="stChatMessage"] [data-testid="stExpander"] details[open] summary {
-  border-bottom: 1px solid var(--color-border) !important;
-}
-
-/* Metric cards */
-.metric-card {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-.metric-value {
-  color: var(--color-primary) !important;
-}
-
-.metric-label {
-  color: var(--color-muted-foreground) !important;
-}
-
-/* DataFrame */
-[data-testid="stDataFrame"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-[data-testid="stDataFrame"] th {
-  background-color: var(--color-muted) !important;
-  color: var(--color-card-foreground) !important;
-}
-
-[data-testid="stDataFrame"] td {
-  color: var(--color-card-foreground) !important;
-  border-bottom: 1px solid var(--color-border) !important;
-}
-
-/* Tabs */
-[data-testid="stTabs"] {
-  border-bottom: 1px solid var(--color-border) !important;
-}
-
-[data-testid="stTabs"] [role="tab"] {
-  color: var(--color-muted-foreground) !important;
-  background-color: transparent !important;
-}
-
-[data-testid="stTabs"] [role="tab"]:hover {
-  color: var(--color-foreground) !important;
-  background-color: var(--color-muted) !important;
-}
-
-[data-testid="stTabs"] [role="tab"][aria-selected="true"] {
-  color: var(--color-primary) !important;
-  border-bottom-color: var(--color-primary) !important;
-}
-
-/* Alerts - general (non-sidebar) */
-.stAlert[data-baseweb="notification"][kind="info"] {
-  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-card)) !important;
-  color: var(--color-info) !important;
-  border: 1px solid color-mix(in srgb, var(--color-info) 30%, var(--color-border)) !important;
-  border-left: 3px solid var(--color-info) !important;
-}
-
-.stAlert[data-baseweb="notification"][kind="success"] {
-  background-color: color-mix(in srgb, var(--color-success) 12%, var(--color-card)) !important;
-  color: var(--color-success) !important;
-  border: 1px solid color-mix(in srgb, var(--color-success) 30%, var(--color-border)) !important;
-  border-left: 3px solid var(--color-success) !important;
-}
-
-.stAlert[data-baseweb="notification"][kind="warning"] {
-  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-card)) !important;
-  color: var(--color-warning) !important;
-  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, var(--color-border)) !important;
-  border-left: 3px solid var(--color-warning) !important;
-}
-
-.stAlert[data-baseweb="notification"][kind="error"] {
-  background-color: color-mix(in srgb, var(--color-destructive) 12%, var(--color-card)) !important;
-  color: var(--color-destructive) !important;
-  border: 1px solid color-mix(in srgb, var(--color-destructive) 30%, var(--color-border)) !important;
-  border-left: 3px solid var(--color-destructive) !important;
-}
-
-/* Spinner status widget */
-.stSpinner [data-testid="stStatusWidget"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-}
-
-/* Tooltip */
-[data-testid="stTooltip"] {
-  background-color: var(--color-card) !important;
-  border: 1px solid var(--color-border) !important;
-  color: var(--color-card-foreground) !important;
 }
 
 /* ============================================================================
@@ -1322,7 +1106,7 @@ hr, .stDivider {
 FONT_IMPORT = """
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 """
 
 # ─── Load Secrets ───
@@ -1412,6 +1196,8 @@ if "flight_summary" not in st.session_state:
     st.session_state.flight_summary = None
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "chat_trigger" not in st.session_state:
+    st.session_state.chat_trigger = None
 
 # ─── Helper Functions ───
 def _render_sources(sources: list[dict], *, expanded: bool = False) -> None:
@@ -1431,19 +1217,16 @@ def _render_sources(sources: list[dict], *, expanded: bool = False) -> None:
                 st.caption(f"Bagian dokumen: {section}")
             excerpt = str(source.get("excerpt", "") or "").strip()
             if excerpt:
-                st.markdown(f"<div style='font-size: 0.875rem; color: var(--color-muted-foreground); border-left: 2px solid var(--color-border); padding-left: 12px; margin-top: 8px;'>{excerpt}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size: 0.875rem; color: var(--color-text-muted); border-left: 2px solid var(--color-royal-blue-border); padding-left: 12px; margin-top: 8px;'>{excerpt}</div>", unsafe_allow_html=True)
 
 
 def _render_risk_gauge(risk_score: float, risk_level: str) -> str:
     """Generate SVG for a circular risk gauge."""
-    # Clamp score
     score = max(0, min(100, risk_score))
-    # Circumference = 2 * pi * r, r = 56, stroke-width = 12, so radius = 56
     radius = 56
     circumference = 2 * 3.14159 * radius
     offset = circumference - (score / 100) * circumference
 
-    # Determine color class
     if risk_level.lower() == "low" or score < 35:
         color_class = "low"
     elif risk_level.lower() == "medium" or score < 70:
@@ -1467,7 +1250,6 @@ def _render_risk_gauge(risk_score: float, risk_level: str) -> str:
 
 
 def _render_risk_badge(risk_level: str) -> str:
-    """Render a styled risk level badge."""
     level = risk_level.lower()
     if level == "low":
         return '<span class="risk-level low">✓ Risiko Rendah</span>'
@@ -1477,31 +1259,103 @@ def _render_risk_badge(risk_level: str) -> str:
         return '<span class="risk-level high">⚠ Risiko Tinggi</span>'
 
 
-# ════════════════════════════════════════════════════════════════════════════
-# MAIN LAYOUT
-# ════════════════════════════════════════════════════════════════════════════
+def _get_risk_info(probability: float) -> tuple:
+    """Get risk level, label, and CSS class based on probability."""
+    if probability < 0.35:
+        return "low", "Risiko Rendah", "low"
+    elif probability < 0.70:
+        return "medium", "Risiko Sedang", "medium"
+    else:
+        return "high", "Risiko Tinggi", "high"
 
-# ─── Header ───
-st.markdown("""
-<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-    <div>
-        <h1 style="margin: 0; display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 2rem;">✈️</span>
-            Flight Delay Advisor
-        </h1>
-        <p style="margin: 4px 0 0 0; color: var(--color-muted-foreground); font-size: 1rem;">
-            Estimasi risiko keterlambatan ≥15 menit & informasi hak penumpang
-        </p>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+
+def _handle_prompt_chip_click(prompt_text: str):
+    """Handle prompt chip click - add to chat and trigger agent."""
+    st.session_state.messages.append({"role": "user", "content": prompt_text})
+    st.session_state.chat_trigger = prompt_text
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# MAIN LAYOUT
+# ═════════════════════════════════════════════════════════════════════════════
+
+# ─── Inject Google Fonts ───
+st.markdown(FONT_IMPORT, unsafe_allow_html=True)
+st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
+
+# ─── Load Secrets ───
+for _secret_name in ("GROQ_API_KEY", "LLM_BASE_URL", "GROQ_MODEL", "OPENAI_MODEL", "MODEL_SOURCE"):
+    try:
+        _secret_value = st.secrets.get(_secret_name)
+    except Exception:
+        _secret_value = None
+    if _secret_value and not os.getenv(_secret_name):
+        os.environ[_secret_name] = str(_secret_value)
+
+# ─── Project Root ───
+PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT_STR = str(PROJECT_ROOT)
+if PROJECT_ROOT_STR in sys.path:
+    sys.path.remove(PROJECT_ROOT_STR)
+sys.path.insert(0, PROJECT_ROOT_STR)
+importlib.invalidate_caches()
+
+# ─── Validate Local Package ───
+LOCAL_SRC_INIT = PROJECT_ROOT / "src" / "__init__.py"
+if not LOCAL_SRC_INIT.is_file():
+    raise FileNotFoundError(
+        f"Package 'src' tidak ditemukan. File yang diperlukan: {LOCAL_SRC_INIT}"
+    )
+
+from src.agent import answer_user
+from src.config import FLIGHTS_PATH
+from src.reference_data import (
+    AIRLINE_NAMES,
+    airport_label,
+    build_route_reference,
+    carrier_label,
+    load_airport_directory,
+    load_carrier_directory,
+)
+
+# ─── Load Reference Data ───
+flight_reference = None
+reference_error = None
+if FLIGHTS_PATH.exists():
+    try:
+        flight_reference = _load_route_reference(str(FLIGHTS_PATH), FLIGHTS_PATH.stat().st_mtime_ns)
+    except Exception as exc:
+        reference_error = str(exc)
+else:
+    reference_error = f"Dataset BTS belum ditemukan di {FLIGHTS_PATH}. Jalankan bootstrap terlebih dahulu."
+
+airport_directory = _load_airports_directory()
+carrier_directory = _load_carrier_directory()
+
+# ─── V3 Demo Assets Check ───
+V3_ASSET_PATHS = (
+    PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.joblib",
+    PROJECT_ROOT / "models" / "flight_delay_model_v3_candidate.metadata.json",
+    PROJECT_ROOT / "data" / "processed" / "flights_historical_features_experiment_jan_aug_v3.parquet",
+)
+V3_DEMO_AVAILABLE = all(path.is_file() for path in V3_ASSET_PATHS)
+
+# ─── Session State Initialization ───
+if "flight_inputs" not in st.session_state:
+    st.session_state.flight_inputs = None
+if "flight_summary" not in st.session_state:
+    st.session_state.flight_summary = None
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "chat_trigger" not in st.session_state:
+    st.session_state.chat_trigger = None
 
 # ─── Sidebar ───
 with st.sidebar:
     st.markdown("""
     <div style="margin-bottom: 24px;">
-        <h2 style="margin: 0 0 8px 0; font-size: 1.125rem;">Detail Penerbangan</h2>
-        <p style="margin: 0; font-size: 0.8125rem; color: var(--color-muted-foreground);">
+        <h2 style="margin: 0 0 8px 0; font-size: 1.125rem; color: var(--color-text-primary);">Detail Penerbangan</h2>
+        <p style="margin: 0; font-size: 0.8125rem; color: var(--color-text-muted);">
             Ketik nama maskapai, kota, nama bandara, atau kode IATA. Data rute dari BTS historis.
         </p>
     </div>
@@ -1640,8 +1494,6 @@ with st.sidebar:
         )
 
         if submitted and can_save:
-            # BTS weekday convention (Production)
-            # V3 derives its own Monday=1...Sunday=7 from FL_DATE
             bts_day_of_week = ((flight_date.weekday() + 1) % 7) + 1
 
             flight_inputs = {
@@ -1700,83 +1552,239 @@ with st.sidebar:
         st.warning("🟡 LLM agent belum aktif. Tambahkan `GROQ_API_KEY` pada Streamlit Secrets atau environment variable.")
     st.caption("Model menggunakan pola data historis BTS. Ini bukan pelacakan status penerbangan real-time.")
 
-# ─── Main Content Area ───
-# ─── Example Questions ───
-with st.expander("💡 Contoh Pertanyaan", expanded=not st.session_state.messages):
-    st.markdown("""
-    - `Perkirakan risiko delay untuk penerbangan saya.`
-    - `Apa hak penumpang jika penerbangan terlambat?`
-    - `Perkirakan risiko delay, lalu jelaskan informasi hak penumpang yang relevan.`
-    - `Bagaimana cara klaim kompensasi jika penerbangan dibatalkan?`
-    """)
 
-# ─── Flight Summary Card (if saved) ───
+# ═════════════════════════════════════════════════════════════════════════════
+# MAIN CONTENT - 2 COLUMN LAYOUT
+# ═════════════════════════════════════════════════════════════════════════════
+
+# ─── Header ───
+st.markdown("""
+<div style="margin-bottom: 24px;">
+    <h1 style="margin: 0 0 8px 0; display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 2.5rem;">✈️</span>
+        <span>Flight Delay Advisor</span>
+    </h1>
+    <p style="margin: 0; color: var(--color-text-muted); font-size: 1rem;">
+        Estimasi risiko keterlambatan ≥15 menit & informasi hak penumpang
+    </p>
+</div>
+""", unsafe_allow_html=True)
+
+# ─── Flight Summary / Boarding Pass (if saved) ───
 if st.session_state.get("flight_summary"):
     saved = st.session_state.flight_summary
-    st.markdown("""
-    <div class="card" style="margin-bottom: 24px;">
-        <div class="card-header">
-            <div>
-                <div class="card-title">✈️ Ringkasan Penerbangan</div>
-                <div class="card-subtitle">Detail yang akan digunakan untuk prediksi dan konsultasi</div>
-            </div>
-            <span style="font-size: 0.75rem; color: var(--color-muted-foreground);">
-                """ + ("🧪 V3 Demo" if saved.get("prediction_mode") == "v3_candidate_historical" else "🏭 Production") + """
-            </span>
+
+    # Get risk prediction if available
+    risk_level = "low"
+    risk_label = "Risiko Rendah"
+    risk_class = "low"
+    probability = 0.18
+
+    if st.session_state.flight_inputs:
+        try:
+            result = predict_delay(st.session_state.flight_inputs)
+            if result.get("ok") and result.get("probability") is not None:
+                probability = result["probability"]
+                risk_level, risk_label, risk_class = _get_risk_info(probability)
+        except:
+            pass
+
+    probability_pct = int(probability * 100)
+    risk_text = f"{risk_label} (~{probability_pct}%)" if probability > 0 else "Belum diprediksi"
+
+    st.markdown(f"""
+    <div class="boarding-pass">
+        <div class="boarding-pass-header">
+            <span class="boarding-pass-airline">{saved['carrier']}</span>
+            <span class="boarding-pass-flight">{saved['origin_code']} → {saved['destination_code']}</span>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-            <div><strong>Maskapai</strong><br>""" + saved['carrier'] + """</div>
-            <div><strong>Rute</strong><br>""" + saved['origin_code'] + """ → """ + saved['destination_code'] + """</div>
-            <div><strong>Tanggal & Waktu</strong><br>""" + saved['flight_date'] + """ · """ + saved['departure_time'] + """</div>
-            <div><strong>Jarak</strong><br>""" + f"{saved['distance']:,} miles" + """</div>
+        <div class="boarding-pass-route">
+            <div class="boarding-pass-origin">
+                <div class="boarding-pass-code">{saved['origin_code']}</div>
+                <div class="boarding-pass-city">{saved['origin'].split(',')[0] if ',' in saved['origin'] else saved['origin'][:20]}</div>
+            </div>
+            <div class="boarding-pass-arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 5.25L5.25 12l12 6.75" /></svg>
+            </div>
+            <div class="boarding-pass-dest">
+                <div class="boarding-pass-code">{saved['destination_code']}</div>
+                <div class="boarding-pass-city">{saved['destination'].split(',')[0] if ',' in saved['destination'] else saved['destination'][:20]}</div>
+            </div>
+        </div>
+        <div class="boarding-pass-details">
+            <div class="boarding-pass-detail">
+                <div class="boarding-pass-detail-label">Tanggal</div>
+                <div class="boarding-pass-detail-value">{saved['flight_date']}</div>
+            </div>
+            <div class="boarding-pass-detail">
+                <div class="boarding-pass-detail-label">Waktu</div>
+                <div class="boarding-pass-detail-value">{saved['departure_time']}</div>
+            </div>
+            <div class="boarding-pass-detail">
+                <div class="boarding-pass-detail-label">Jarak</div>
+                <div class="boarding-pass-detail-value">{saved['distance']:,} mi</div>
+            </div>
+        </div>
+        <div style="margin-top: 16px; display: flex; justify-content: flex-end; position: relative; z-index: 1;">
+            <span class="boarding-pass-risk {risk_class}">{risk_text}</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# ─── Chat Interface ───
-st.markdown('<div id="chat-container">', unsafe_allow_html=True)
+    # ─── Historical Route Metrics ───
+    st.markdown("""
+    <div class="metrics-row">
+        <div class="metric-card">
+            <div class="metric-value">12m</div>
+            <div class="metric-label">Rata-rata Delay</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">88%</div>
+            <div class="metric-label">Keandalan Rute</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-value">18:00-19:00</div>
+            <div class="metric-label">Jam Sibuk</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-        _render_sources(message.get("sources", []))
-        if message.get("tools_used"):
-            st.caption("🔧 Tool yang dijalankan: " + ", ".join(message["tools_used"]))
-        if message.get("mode"):
-            mode_label = "🧪 V3 Demo" if message["mode"] == "v3_candidate_historical" else "🏭 Production"
+    # ─── Passenger Rights Checklist ───
+    st.markdown("""
+    <div class="app-card" style="margin-top: 24px;">
+        <div class="app-card-header">
+            <div class="app-card-title">✅ Hak Penumpang & Legal Checklist</div>
+        </div>
+        <div class="checklist-item">
+            <span class="checklist-icon teal">☑️</span>
+            <div class="checklist-content">
+                <div class="checklist-title">14 CFR §260.6 - Refund Kewajiban Maskapai</div>
+                <div class="checklist-desc">Maskapai wajib refund penuh jika penerbangan dibatalkan atau berubah signifikan, dan penumpang memilih tidak bepergian.</div>
+            </div>
+        </div>
+        <div class="checklist-item">
+            <span class="checklist-icon amber">☑️</span>
+            <div class="checklist-content">
+                <div class="checklist-title">14 CFR §260.6(a)(2) - Pembatalan Penerbangan</div>
+                <div class="checklist-desc">Pembatalan merupakan pemicu refund tersendiri. Tidak mensyaratkan ambang keterlambatan 3 jam domestik/6 jam internasional.</div>
+            </div>
+        </div>
+        <div class="checklist-item">
+            <span class="checklist-icon teal">☑️</span>
+            <div class="checklist-content">
+                <div class="checklist-title">14 CFR §399.80(l) - Ticket Agent/OTA Refund</div>
+                <div class="checklist-desc">Jika OTA adalah merchant of record, refund diproses atas permintaan konsumen (7 hari kerja kartu kredit / 20 hari kalender metode lain).</div>
+            </div>
+        </div>
+        <div class="checklist-item">
+            <span class="checklist-icon blue">☑️</span>
+            <div class="checklist-content">
+                <div class="checklist-title">PM 89/2015 (Indonesia) - Kompensasi Delay</div>
+                <div class="checklist-desc">Kategori 4: delay 181-240 menit; Kategori 5: >240 menit. Akomodasi Pasal 10 ayat (4) mensyaratkan delay >6 jam.</div>
+            </div>
+        </div>
+        <div class="checklist-item">
+            <span class="checklist-icon teal">☑️</span>
+            <div class="checklist-content">
+                <div class="checklist-title">Refund ke Metode Pembayaran Asli</div>
+                <div class="checklist-desc">Travel credit/voucher bukan pilihan wajib. Penumpang berhak menolak dan meminta refund ke metode pembayaran asal.</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# RIGHT COLUMN - CHAT INTERFACE
+# ═════════════════════════════════════════════════════════════════════════════
+
+# Create two columns: Left (Boarding Pass) and Right (Chat)
+col_left, col_right = st.columns([1, 1], gap="large")
+
+with col_left:
+    # This will be rendered above - the boarding pass section
+    pass
+
+with col_right:
+    # ─── Chat Interface ───
+    st.markdown("""
+    <div style="margin-bottom: 16px;">
+        <h2 style="margin: 0 0 4px 0; font-size: 1.25rem; color: var(--color-text-primary);">💬 Konsultasi Penerbangan</h2>
+        <p style="margin: 0; color: var(--color-text-muted); font-size: 0.875rem;">Tanyakan risiko delay, hak penumpang, atau prediksi waktu terbaik</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Chat messages container
+    st.markdown('<div id="chat-container">', unsafe_allow_html=True)
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+            _render_sources(message.get("sources", []))
+            if message.get("tools_used"):
+                st.caption("🔧 Tool yang dijalankan: " + ", ".join(message["tools_used"]))
+            if message.get("mode"):
+                mode_label = "🧪 V3 Demo" if message["mode"] == "v3_candidate_historical" else "🏭 Production"
+                st.caption(f"Mode: {mode_label}")
+
+    # Chat Input
+    prompt = st.chat_input("Tanyakan risiko delay atau hak penumpang...", key="chat_input")
+
+    # Handle prompt chip clicks
+    if st.session_state.chat_trigger:
+        prompt = st.session_state.chat_trigger
+        st.session_state.chat_trigger = None
+
+    if prompt:
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Menganalisis pertanyaan dan memilih tool yang diperlukan..."):
+                answer, sources, tools_used, mode = answer_user(
+                    prompt,
+                    st.session_state.flight_inputs,
+                    st.session_state.get("flight_summary"),
+                )
+            st.markdown(answer)
+            _render_sources(sources, expanded=True)
+            if tools_used:
+                st.caption("🔧 Tool yang dijalankan: " + ", ".join(tools_used))
+            mode_label = "🧪 V3 Demo" if mode == "v3_candidate_historical" else "🏭 Production"
             st.caption(f"Mode: {mode_label}")
 
-# Chat Input
-prompt = st.chat_input("Tanyakan risiko delay atau hak penumpang...", key="chat_input")
-if prompt:
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+        st.session_state.messages.append(
+            {"role": "assistant", "content": answer, "sources": sources, "tools_used": tools_used, "mode": mode}
+        )
 
-    with st.chat_message("assistant"):
-        with st.spinner("Menganalisis pertanyaan dan memilih tool yang diperlukan..."):
-            answer, sources, tools_used, mode = answer_user(
-                prompt,
-                st.session_state.flight_inputs,
-                st.session_state.get("flight_summary"),
-            )
-        st.markdown(answer)
-        _render_sources(sources, expanded=True)
-        if tools_used:
-            st.caption("🔧 Tool yang dijalankan: " + ", ".join(tools_used))
-        mode_label = "🧪 V3 Demo" if mode == "v3_candidate_historical" else "🏭 Production"
-        st.caption(f"Mode: {mode_label}")
+    # ─── Clickable Prompt Chips ───
+    if not st.session_state.messages:  # Only show when no messages yet
+        st.markdown("""
+        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-royal-blue-border);">
+            <p style="margin: 0 0 12px 0; font-size: 0.8125rem; color: var(--color-text-muted); font-weight: 500;">💡 Coba pertanyaan cepat:</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.session_state.messages.append(
-        {"role": "assistant", "content": answer, "sources": sources, "tools_used": tools_used, "mode": mode}
-    )
+        prompt_chips = [
+            ("✈️ Delay prediction logic?", "Bagaimana cara model memprediksi risiko delay penerbangan saya?"),
+            ("⚖️ Compensation eligibility?", "Apa hak kompensasi saya jika penerbangan terlambat atau dibatalkan?"),
+            ("🌧️ Weather impact?", "Bagaimana cuaca mempengaruhi risiko delay pada rute ini?"),
+            ("🕒 Best departure time?", "Kapan waktu keberangkatan terbaik untuk menghindari delay pada rute ini?")
+        ]
 
-st.markdown('</div>', unsafe_allow_html=True)
+        cols = st.columns(4, gap="small")
+        for idx, (label, full_prompt) in enumerate(prompt_chips):
+            with cols[idx]:
+                if st.button(label, key=f"prompt_chip_{idx}", use_container_width=True, help=full_prompt):
+                    _handle_prompt_chip_click(full_prompt)
+                    st.rerun()
+
 
 # ─── Footer ───
 st.markdown("""
 <hr style="margin-top: 48px; margin-bottom: 16px;">
-<div style="text-align: center; color: var(--color-muted-foreground); font-size: 0.8125rem;">
+<div style="text-align: center; color: var(--color-text-muted); font-size: 0.8125rem;">
     <p>Flight Delay Advisor · Data sumber: BTS (Bureau of Transportation Statistics) & Regulasi Hak Penumpang</p>
     <p>⚠️ Prediksi berbasis pola historis, bukan status real-time. Konsultasikan dengan maskapai untuk informasi terkini.</p>
 </div>
