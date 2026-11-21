@@ -954,6 +954,323 @@ hr, .stDivider {
 }
 
 /* ============================================================================
+   DARK THEME COMPREHENSIVE FIXES — Header, Sidebar, Chat Footer, Components
+   ============================================================================ */
+
+/* 1. HEADER & TOOLBAR ATAS — Hapus strip putih di bagian atas */
+[data-testid="stHeader"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"] {
+  background-color: var(--color-background) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* 2. SIDEBAR LENGKAP — Alert/Info kontras, label & input konsisten */
+[data-testid="stSidebar"] [data-testid="stAlert"],
+[data-testid="stSidebar"] [data-testid="stAlertContainer"],
+[data-testid="stSidebar"] .stAlert {
+  background-color: rgba(56, 189, 248, 0.14) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  border-radius: var(--radius-md) !important;
+  color: #e2e8f0 !important;
+  padding: var(--space-3) var(--space-4) !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stAlert"] *,
+[data-testid="stSidebar"] [data-testid="stAlertContainer"] *,
+[data-testid="stSidebar"] .stAlert * {
+  color: #e2e8f0 !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stAlert"] svg,
+[data-testid="stSidebar"] [data-testid="stAlertContainer"] svg,
+[data-testid="stSidebar"] .stAlert svg {
+  color: #38bdf8 !important;
+  fill: #38bdf8 !important;
+}
+
+/* Sidebar widget labels */
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] [data-testid="stWidgetLabel"],
+[data-testid="stSidebar"] .stSelectbox label,
+[data-testid="stSidebar"] .stTextInput label,
+[data-testid="stSidebar"] .stDateInput label,
+[data-testid="stSidebar"] .stTimeInput label,
+[data-testid="stSidebar"] .stNumberInput label {
+  color: var(--color-card-foreground) !important;
+  font-weight: 500 !important;
+}
+
+/* Sidebar caption */
+[data-testid="stSidebar"] .stCaption,
+[data-testid="stSidebar"] .stMarkdown small {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* Sidebar inputs - dark fields with light text */
+[data-testid="stSidebar"] .stTextInput input,
+[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div,
+[data-testid="stSidebar"] .stDateInput input,
+[data-testid="stSidebar"] .stTimeInput input,
+[data-testid="stSidebar"] .stNumberInput input {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+[data-testid="stSidebar"] .stTextInput input:focus,
+[data-testid="stSidebar"] .stSelectbox [data-baseweb="select"] > div:focus-within,
+[data-testid="stSidebar"] .stDateInput input:focus,
+[data-testid="stSidebar"] .stTimeInput input:focus,
+[data-testid="stSidebar"] .stNumberInput input:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent) !important;
+}
+
+/* Sidebar select dropdown */
+[data-testid="stSidebar"] [data-baseweb="popover"] [data-baseweb="menu"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="menu"] [role="option"] {
+  color: var(--color-card-foreground) !important;
+}
+
+[data-testid="stSidebar"] [data-baseweb="menu"] [role="option"]:hover,
+[data-testid="stSidebar"] [data-baseweb="menu"] [role="option"][aria-selected="true"] {
+  background-color: var(--color-muted) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Sidebar calendar */
+[data-testid="stSidebar"] [data-baseweb="calendar"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+/* 3. AREA UTAMA & FOOTER CHAT BAWAH — Hapus background putih */
+[data-testid="stBottom"],
+[data-testid="stBottom"] > div,
+[data-testid="stBottomBlockContainer"],
+[data-testid="stChatInput"],
+[data-testid="stChatInputContainer"] {
+  background-color: var(--color-background) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+/* Chat input textarea - already handled but ensure contrast */
+[data-testid="stChatInput"] textarea {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+[data-testid="stChatInput"] textarea::placeholder {
+  color: var(--color-muted-foreground) !important;
+}
+
+[data-testid="stChatInput"] textarea:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent) !important;
+}
+
+/* 4. EXPANDER, CARD RINGKASAN, BADGE RISIKO, CHAT BUBBLES — Kontras rapi */
+/* Expander already styled, ensure summary has proper background */
+[data-testid="stExpander"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+[data-testid="stExpander"] summary {
+  background-color: var(--color-card) !important;
+  color: var(--color-card-foreground) !important;
+}
+
+[data-testid="stExpander"] summary:hover {
+  background-color: var(--color-muted) !important;
+}
+
+[data-testid="stExpander"] > div:last-child {
+  background-color: var(--color-card) !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+/* Flight summary card */
+.card {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-card-foreground) !important;
+}
+
+.card-header {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.card-title {
+  color: var(--color-card-foreground) !important;
+}
+
+.card-subtitle {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* Risk indicator / gauge */
+.risk-indicator {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.risk-gauge circle.bg {
+  stroke: var(--color-muted) !important;
+}
+
+.risk-score {
+  color: var(--color-card-foreground) !important;
+}
+
+.risk-label {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* Risk level badges - ensure text contrast */
+.risk-level.low {
+  background-color: color-mix(in srgb, var(--color-success) 18%, var(--color-card)) !important;
+  color: var(--color-success) !important;
+  border: 1px solid color-mix(in srgb, var(--color-success) 40%, var(--color-border)) !important;
+}
+
+.risk-level.medium {
+  background-color: color-mix(in srgb, var(--color-warning) 18%, var(--color-card)) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 40%, var(--color-border)) !important;
+}
+
+.risk-level.high {
+  background-color: color-mix(in srgb, var(--color-destructive) 18%, var(--color-card)) !important;
+  color: var(--color-destructive) !important;
+  border: 1px solid color-mix(in srgb, var(--color-destructive) 40%, var(--color-border)) !important;
+}
+
+/* Chat messages */
+[data-testid="stChatMessage"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-card-foreground) !important;
+}
+
+[data-testid="stChatMessageContent"] {
+  color: var(--color-card-foreground) !important;
+}
+
+/* Chat message expander (sources) */
+[data-testid="stChatMessage"] [data-testid="stExpander"] {
+  background-color: var(--color-muted) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+[data-testid="stChatMessage"] [data-testid="stExpander"] summary {
+  color: var(--color-muted-foreground) !important;
+  background-color: var(--color-muted) !important;
+}
+
+[data-testid="stChatMessage"] [data-testid="stExpander"] details[open] summary {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* Metric cards */
+.metric-card {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.metric-value {
+  color: var(--color-primary) !important;
+}
+
+.metric-label {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* DataFrame */
+[data-testid="stDataFrame"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+[data-testid="stDataFrame"] th {
+  background-color: var(--color-muted) !important;
+  color: var(--color-card-foreground) !important;
+}
+
+[data-testid="stDataFrame"] td {
+  color: var(--color-card-foreground) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* Tabs */
+[data-testid="stTabs"] {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+[data-testid="stTabs"] [role="tab"] {
+  color: var(--color-muted-foreground) !important;
+  background-color: transparent !important;
+}
+
+[data-testid="stTabs"] [role="tab"]:hover {
+  color: var(--color-foreground) !important;
+  background-color: var(--color-muted) !important;
+}
+
+[data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+  color: var(--color-primary) !important;
+  border-bottom-color: var(--color-primary) !important;
+}
+
+/* Alerts - general (non-sidebar) */
+.stAlert[data-baseweb="notification"][kind="info"] {
+  background-color: color-mix(in srgb, var(--color-info) 12%, var(--color-card)) !important;
+  color: var(--color-info) !important;
+  border: 1px solid color-mix(in srgb, var(--color-info) 30%, var(--color-border)) !important;
+  border-left: 3px solid var(--color-info) !important;
+}
+
+.stAlert[data-baseweb="notification"][kind="success"] {
+  background-color: color-mix(in srgb, var(--color-success) 12%, var(--color-card)) !important;
+  color: var(--color-success) !important;
+  border: 1px solid color-mix(in srgb, var(--color-success) 30%, var(--color-border)) !important;
+  border-left: 3px solid var(--color-success) !important;
+}
+
+.stAlert[data-baseweb="notification"][kind="warning"] {
+  background-color: color-mix(in srgb, var(--color-warning) 12%, var(--color-card)) !important;
+  color: var(--color-warning) !important;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, var(--color-border)) !important;
+  border-left: 3px solid var(--color-warning) !important;
+}
+
+.stAlert[data-baseweb="notification"][kind="error"] {
+  background-color: color-mix(in srgb, var(--color-destructive) 12%, var(--color-card)) !important;
+  color: var(--color-destructive) !important;
+  border: 1px solid color-mix(in srgb, var(--color-destructive) 30%, var(--color-border)) !important;
+  border-left: 3px solid var(--color-destructive) !important;
+}
+
+/* Spinner status widget */
+.stSpinner [data-testid="stStatusWidget"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+/* Tooltip */
+[data-testid="stTooltip"] {
+  background-color: var(--color-card) !important;
+  border: 1px solid var(--color-border) !important;
+  color: var(--color-card-foreground) !important;
+}
+
+/* ============================================================================
    UTILITY CLASSES
    ============================================================================ */
 .visually-hidden {
